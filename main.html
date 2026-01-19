@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructed Logic | 空间与代码</title>
+    <style>
+        :root {
+            /* 调色板：建筑师灰 + 终端黑 + 警告橙 */
+            --bg-color: #F2F2F0; /* 类似纸张或未涂饰墙面的颜色 */
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --accent-color: #FF5722; /* 施工警示色 或 语法高亮色 */
+            --line-color: #D1D1D1;
+            
+            /* 字体系统 */
+            --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-code: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            
+            /* 间距 */
+            --spacing-unit: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: var(--spacing-unit);
+            max-width: 1200px;
+            margin: 0 auto;
+            border-left: 1px solid var(--line-color);
+            border-right: 1px solid var(--line-color);
+            min-height: 100vh;
+        }
+
+        /* 顶部导航：像图纸的信息栏 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: calc(var(--spacing-unit) * 2);
+            border-bottom: 2px solid var(--text-primary);
+            margin-bottom: calc(var(--spacing-unit) * 3);
+        }
+
+        .identity {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .role-tag {
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: #E5E5E5;
+            padding: 4px 8px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .meta-info {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            text-align: right;
+            color: var(--text-secondary);
+        }
+
+        /* 简介区域 */
+        .intro {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: calc(var(--spacing-unit) * 3);
+            color: var(--text-primary);
+        }
+        
+        .intro span {
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        /* 网格系统：展示小程序 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-unit);
+        }
+
+        /* 卡片设计：像一个个独立的房间或模块 */
+        .applet-card {
+            background: #FFFFFF;
+            border: 1px solid var(--line-color);
+            padding: var(--spacing-unit);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 280px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 悬停效果：立面浮起 */
+        .applet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.1);
+            border-color: var(--text-primary);
+        }
+
+        .applet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .applet-icon {
+            font-family: var(--font-code);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .applet-id {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--line-color);
+        }
+
+        .applet-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .applet-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            flex-grow: 1;
+        }
+
+        .applet-footer {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--line-color);
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border: 1px solid var(--line-color);
+            color: var(--text-secondary);
+        }
+
+        /* 装饰元素：角落的十字准星，模仿CAD */
+        .cad-cross {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+        .cad-cross::before, .cad-cross::after {
+            content: '';
+            position: absolute;
+            background: var(--accent-color);
+        }
+        .cad-cross::before { width: 100%; height: 1px; top: 50%; }
+        .cad-cross::after { height: 100%; width: 1px; left: 50%; }
+        
+        .tl { top: -5px; left: -5px; }
+        .br { bottom: -5px; right: -5px; }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body { border: none; padding: 16px; }
+            header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .meta-info { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="identity">
+            <h1>ARCHI.CODE</h1>
+            <div class="role-tag">
+                <span style="color:var(--accent-color)">const</span> DESIGNER = <span style="color:var(--accent-color)">new</span> PROGRAMMER();
+            </div>
+        </div>
+        <div class="meta-info">
+            <p>LOCATION: LOCALHOST:8080</p>
+            <p>STATUS: BUILDING...</p>
+        </div>
+    </header>
+
+    <section class="intro">
+        <p>这里没有精修的效果图，只有运行在逻辑之上的工具。探索我构建的<span>网页小程序</span>，它们融合了空间的秩序与代码的效率。</p>
+    </section>
+
+    <main class="grid-container">
+        
+        <!-- 小程序卡片 1 -->
+        <a href="#" class="applet-card">
+            <div class="cad-cross tl"></div> <!-- 装饰 -->
+            <div class="applet-header">
+                <div class="applet-icon">{ }</div>
+                <div class="applet-id">N.01</div>
+            </div>
+            <h3 class="applet-title">Color Matrix Generator</h3>
+            <p class="applet-desc">一个基于 HSL 空间的色彩矩阵生成器。用于快速生成室内软装配色方案。</p>
+            <div class="applet-footer">
+                <span class="tag">TOOL</span>
+                <span class="tag">COLOR</span>
+                <span class="tag">JS</span>
+            </div>
+        </a>
+
+        <!-- 小程序卡片 2 -->
+        <a href="#" class="applet-card">
+            <div class="applet-header">
+                <div class="applet-icon">px</div>
+                <div class="applet-id">N.02</div>
+            </div>
+            <h3 class="applet-title">Scale Converter</h3>
+            <p class="applet-desc">实时比例尺换算工具。解决图纸尺寸与实际家具选型的换算痛点。</p>
+            <div class="applet-footer">
+                <span class="tag">UTILITY</span>
+                <span class="tag">CALC</span>
+            </div>
+        </a>
+
+        <!-- 小程序卡片 3 -->
+        <a href="#" class="applet-card">
+            <div class="cad-cross br"></div> <!-- 装饰 -->
+            <div class="applet-header">
+                <div class="applet-icon">///</div>
+                <div class="applet-id">N.03</div>
+            </div>
+            <h3 class="applet-title">Pomodoro Space</h3>
+            <p class="applet-desc">结合环境白噪音的极简番茄钟。为了在绘图和写代码时保持绝对专注。</p>
+            <div class="applet-footer">
+                <span class="tag">AUDIO</span>
+                <span class="tag">TIME</span>
+            </div>
+        </a>
+
+        <!-- 小程序卡片 4 -->
+        <a href="#" class="applet-card">
+            <div class="applet-header">
+                <div class="applet-icon">SVG</div>
+                <div class="applet-id">N.04</div>
+            </div>
+            <h3 class="applet-title">Pattern Maker</h3>
+            <p class="applet-desc">生成可平铺的几何纹理 SVG。灵感来源于建筑瓷砖排版。</p>
+            <div class="applet-footer">
+                <span class="tag">GRAPHIC</span>
+                <span class="tag">SVG</span>
+            </div>
+        </a>
+
+    </main>
+
+    <footer style="margin-top: 60px; border-top: 1px solid var(--line-color); padding-top: 24px; font-family: var(--font-code); font-size: 0.8rem; color: var(--text-secondary); display:flex; justify-content:space-between;">
+        <p>&copy; 2024 DESIGNER.DEV</p>
+        <p>RENDER TIME: 0.02s</p>
+    </footer>
+
+</body>
+</html>
