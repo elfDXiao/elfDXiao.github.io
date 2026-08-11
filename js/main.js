@@ -76,7 +76,7 @@
       }
       var subject = encodeURIComponent('来自网站的咨询 - ' + name.value.trim());
       var body = encodeURIComponent('称呼：' + name.value.trim() + '\n邮箱：' + email.value.trim() + '\n\n' + msg.value.trim());
-      window.location.href = 'mailto:your@email.com?subject=' + subject + '&body=' + body;
+      window.location.href = 'mailto:xtqsbx@gmail.com?subject=' + subject + '&body=' + body;
       tip.textContent = '已打开邮件应用，发送即可，谢谢！';
       tip.className = 'form-tip ok';
       form.reset();

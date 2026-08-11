@@ -573,3 +573,18 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* 页脚个人信息 */
+.footer-owner {
+  margin-top: 14px;
+  font-size: 12.5px;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.5);
+}
+.statement .sign {
+  margin-top: 26px;
+  font-family: var(--serif);
+  font-size: 14px;
+  letter-spacing: .35em;
+  color: var(--ink-3);
+}
