@@ -754,3 +754,23 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   .choice-grid { grid-template-columns: 1fr; }
   .survey-doc { padding: 22px 18px; }
 }
+
+/* 八大选型系统卡片 */
+.select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.select-card {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  overflow: hidden;
+  display: block;
+  transition: border-color .3s, transform .3s;
+}
+.select-card:hover { border-color: var(--ink-3); transform: translateY(-4px); }
+.select-thumb { aspect-ratio: 4 / 3; overflow: hidden; }
+.select-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.select-body { padding: 18px 20px 22px; }
+.select-body h3 { font-size: 16px; margin-bottom: 10px; }
+.select-link { font-size: 12.5px; letter-spacing: .15em; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+.select-card:hover .select-link .arr { transform: translateX(4px); }
+.select-link .arr { transition: transform .25s; }
+@media (max-width: 960px) { .select-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .select-grid { grid-template-columns: 1fr; } }
