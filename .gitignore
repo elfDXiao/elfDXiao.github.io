@@ -11,3 +11,6 @@ Thumbs.db
 
 # 本地预览截图（不上传）
 preview/
+
+# 地图原始数据（已转换为 js/china-map-data.js 等）
+_data/
