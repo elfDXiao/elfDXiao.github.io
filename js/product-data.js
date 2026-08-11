@@ -11,5 +11,6 @@ window.PRODUCT_DATA = [
   { id: 'p09', cat: '建材部品', name: '吸音天花扣板', brand: 'DAIKEN', note: '日式扣板天花，防潮防霉，可拆卸检修。', price: '¥220/㎡ 起', hue: 205 },
   { id: 'p10', cat: '建材部品', name: '室内门（折叠/平开）', brand: 'SANWA', note: '日式轻薄室内门，节约空间，静音合页。', price: '¥1,800 起', hue: 205 },
   { id: 'p11', cat: '厨房系统', name: '下拉式调味拉篮', brand: 'LIXIL', note: '上下分区取用，收纳调味瓶罐。', price: '¥1,200 起', hue: 25 },
-  { id: 'p12', cat: '卫浴系统', name: '恒温花洒淋浴柱', brand: 'TOTO', note: '恒温阀芯，防烫设计，多模式出水。', price: '¥3,500 起', hue: 155 }
+  { id: 'p12', cat: '卫浴系统', name: '恒温花洒淋浴柱', brand: 'TOTO', note: '恒温阀芯，防烫设计，多模式出水。', price: '¥3,500 起', hue: 155 },
+  { id: 'p13', cat: '卫浴系统', name: '骊住 SPAGE 整体浴室产品手册', brand: 'LIXIL', note: '品牌旗舰 SPAGE 整体浴室官方产品手册（260 页 PDF），含系列型号、尺寸与配置说明。点击下载查阅。', price: '免费资料', hue: 155, file: 'assets/pdf/骊住品牌旗舰SPAGE整体浴室产品手册.pdf' }
 ];

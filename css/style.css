@@ -588,3 +588,64 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   letter-spacing: .35em;
   color: var(--ink-3);
 }
+/* =========================================================
+   全案设计客户需求调查系统
+   ========================================================= */
+.survey-grid { display: grid; grid-template-columns: 1.6fr .8fr; gap: clamp(28px, 4vw, 48px); align-items: start; }
+.form-card {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 28px 30px;
+  margin-bottom: 18px;
+}
+.form-card h3 { font-size: 18px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.form-card h3 span { font-family: var(--serif); color: var(--accent); font-size: 14px; letter-spacing: .15em; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; letter-spacing: .05em; color: var(--ink-2); margin-bottom: 6px; font-weight: 600; }
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  background: #fff;
+  outline: none;
+  font: inherit;
+  color: var(--ink);
+  transition: border-color .25s, box-shadow .25s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(33,31,27,.06);
+}
+.check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; }
+.check { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink-2); cursor: pointer; padding: 4px 0; }
+.check input { width: 16px; height: 16px; accent-color: var(--accent); }
+.form-actions { margin-top: 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.form-tip { font-size: 13px; color: var(--ink-3); min-height: 1.4em; }
+.form-tip.ok { color: #2e7d4f; }
+.form-tip.err { color: #b03a2e; }
+
+.survey-aside { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--nav-h) + 24px); }
+.aside-card { border: 1px solid var(--line); background: var(--paper); padding: 24px; }
+.aside-card h3 { font-size: 16px; margin-bottom: 10px; }
+.aside-card p, .aside-card li { font-size: 13.5px; color: var(--ink-2); }
+.aside-card ol { list-style: decimal; padding-left: 18px; }
+.aside-card ol li { padding: 3px 0; }
+
+@media (max-width: 900px) {
+  .survey-grid { grid-template-columns: 1fr; }
+  .survey-aside { position: static; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+.download-link {
+  display: inline-block;
+  margin: 6px 0 0;
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 6px 14px;
+  transition: background .25s, color .25s;
+}
+.download-link:hover { background: var(--accent); color: #fff; }
