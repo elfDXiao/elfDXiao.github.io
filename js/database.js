@@ -49,7 +49,7 @@
       card.className = 'product-card';
       card.innerHTML =
         '<div class="product-thumb">' +
-          '<img src="' + window.PH.image(i + 1, p.hue || 25, 'PRODUCT') + '" alt="' + esc(p.name) + '">' +
+          '<img src="' + (p.cover || window.PH.image(i + 1, p.hue || 25, 'PRODUCT')) + '" alt="' + esc(p.name) + '">' +
           '<span class="thumb-tag">' + esc(p.cat) + '</span>' +
         '</div>' +
         '<div class="product-body">' +
