@@ -774,3 +774,13 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
 .select-link .arr { transition: transform .25s; }
 @media (max-width: 960px) { .select-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .select-grid { grid-template-columns: 1fr; } }
+
+/* 板块未完工提示 */
+.notice-box {
+  border: 1px dashed var(--ink-3);
+  padding: clamp(28px, 5vw, 48px);
+  text-align: center;
+  color: var(--ink-2);
+  letter-spacing: .18em;
+  font-size: 14.5px;
+}
