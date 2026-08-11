@@ -1,4 +1,4 @@
-/* 占位图生成器：在真实照片补充前，生成极简风格的示意图片 */
+/* 占位图生成器：在真实照片补充前，生成简约风格的示意图片 */
 window.PH = (function () {
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 

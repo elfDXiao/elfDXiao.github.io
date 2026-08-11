@@ -1,5 +1,5 @@
 /* =========================================================
-   个人主页 · 北欧极简设计
+   个人主页 · 北欧简约设计
    ========================================================= */
 
 :root {
@@ -244,7 +244,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
 .hero-title em { font-style: normal; color: var(--accent); }
 .hero-sub {
   margin-top: 30px;
-  max-width: 460px;
+  max-width: 560px;
   color: var(--ink-2);
   font-size: 15.5px;
 }
