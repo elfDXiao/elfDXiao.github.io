@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="全屋定制展示 —— 点击中国地图选择省份与城市，浏览落地案例与价格。">
+  <title>全屋定制展示 · 工房 Atelier</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>工</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="index.html" class="brand">工房 <small>ATELIER</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+      <a href="index.html">首页</a>
+      <a href="database.html">产品资料库</a>
+      <a href="furniture.html">全屋定制</a>
+      <a href="kitchen.html">厨卫系统</a>
+      <a href="studio.html">工作室案例</a>
+      <a href="bathroom.html">整体浴室</a>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 02 · Custom Furniture</p>
+        <h1 class="sec-title">全屋定制展示</h1>
+        <p class="sec-sub">以日式收纳思维与北欧极简美学定制每一寸空间。点击地图选择省份与城市，浏览当地全屋定制的落地案例、实景图片与价格说明。</p>
+      </div>
+    </section>
+
+    <!-- 地图 + 选城市 -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="sec-label">Explore</span>
+          <h2 class="sec-title">选择省份与城市</h2>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。</p>
+        </div>
+        <div class="explorer-wrap reveal">
+          <div class="explorer-stage">
+            <div class="map-box">
+              <div id="mapFurniture"></div>
+              <p class="map-hint" id="hintFurniture">请点击地图上的省份开始浏览</p>
+            </div>
+          </div>
+          <div class="sel-box">
+            <h3>选择城市</h3>
+            <div class="crumb" id="crumbFurniture">请先在左侧地图选择省份</div>
+            <div id="cityPanelFurniture" style="display:none;">
+              <div class="city-grid" id="cityGridFurniture"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 案例 -->
+    <section class="section bg-alt" id="caseSectionFurniture" style="display:none;">
+      <div class="container">
+        <div class="case-section-title"><h2 id="caseTitleFurniture"></h2></div>
+        <div class="case-grid" id="caseGridFurniture"></div>
+        <p class="case-empty" id="caseEmptyFurniture" style="display:none;"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 灯箱 -->
+  <div class="lightbox" id="lbFurniture">
+    <div class="lb-card">
+      <div class="lb-media">
+        <button class="lb-close" id="lbCloseFurniture" aria-label="关闭">✕</button>
+        <span class="lb-count" id="lbCountFurniture"></span>
+        <div id="lbMediaFurniture"></div>
+        <button class="lb-nav lb-prev" id="lbPrevFurniture" aria-label="上一张">‹</button>
+        <button class="lb-nav lb-next" id="lbNextFurniture" aria-label="下一张">›</button>
+      </div>
+      <div class="lb-body" id="lbBodyFurniture"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">工房<small>ATELIER · 个人主页</small></p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫本地化系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">整体浴室实例</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:your@email.com">your@email.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> 工房 Atelier · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/china-map-data.js"></script>
+  <script src="js/city-data.js"></script>
+  <script src="js/case-data.js"></script>
+  <script src="js/ph.js"></script>
+  <script src="js/map-explorer.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.initMapExplorer({
+        type: 'furniture',
+        mapId: 'mapFurniture',
+        hintId: 'hintFurniture',
+        crumbId: 'crumbFurniture',
+        cityId: 'cityPanelFurniture',
+        cityGridId: 'cityGridFurniture',
+        caseSectionId: 'caseSectionFurniture',
+        caseTitleId: 'caseTitleFurniture',
+        caseGridId: 'caseGridFurniture',
+        caseEmptyId: 'caseEmptyFurniture',
+        lightboxId: 'lbFurniture',
+        lbMediaId: 'lbMediaFurniture',
+        lbCountId: 'lbCountFurniture',
+        lbBodyId: 'lbBodyFurniture',
+        lbPrevId: 'lbPrevFurniture',
+        lbNextId: 'lbNextFurniture',
+        lbCloseId: 'lbCloseFurniture'
+      });
+    });
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>

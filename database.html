@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="日系产品资料库 —— 系统厨房、卫浴、收纳部品图文资料。">
+  <title>日系产品资料库 · 工房 Atelier</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>工</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="index.html" class="brand">工房 <small>ATELIER</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html" class="active">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html">整体浴室</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 01 · Library</p>
+        <h1 class="sec-title">日系产品资料库</h1>
+        <p class="sec-sub">收录我们常用的日系厨房、卫浴与收纳部品。可按分类筛选或直接搜索，方便随时查阅与比价。</p>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="lib-toolbar">
+          <div class="lib-search">
+            <span class="ico">⌕</span>
+            <input type="search" id="libSearch" placeholder="搜索产品名称 / 品牌">
+          </div>
+          <div class="lib-filters" id="libFilters"></div>
+        </div>
+        <p class="lib-count" id="libCount"></p>
+        <div class="product-grid" id="libGrid"></div>
+        <p class="lib-empty" id="libEmpty" style="display:none;">没有找到相关产品，换个关键词试试。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">工房<small>ATELIER · 个人主页</small></p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫本地化系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">整体浴室实例</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:your@email.com">your@email.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> 工房 Atelier · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/product-data.js"></script>
+  <script src="js/ph.js"></script>
+  <script src="js/database.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

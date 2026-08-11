@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="个人主页 - 我的作品集与个人介绍">
-  <title>个人主页</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  <meta name="description" content="工房 Atelier —— 以北欧极简与日式收纳，打造安静、好用、有质感的家。">
+  <title>工房 Atelier · 个人主页</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>工</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- 顶部导航 -->
   <header class="site-header" id="siteHeader">
     <nav class="nav container">
-      <a href="#home" class="brand">我的主页</a>
+      <a href="index.html" class="brand">工房 <small>ATELIER</small></a>
       <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#home" class="active">首页</a></li>
-        <li><a href="#about">关于我</a></li>
-        <li><a href="#skills">技能专长</a></li>
-        <li><a href="#projects">项目作品</a></li>
-        <li><a href="#contact">联系我</a></li>
+        <li><a href="index.html" class="active">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html">整体浴室</a></li>
       </ul>
     </nav>
   </header>
@@ -30,162 +30,94 @@
   <main>
     <!-- 首屏 -->
     <section class="hero" id="home">
-      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-vertical">簡素 · 極簡 · 本質</div>
       <div class="container hero-inner">
-        <div class="hero-avatar" aria-hidden="true">
-          <div class="avatar-ring">
-            <span>你的</span><span>头像</span>
-          </div>
-        </div>
-        <p class="hero-greet">你好，我是</p>
-        <h1 class="hero-name"><span id="typedName"></span><span class="cursor">|</span></h1>
-        <p class="hero-title">网页开发者 / 创作者</p>
-        <p class="hero-desc">
-          这里是我的个人主页。我会在这里展示我的作品、分享我的想法，<br>
-          也会不断把这里打磨得更好。欢迎常来看看！
-        </p>
+        <p class="hero-label">INTERIOR · FURNITURE · ARCHITECTURE</p>
+        <h1 class="hero-title">以简驭繁，<br>让家回归<em>生活的本质</em>。</h1>
+        <p class="hero-sub">我们专注于日式收纳思维与北欧极简美学的结合——全屋定制、日本厨卫本地化、整体浴室落地。安静、克制，却处处好用。</p>
         <div class="hero-actions">
-          <a href="#projects" class="btn btn-primary">查看作品</a>
-          <a href="#contact" class="btn btn-ghost">联系我</a>
+          <a href="#sections" class="btn btn-solid">浏览五大板块</a>
+          <a href="#philosophy" class="btn btn-line">设计理念</a>
         </div>
-        <div class="hero-meta">
-          <span>📍 中国</span>
-          <span>💼 自由职业 / 待更新</span>
+      </div>
+      <span class="hero-scroll">SCROLL</span>
+    </section>
+
+    <!-- 五大板块 -->
+    <section class="section-tight" id="sections">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="sec-label">Sections</span>
+          <h2 class="sec-title">五大板块</h2>
+          <p class="sec-sub">从产品资料到落地案例，按你的需求慢慢浏览。</p>
+        </div>
+        <div class="index-list reveal">
+          <a class="index-item" href="database.html">
+            <span class="index-num">01</span>
+            <h3 class="index-title">日系产品资料库</h3>
+            <p class="index-desc">系统厨房、卫浴、收纳部品的图文资料库，可按分类筛选与搜索。</p>
+            <span class="index-go">→</span>
+          </a>
+          <a class="index-item" href="furniture.html">
+            <span class="index-num">02</span>
+            <h3 class="index-title">全屋定制展示</h3>
+            <p class="index-desc">点击中国地图选择省份与城市，浏览当地全屋定制落地案例与价格说明。</p>
+            <span class="index-go">→</span>
+          </a>
+          <a class="index-item" href="kitchen.html">
+            <span class="index-num">03</span>
+            <h3 class="index-title">日本厨卫本地化系统</h3>
+            <p class="index-desc">日式厨卫在中国的本地化适配：测量、设计、安装与售后全流程。</p>
+            <span class="index-go">→</span>
+          </a>
+          <a class="index-item" href="studio.html">
+            <span class="index-num">04</span>
+            <h3 class="index-title">工作室案例展示</h3>
+            <p class="index-desc">工作室真实项目实景：按省份与城市查看各地案例与造价。</p>
+            <span class="index-go">→</span>
+          </a>
+          <a class="index-item" href="bathroom.html">
+            <span class="index-num">05</span>
+            <h3 class="index-title">整体浴室中国落地实例</h3>
+            <p class="index-desc">日式整体浴室在中国的实拍落地项目，含尺寸型号与全含报价。</p>
+            <span class="index-go">→</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- 关于我 -->
-    <section class="section" id="about">
+    <!-- 理念 -->
+    <section class="section bg-alt" id="philosophy">
+      <div class="container statement reveal">
+        <span class="sec-label">Philosophy</span>
+        <blockquote>好的设计不是堆砌，<br>而是让每一样东西，都有它安静的位置。</blockquote>
+        <p>我们相信——收纳让空间从容，材质让触感温暖，留白让生活呼吸。<br>北欧的克制与日式的细致，最终都指向同一个词：<b>好用</b>。</p>
+      </div>
+    </section>
+
+    <!-- 如何开始 -->
+    <section class="section">
       <div class="container">
-        <h2 class="section-title">关于我 <span>About</span></h2>
-        <div class="about-grid">
-          <div class="about-text">
-            <p>
-              这里写一段关于你的介绍。可以写你的职业、你的兴趣、你的经历，
-              让来访的朋友更了解你。
-            </p>
-            <p>
-              比如：我是一名热爱设计与技术的创作者，喜欢把想法变成看得见的产品。
-              平时喜欢研究网页开发、摄影、阅读，也喜欢旅行。
-            </p>
-            <div class="about-facts">
-              <div class="fact"><span class="fact-num">01</span><span class="fact-label">热爱创造</span></div>
-              <div class="fact"><span class="fact-num">02</span><span class="fact-label">持续学习</span></div>
-              <div class="fact"><span class="fact-num">03</span><span class="fact-label">认真做事</span></div>
-            </div>
+        <div class="sec-head reveal">
+          <span class="sec-label">Process</span>
+          <h2 class="sec-title">如何开始</h2>
+        </div>
+        <div class="steps reveal">
+          <div class="step">
+            <span class="step-num">STEP 01</span>
+            <h3>咨询与测量</h3>
+            <p>告诉我们你的户型、预算与生活习惯，我们上门测量并给出初步方案。</p>
           </div>
-          <div class="about-card">
-            <h3>我的档案</h3>
-            <ul class="profile-list">
-              <li><span>姓名</span><b>你的名字</b></li>
-              <li><span>职业</span><b>你的职业</b></li>
-              <li><span>城市</span><b>你的城市</b></li>
-              <li><span>邮箱</span><b>your@email.com</b></li>
-            </ul>
-            <a href="#contact" class="btn btn-primary btn-block">和我聊聊</a>
+          <div class="step">
+            <span class="step-num">STEP 02</span>
+            <h3>设计与报价</h3>
+            <p>深化设计方案与施工图，输出透明分项报价，确认后再动工。</p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 技能专长 -->
-    <section class="section section-alt" id="skills">
-      <div class="container">
-        <h2 class="section-title">技能专长 <span>Skills</span></h2>
-        <div class="skills-grid">
-          <article class="skill-card">
-            <div class="skill-icon">🌐</div>
-            <h3>网页开发</h3>
-            <p>HTML / CSS / JavaScript，会做响应式网页与交互效果。</p>
-            <div class="skill-bar"><i style="--w: 85%"></i></div>
-          </article>
-          <article class="skill-card">
-            <div class="skill-icon">🎨</div>
-            <h3>设计审美</h3>
-            <p>注重排版与配色，追求简洁美观的用户体验。</p>
-            <div class="skill-bar"><i style="--w: 80%"></i></div>
-          </article>
-          <article class="skill-card">
-            <div class="skill-icon">⚙️</div>
-            <h3>工具运用</h3>
-            <p>熟练使用常用办公与设计工具，学习新工具很快。</p>
-            <div class="skill-bar"><i style="--w: 90%"></i></div>
-          </article>
-          <article class="skill-card">
-            <div class="skill-icon">💬</div>
-            <h3>沟通协作</h3>
-            <p>善于表达与配合，能和团队一起把事做成。</p>
-            <div class="skill-bar"><i style="--w: 88%"></i></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 项目作品 -->
-    <section class="section" id="projects">
-      <div class="container">
-        <h2 class="section-title">项目作品 <span>Projects</span></h2>
-        <div class="projects-grid">
-          <article class="project-card">
-            <div class="project-thumb thumb-1"><span>项目一</span></div>
-            <div class="project-body">
-              <h3>项目名称一</h3>
-              <p>一句话介绍这个项目做了什么，解决了什么问题。</p>
-              <div class="tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
-            </div>
-          </article>
-          <article class="project-card">
-            <div class="project-thumb thumb-2"><span>项目二</span></div>
-            <div class="project-body">
-              <h3>项目名称二</h3>
-              <p>一句话介绍这个项目做了什么，解决了什么问题。</p>
-              <div class="tags"><span>设计</span><span>落地页</span></div>
-            </div>
-          </article>
-          <article class="project-card">
-            <div class="project-thumb thumb-3"><span>项目三</span></div>
-            <div class="project-body">
-              <h3>项目名称三</h3>
-              <p>一句话介绍这个项目做了什么，解决了什么问题。</p>
-              <div class="tags"><span>工具</span><span>效率</span></div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 联系我 -->
-    <section class="section section-alt" id="contact">
-      <div class="container">
-        <h2 class="section-title">联系我 <span>Contact</span></h2>
-        <div class="contact-grid">
-          <div class="contact-info">
-            <p>如果你对我的作品感兴趣，或者想和我合作，欢迎随时联系我！</p>
-            <a class="contact-item" href="mailto:your@email.com">
-              <span class="contact-ico">✉️</span>
-              <span><b>邮箱</b><br>your@email.com</span>
-            </a>
-            <a class="contact-item" href="#" target="_blank" rel="noopener">
-              <span class="contact-ico">🐙</span>
-              <span><b>GitHub</b><br>github.com/你的用户名</span>
-            </a>
-            <a class="contact-item" href="#" target="_blank" rel="noopener">
-              <span class="contact-ico">💬</span>
-              <span><b>其他平台</b><br>你的社交账号（待添加）</span>
-            </a>
+          <div class="step">
+            <span class="step-num">STEP 03</span>
+            <h3>落地与售后</h3>
+            <p>工厂生产、现场安装、验收交付，并提供长期售后保障。</p>
           </div>
-          <form class="contact-form" id="contactForm" novalidate>
-            <h3>给我留言</h3>
-            <label for="cName">你的称呼</label>
-            <input type="text" id="cName" name="name" placeholder="怎么称呼你？" required>
-            <label for="cEmail">你的邮箱</label>
-            <input type="email" id="cEmail" name="email" placeholder="name@example.com" required>
-            <label for="cMsg">留言内容</label>
-            <textarea id="cMsg" name="message" rows="4" placeholder="想和我说点什么？" required></textarea>
-            <button type="submit" class="btn btn-primary btn-block">发送留言</button>
-            <p class="form-tip" id="formTip"></p>
-          </form>
         </div>
       </div>
     </section>
@@ -193,8 +125,29 @@
 
   <footer class="site-footer">
     <div class="container">
-      <p>© <span id="year"></span> 你的名字 · 用 ❤️ 制作</p>
-      <p class="footer-powered">由 GitHub Pages 免费托管</p>
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">工房<small>ATELIER · 个人主页</small></p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫本地化系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">整体浴室实例</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:your@email.com">your@email.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> 工房 Atelier · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
     </div>
   </footer>
 

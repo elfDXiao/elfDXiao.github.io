@@ -8,3 +8,6 @@ Thumbs.db
 
 # 临时文件
 *.log
+
+# 本地预览截图（不上传）
+preview/
