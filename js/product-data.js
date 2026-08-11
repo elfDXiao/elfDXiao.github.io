@@ -4,5 +4,6 @@ window.PRODUCT_DATA = [
   { id: 'p14', cat: '卫浴系统', name: '骊住 Lidea 整体浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/lidea-cover.jpg', file: 'assets/pdf/骊住品牌Lidea整体浴室产品手册.pdf' },
   { id: 'p15', cat: '卫浴系统', name: '骊住 renobio Fit 系列 小型浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/renobio-cover.jpg', file: 'assets/pdf/骊住品牌小型浴室renobio Fit系列.pdf' },
   { id: 'p16', cat: '卫浴系统', name: '骊住整体淋浴产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/shower-cover.jpg', file: 'assets/pdf/骊住品牌整体淋浴.pdf' },
-  { id: 'p17', cat: '卫浴系统', name: 'TOTO 品牌旗舰 Synla 系列整体浴室产品手册', brand: 'TOTO', hue: 155, cover: 'assets/img/covers/synla-cover.jpg', file: 'assets/pdf/TOTO品牌旗舰Synla系列整体浴室.pdf' }
+  { id: 'p17', cat: '卫浴系统', name: 'TOTO 品牌旗舰 Synla 系列整体浴室产品手册', brand: 'TOTO', hue: 155, cover: 'assets/img/covers/synla-cover.jpg', file: 'assets/pdf/TOTO品牌旗舰Synla系列整体浴室.pdf' },
+  { id: 'p18', cat: '卫浴系统', name: 'TOTO 品牌 Sazana 系列整体浴室产品手册', brand: 'TOTO', hue: 155, cover: 'assets/img/covers/sazana-cover.jpg', file: 'assets/pdf/TOTO品牌Sazana系列整体浴室.pdf' }
 ];
