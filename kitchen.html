@@ -1,12 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="日本厨卫本地化系统 —— 汉化的日本整体浴室选型系统与中国大陆合理落地价格。">
-  <title>日本厨卫本地化系统 · elf_D老肖的世界</title>
+  <meta name="description" content="厨卫选型系统 —— TOTO、LIXIL、CleanUp 等日系整体浴室/厨房在线选型，中日双语，生成大陆地区价格报价单。">
+  <title>厨卫选型系统 · elf_D老肖的世界</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .select-card.coming .select-thumb img { filter: grayscale(.85); opacity:.75; }
+    .select-card.coming { cursor: default; }
+    .select-card.coming:hover { transform:none; border-color:var(--line); }
+    .select-thumb.placeholder { display:flex; align-items:center; justify-content:center; background:var(--paper-2); color:var(--ink-3); font-family:var(--serif); letter-spacing:.22em; }
+    .select-link.soon { color:var(--ink-3); }
+    .badge { display:inline-block; font-size:11px; letter-spacing:.12em; padding:3px 8px; border:1px solid var(--line); color:var(--ink-3); margin-left:8px; }
+    .badge.live { color:#fff; background:var(--accent); border-color:var(--accent); }
+  </style>
 </head>
 <body class="page">
 
@@ -20,9 +29,9 @@
         <li><a href="index.html">首页</a></li>
         <li><a href="database.html">产品资料库</a></li>
         <li><a href="furniture.html">全屋定制</a></li>
-        <li><a href="kitchen.html" class="active">厨卫系统</a></li>
+        <li><a href="kitchen.html" class="active">厨卫选型系统</a></li>
         <li><a href="studio.html">工作室案例</a></li>
-        <li><a href="bathroom.html">整体浴室</a></li>
+        <li><a href="bathroom.html">浴室案例</a></li>
         <li><a href="survey.html">需求调查</a></li>
       </ul>
     </nav>
@@ -31,77 +40,69 @@
   <main>
     <section class="page-hero">
       <div class="container">
-        <p class="breadcrumb">Section 03 · Localization</p>
-        <h1 class="sec-title">日本厨卫本地化系统</h1>
-        <p class="sec-sub">博主是个全案设计师，利用空余时间将需要密码账号访问的日本整体浴室后台系统汉化，让所有国人都可以直接访问，并且公开其中国大陆地区合理落地价格。</p>
+        <p class="breadcrumb">Section 03 · Select Systems</p>
+        <h1 class="sec-title">厨卫选型系统</h1>
+        <p class="sec-sub">日系整体浴室与厨房在线选型：中日双语、按产品手册步骤选配，选完生成大陆地区价格报价单。<br>已上线系统可直接进入，其余系统将陆续开放。</p>
       </div>
     </section>
 
-    <!-- 八大选型系统 -->
     <section class="section-tight">
       <div class="container">
         <div class="sec-head reveal">
           <span class="sec-label">Systems</span>
-          <h2 class="sec-title">八大选型系统</h2>
-          <p class="sec-sub">覆盖日系主流整体浴室品牌与系列，点击进入对应系统的产品手册与选型资料。</p>
+          <h2 class="sec-title">选型系统</h2>
+          <p class="sec-sub">覆盖 TOTO / LIXIL / CleanUp 的主流整体浴室与厨房系列，点击进入对应选型系统。</p>
         </div>
         <div class="select-grid reveal">
-          <a class="select-card" href="assets/pdf/TOTO品牌Sazana系列整体浴室.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/sazana-cover.jpg" alt="TOTO Sazana 系列选型系统"></div>
+          <a class="select-card" href="shower-selector.html">
+            <div class="select-thumb"><img src="assets/img/covers/toto-shower-cover.png" alt="TOTO 整体淋浴选型系统"></div>
             <div class="select-body">
-              <h3>TOTO Sazana 系列选型系统</h3>
+              <h3>TOTO 整体淋浴选型系统<span class="badge live">已上线</span></h3>
               <span class="select-link">进入系统 <span class="arr">→</span></span>
             </div>
           </a>
-          <a class="select-card" href="assets/pdf/TOTO品牌旗舰Synla系列整体浴室.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/synla-cover.jpg" alt="TOTO Synla 系列选型系统"></div>
+          <div class="select-card coming">
+            <div class="select-thumb"><img src="assets/img/covers/sazana-cover.jpg" alt="TOTO SAZANA 系列选型系统"></div>
             <div class="select-body">
-              <h3>TOTO Synla 系列选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
+              <h3>TOTO SAZANA 系列选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
             </div>
-          </a>
-          <a class="select-card" href="assets/pdf/骊住品牌旗舰SPAGE整体浴室产品手册.pdf" target="_blank" rel="noopener">
+          </div>
+          <div class="select-card coming">
+            <div class="select-thumb"><img src="assets/img/covers/synla-cover.jpg" alt="TOTO SYNLA 系列选型系统"></div>
+            <div class="select-body">
+              <h3>TOTO SYNLA 系列选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
+            </div>
+          </div>
+          <div class="select-card coming">
+            <div class="select-thumb"><img src="assets/img/covers/lidea-cover.jpg" alt="LIXIL LIDEA 系列选型系统"></div>
+            <div class="select-body">
+              <h3>LIXIL LIDEA 系列选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
+            </div>
+          </div>
+          <div class="select-card coming">
             <div class="select-thumb"><img src="assets/img/covers/spage-cover.jpg" alt="LIXIL SPAGE 系列选型系统"></div>
             <div class="select-body">
-              <h3>LIXIL SPAGE 系列选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
+              <h3>LIXIL SPAGE 系列选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
             </div>
-          </a>
-          <a class="select-card" href="assets/pdf/骊住品牌Lidea整体浴室产品手册.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/lidea-cover.jpg" alt="LIXIL Lidea 系列选型系统"></div>
-            <div class="select-body">
-              <h3>LIXIL Lidea 系列选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
-            </div>
-          </a>
-          <a class="select-card" href="assets/pdf/骊住品牌小型浴室renobio Fit系列.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/renobio-cover.jpg" alt="LIXIL Renobio Fit 选型系统"></div>
-            <div class="select-body">
-              <h3>LIXIL Renobio Fit 选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
-            </div>
-          </a>
-          <a class="select-card" href="assets/pdf/骊住品牌整体淋浴.pdf" target="_blank" rel="noopener">
+          </div>
+          <div class="select-card coming">
             <div class="select-thumb"><img src="assets/img/covers/shower-cover.jpg" alt="LIXIL 整体淋浴选型系统"></div>
             <div class="select-body">
-              <h3>LIXIL 整体淋浴选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
+              <h3>LIXIL 整体淋浴选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
             </div>
-          </a>
-          <a class="select-card" href="assets/pdf/Cleanup品牌rakuvia系列整体浴室.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/rakuvia-cover.jpg" alt="Cleanup rakuvia 系列选型系统"></div>
+          </div>
+          <div class="select-card coming">
+            <div class="select-thumb placeholder"><span>CleanUp</span></div>
             <div class="select-body">
-              <h3>Cleanup rakuvia 系列选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
+              <h3>CleanUp 厨房选型系统<span class="badge">敬请期待</span></h3>
+              <span class="select-link soon">即将上线</span>
             </div>
-          </a>
-          <a class="select-card" href="assets/pdf/Cleanup品牌旗舰selevia系列整体浴室.pdf" target="_blank" rel="noopener">
-            <div class="select-thumb"><img src="assets/img/covers/selevia-cover.jpg" alt="Cleanup selevia 系列选型系统"></div>
-            <div class="select-body">
-              <h3>Cleanup selevia 系列选型系统</h3>
-              <span class="select-link">进入系统 <span class="arr">→</span></span>
-            </div>
-          </a>
+          </div>
         </div>
       </div>
     </section>
@@ -111,14 +112,8 @@
         <div class="cta-box reveal">
           <h2>想了解你的户型如何适配？</h2>
           <p>告诉我们你的城市与户型，我们为你出一份初步适配建议。</p>
-          <a href="mailto:xtqsbx@gmail.com?subject=厨卫本地化咨询" class="btn btn-solid">发送咨询邮件</a>
+          <a href="mailto:xtqsbx@gmail.com?subject=厨卫选型咨询" class="btn btn-solid">发送咨询邮件</a>
         </div>
-      </div>
-    </section>
-
-    <section class="section-tight">
-      <div class="container">
-        <div class="notice-box reveal">本板块尚未完工，内容正在整理中，敬请期待。</div>
       </div>
     </section>
   </main>
@@ -134,9 +129,9 @@
           <h4>板块</h4>
           <a href="database.html">日系产品资料库</a>
           <a href="furniture.html">全屋定制展示</a>
-          <a href="kitchen.html">厨卫本地化系统</a>
+          <a href="kitchen.html">厨卫选型系统</a>
           <a href="studio.html">工作室案例</a>
-          <a href="bathroom.html">整体浴室实例</a>
+          <a href="bathroom.html">浴室案例</a>
           <a href="survey.html">需求调查系统</a>
         </div>
         <div class="footer-col">

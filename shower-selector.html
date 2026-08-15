@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TOTO 整体淋浴房（Select Shower Room）选型与报价：按产品手册步骤选择型号、花色、收纳、水栓、花洒、门、照明与追加选项，自动按汇率换算人民币含安装价并导出报价 PDF。">
+  <title>TOTO 整体淋浴房选型 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root{
+      --shower-line:#d8d2c6;
+      --shower-accent:#a65b33;
+    }
+    .shower-wrap{ display:grid; grid-template-columns: 270px 1fr; gap:clamp(20px,4vw,44px); align-items:start; }
+    .shower-side{ position:sticky; top:calc(var(--nav-h) + 20px); }
+    .rate-box, .sum-box{ background:#fff; border:1px solid var(--shower-line); padding:18px 18px 20px; margin-bottom:16px; }
+    .rate-box label, .sum-box h4{ display:block; font-size:13px; letter-spacing:.08em; color:var(--ink-3); margin-bottom:8px; }
+    .rate-box input{ width:100%; padding:10px 12px; border:1px solid var(--shower-line); background:var(--paper); font-size:16px; }
+    .rate-box input:focus{ outline:none; border-color:var(--shower-accent); }
+    .rate-hint{ font-size:11.5px; color:var(--ink-3); margin-top:8px; line-height:1.6; }
+    .sum-row{ display:flex; justify-content:space-between; align-items:baseline; padding:7px 0; border-bottom:1px dashed var(--shower-line); font-size:14px; }
+    .sum-row:last-child{ border-bottom:0; }
+    .sum-row .k{ color:var(--ink-2); }
+    .sum-row .v{ font-family:var(--serif); letter-spacing:.02em; }
+    .sum-total{ margin-top:10px; padding-top:12px; border-top:1px solid var(--ink); }
+    .sum-total .v{ color:var(--shower-accent); font-size:22px; font-weight:600; }
+    .base-card{ background:#fff; border:1px solid var(--shower-line); padding:18px 20px 20px; margin-bottom:26px; }
+    .base-card h3, .step-head h3{ font-size:18px; margin-bottom:14px; }
+    .base-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:12px; }
+    .base-row:last-child{ margin-bottom:0; }
+    .base-label{ min-width:110px; font-size:13px; color:var(--ink-3); letter-spacing:.05em; }
+    .base-meta{ font-size:13.5px; color:var(--ink-2); margin:0 0 12px; }
+    .chip{ border:1px solid var(--shower-line); background:var(--paper); padding:7px 13px; font-size:13.5px; color:var(--ink-2); transition:.2s; }
+    .chip.on{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+    .step-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:16px; }
+    .step-head .step-no{ font-family:var(--serif); color:var(--shower-accent); font-size:15px; letter-spacing:.12em; }
+    .step-head h3{ margin:0; flex:1; }
+    .ref-toggle{ font-size:12.5px; letter-spacing:.08em; color:var(--shower-accent); border-bottom:1px solid var(--shower-line); padding-bottom:2px; }
+    .ref-box{ display:none; margin:0 0 18px; border:1px solid var(--shower-line); background:#fff; }
+    .ref-box.open{ display:block; }
+    .ref-box img{ width:100%; height:auto; display:block; }
+    .hint{ font-size:13px; color:var(--ink-3); margin-bottom:14px; }
+    .grade-title{ font-family:var(--serif); font-size:16px; margin:20px 0 10px; color:var(--ink); }
+    .opt-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:12px; margin-bottom:8px; }
+    .opt-card{ display:flex; flex-direction:column; align-items:stretch; text-align:left; gap:6px; background:#fff; border:1px solid var(--shower-line); padding:14px; transition:border-color .2s, transform .2s; }
+    .opt-card:hover{ border-color:var(--ink-3); transform:translateY(-2px); }
+    .opt-card.on{ border-color:var(--shower-accent); box-shadow:0 0 0 1px var(--shower-accent); }
+    .opt-card.disabled{ opacity:.42; pointer-events:none; }
+    .opt-img{ width:100%; height:110px; object-fit:contain; background:var(--paper); margin-bottom:4px; }
+    .opt-name{ font-size:13.5px; line-height:1.5; color:var(--ink); }
+    .opt-name em{ display:block; font-style:normal; font-size:11px; color:var(--shower-accent); margin-top:2px; }
+    .opt-code{ font-size:12px; color:var(--ink-3); letter-spacing:.06em; }
+    .opt-note{ font-size:11.5px; color:var(--ink-3); line-height:1.5; }
+    .opt-price{ font-size:12.5px; }
+    .plus{ color:#2e7d4f; } .minus{ color:#b03a2e; } .ok{ color:#2e7d4f; }
+    .check-row{ display:flex; align-items:center; gap:10px; margin:14px 0 4px; padding:12px 14px; background:#fff; border:1px solid var(--shower-line); font-size:13.5px; color:var(--ink-2); cursor:pointer; }
+    .check-row input{ width:16px; height:16px; accent-color:var(--shower-accent); }
+    .mini-select{ width:100%; padding:8px 10px; border:1px solid var(--shower-line); background:var(--paper); font-size:13px; margin-top:8px; }
+    .pipe-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .wizard-buttons{ display:flex; gap:12px; margin-top:26px; }
+    .wizard-buttons .spacer{ flex:1; }
+    .result-actions{ margin-bottom:14px; }
+    .customer-form{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+    .customer-form .field{ display:flex; flex-direction:column; gap:6px; }
+    .customer-form label{ font-size:12.5px; color:var(--ink-3); }
+    .customer-form input{ padding:10px 12px; border:1px solid var(--shower-line); background:#fff; }
+    .quote-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+    .quote-table th, .quote-table td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--shower-line); }
+    .quote-table th{ font-size:12px; letter-spacing:.06em; color:var(--ink-3); }
+    .quote-table td.num, .quote-table th.num{ text-align:right; white-space:nowrap; }
+    .doc-row.big{ padding:10px 0; }
+    .doc-row.big .doc-q{ font-size:14px; color:var(--ink); }
+    .doc-row.big .doc-a{ font-size:16px; }
+    .doc-row.accent .doc-a{ color:var(--shower-accent); font-size:20px; font-weight:600; }
+    .doc-formula{ margin-top:12px; font-size:12px; color:var(--ink-3); }
+    @media (max-width:900px){ .shower-wrap{ grid-template-columns:1fr; } .shower-side{ position:static; } .customer-form{ grid-template-columns:1fr; } }
+    @media print {
+      @page { size: A4; margin: 14mm 12mm; }
+      body { background:#fff !important; }
+      body * { visibility:hidden; }
+      #quoteDoc, #quoteDoc * { visibility:visible; }
+      #quoteDoc { position:absolute; left:0; top:0; width:100%; max-width:100%; border:0; box-shadow:none; }
+      .doc-section { break-inside:auto; }
+      .quote-table tr { break-inside:avoid; }
+    }
+  </style>
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫选型系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html">浴室案例</a></li>
+        <li><a href="survey.html">需求调查</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 05 · Shower Room Select</p>
+        <h1 class="sec-title" id="appTitle">TOTO 整体淋浴房选型</h1>
+        <p class="sec-sub">按 TOTO《Select Shower Room》手册步骤逐步选择，中日双语对照；日元价按手动输入的当日汇率折算为大陆地区价格，并生成报价 PDF。<br>请先手动输入当日汇率。</p>
+        <div class="hero-actions" style="margin-top:20px;">
+          <button type="button" class="btn btn-line" id="langZh">中文</button>
+          <button type="button" class="btn btn-line" id="langJa">日本語</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight" id="wizardView">
+      <div class="container">
+        <div class="shower-wrap">
+          <aside class="shower-side">
+            <div class="wizard-progress">
+              <div class="progress-label">步骤 <b id="stepCount">1 / 10</b></div>
+              <div class="progress-track"><div class="progress-fill" id="progressBar" style="width:0%;"></div></div>
+            </div>
+            <ol class="wizard-steps" id="wizardSteps" style="margin-bottom:18px;"></ol>
+
+            <div class="rate-box">
+              <label for="rate">汇率 / 為替</label>
+              <input id="rate" type="number" step="0.0001" min="0.0001" placeholder="请手动输入当前汇率">
+              <p class="rate-hint">请手动输入 1日元 = 人民币 的当日汇率</p>
+            </div>
+
+            <div class="sum-box">
+              <h4>报价合计 / 見積合計</h4>
+              <div class="sum-row"><span class="k">类型 / タイプ</span><span class="v" id="sumType">G型</span></div>
+              <div class="sum-row"><span class="k">尺寸 / サイズ</span><span class="v" id="sumSize">0816</span></div>
+              <div class="sum-row"><span class="k">本体品番</span><span class="v" id="sumModel">—</span></div>
+              <div class="sum-row"><span class="k">门位 / ドア位置</span><span class="v" id="sumDoor">A</span></div>
+              <div class="sum-row"><span class="k">排水 / 雑排水</span><span class="v" id="sumDrain">—</span></div>
+              <div class="sum-row"><span class="k">基本规格价 / 基本仕様</span><span class="v" id="sumBase">—</span></div>
+              <div class="sum-row"><span class="k">选项合计 / オプション</span><span class="v" id="sumOpt">—</span></div>
+              <div class="sum-row sum-total"><span class="k">日元合计 / 円合計</span><span class="v" id="sumJPY">—</span></div>
+              <div class="sum-row sum-total"><span class="k">大陆地区价格 / 中国本土価格</span><span class="v" id="sumRMB">—</span></div>
+            </div>
+          </aside>
+
+          <div class="wizard-panel">
+            <div class="base-card">
+              <h3>基本规格 / 基本仕様</h3>
+              <div id="basePanel"></div>
+            </div>
+
+            <div class="step-head">
+              <span class="step-no" id="stepNo">1</span>
+              <h3 id="stepTitle">选择墙面花色</h3>
+              <button type="button" class="ref-toggle" id="refBtn">原图对照</button>
+            </div>
+            <div class="ref-box" id="refBox"><img id="stepRefImg" alt=""></div>
+            <div id="stepBody"></div>
+
+            <div class="wizard-buttons">
+              <button type="button" class="btn btn-line" id="btnPrev">← 上一步</button>
+              <span class="spacer"></span>
+              <button type="button" class="btn btn-solid" id="btnNext">下一步 →</button>
+              <button type="button" class="btn btn-accent" id="btnFinish" hidden>生成报价单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight result-section" id="resultSection" hidden>
+      <div class="container">
+        <div class="result-actions no-print">
+          <button type="button" class="btn btn-line" id="btnBack">← 返回修改</button>
+          <button type="button" class="btn btn-line" id="btnReset">重新选择</button>
+          <button type="button" class="btn btn-accent" id="btnPrint">导出报价 PDF</button>
+        </div>
+
+        <div class="customer-form no-print">
+          <div class="field"><label>客户名称 / お名前</label><input id="customerName" type="text" placeholder="（选填）"></div>
+          <div class="field"><label>联系电话 / 電話番号</label><input id="customerPhone" type="text" placeholder="（选填）"></div>
+          <div class="field"><label>备注 / 備考</label><input id="customerNote" type="text" placeholder="（选填）"></div>
+        </div>
+
+        <p class="result-tip no-print" id="resultTip">检查无误后点击「导出报价 PDF」，在打印对话框中选择「另存为 PDF」。</p>
+        <article class="survey-doc" id="quoteDoc"></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫选型系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">浴室案例</a>
+          
+          <a href="survey.html">需求调查系统</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:xtqsbx@gmail.com">xtqsbx@gmail.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/shower-data.js"></script>
+  <script src="js/shower.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
