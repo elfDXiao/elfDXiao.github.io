@@ -11,16 +11,16 @@
     2:{section:'tub', groups:['tub']},
     3:{section:'tub', groups:['counter']},
     4:{section:'tub', groups:['floor']},
-    5:null,
+    5:{section:'items', groups:['items']},
     6:{section:'light_vent', groups:['light']},
     7:{section:'light_vent', groups:['vent']},
-    8:null,
+    8:{section:'extra', groups:['dryer']},
     9:{section:'faucet', groups:['faucet','shower','towel','slide']},
     10:{section:'mirror', groups:['mirror']},
     11:{section:'mirror', groups:['ceiling']},
     12:{section:'mirror', groups:['storage']},
     13:{section:'door', groups:['door','door_position','pocket']},
-    14:null
+    14:{section:'extra', groups:['remote','tv_audio','bar','window','other']}
   };
   const state = { lang:'zh', step:0, type:'G', size:'1624', rate:null, sel:{} };
   function t(k){ return UI[state.lang][k]||k; }
