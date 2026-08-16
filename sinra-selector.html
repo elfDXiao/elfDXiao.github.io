@@ -48,6 +48,17 @@
     .doc-formula{ margin-top:12px; font-size:12px; color:var(--ink-3); }
     @media (max-width:900px){ .shower-wrap{ grid-template-columns:1fr; } .shower-side{ position:static; } .customer-form{ grid-template-columns:1fr; } }
     @media print { @page { size:A4; margin:14mm 12mm; } body{ background:#fff !important; } body *{ visibility:hidden; } #quoteDoc,#quoteDoc *{ visibility:visible; } #quoteDoc{ position:absolute; left:0; top:0; width:100%; max-width:100%; border:0; box-shadow:none; } }
+      .grade-title{ font-family:var(--serif); font-size:16px; margin:20px 0 10px; }
+    .opt-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; margin-bottom:8px; }
+    .opt-card{ display:flex; flex-direction:column; align-items:stretch; text-align:left; gap:6px; background:#fff; border:1px solid var(--line); padding:14px; }
+    .opt-card.on{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+    .opt-card.disabled{ opacity:.42; pointer-events:none; }
+    .opt-img{ width:100%; height:110px; object-fit:contain; background:var(--paper); }
+    .opt-name{ font-size:13.5px; line-height:1.5; }
+    .opt-code{ font-size:12px; color:var(--ink-3); }
+    .opt-price{ font-size:12.5px; }
+    .opt-note{ font-size:11.5px; color:var(--ink-3); line-height:1.5; }
+    .plus{ color:#2e7d4f; } .minus{ color:#b03a2e; } .ok{ color:#2e7d4f; } .muted{ color:var(--ink-3); }
   </style>
 </head>
 <body class="page">
@@ -172,6 +183,7 @@
   </footer>
 
   <script src="js/sinra-data.js"></script>
+  <script src="js/sinra-sections.js"></script>
   <script src="js/sinra.js"></script>
   <script src="js/main.js"></script>
 </body>
