@@ -59,6 +59,11 @@
     }
     return null;
   }
+  function wallPriceFor(opt, type){
+    if(!opt) return 0;
+    if(opt.prices && typeof opt.prices[type] === 'number') return opt.prices[type];
+    return 0; // 壁柄未印刷数字按标配处理
+  }
   function available(opt, type){ return priceFor(opt,type) !== null; }
 
   function init(){
@@ -121,16 +126,24 @@
   }
   function renderWall(body){
     const w = SEC.wall; if(!w) return;
-    const key='wall';
-    const grid=el('div','opt-grid');
+    const note=el('p','hint'); note.textContent='上方为壁柄原图对照；下方为组合表格，点击「选择」即可计价。';
+    body.appendChild(note);
+    const table=el('table','quote-table');
+    table.innerHTML='<thead><tr><th>颜色</th><th>代码</th><th>等级</th><th>G</th><th>B</th><th>R</th><th>D</th><th>C</th><th>选择</th></tr></thead>';
+    const tb=el('tbody');
     (w.options||[]).forEach(o=>{
-      const card=el('button','opt-card'+(state.sel[key]===o.id?' on':'')+((!available(o,state.type))?' disabled':''));
-      card.innerHTML = '<span class="opt-name">'+n(o.name)+'</span><span class="opt-code">'+(o.code||'')+'</span><span class="opt-price">'+deltaText(o)+'</span>';
-      card.onclick=()=>{ if(available(o,state.type)){ state.sel[key]=o.id; renderAll(); } };
-      grid.appendChild(card);
+      const gradeName = ((w.grades||[]).find(g=>g.id===o.grade)||{}).name ? n(((w.grades||[]).find(g=>g.id===o.grade)).name) : (o.grade||'');
+      const pv=function(t){ const v=o.prices&&o.prices[t]; if(v===0) return '标配'; if(v==null) return '标配'; return (v>0?'+':'')+v.toLocaleString(); };
+      const tr=el('tr');
+      tr.innerHTML='<td>'+n(o.name)+'</td><td>'+o.code+'</td><td>'+gradeName+'</td><td>'+pv('G')+'</td><td>'+pv('B')+'</td><td>'+pv('R')+'</td><td>'+pv('D')+'</td><td>'+pv('C')+'</td><td><button class="chip" data-wall="'+o.id+'">'+(state.sel['wall']===o.id?'已选':'选择')+'</button></td>';
+      tb.appendChild(tr);
     });
-    body.appendChild(grid);
-    const note=el('p','hint'); note.textContent='组合照片正在生成中：请先对照上方原图。'; body.appendChild(note);
+    table.appendChild(tb); body.appendChild(table);
+    body.querySelectorAll('[data-wall]').forEach(b=>{ b.onclick=function(){ state.sel['wall']=b.getAttribute('data-wall'); renderAll(); }; });
+    if(w.combos && w.combos.length){
+      const h=el('h4','grade-title'); h.textContent='组合方案'; body.appendChild(h);
+      w.combos.forEach(c=>{ const p=el('p','hint'); p.textContent='· '+n(c.name)+(c.desc?('：'+n(c.desc)):''); body.appendChild(p); });
+    }
   }
   function optionCard(section, o, key){
     const av = available(o, state.type);
@@ -165,7 +178,7 @@
       let o=null;
       if(sid==='wall'){ o=(section.options||[]).find(x=>x.id===state.sel[key]); }
       else { const g=(section.groups||[]).find(g=>g.id===gid); o=g?g.options.find(x=>x.id===state.sel[key]):null; }
-      if(o){ const p=priceFor(o,state.type); if(p!=null && p!==0){ opt+=p; items.push({name:n(o.name), code:o.code||'', price:p}); } }
+      if(o){ const p=(sid==='wall')?wallPriceFor(o,state.type):priceFor(o,state.type); if(p!=null && p!==0){ opt+=p; items.push({name:n(o.name), code:o.code||'', price:p}); } }
     });
     const total=base+opt;
     const rmb=(state.rate&&state.rate>0)? total*state.rate*0.8 : null;
