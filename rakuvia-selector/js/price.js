@@ -3,7 +3,7 @@
  *
  * 处理三类价格表示：
  *  1. 数字 priceDiff：相对基本仕様的差价（正=加价 负=减价 0=基本）
- *  2. 文本价格单元格："⊕￥10,000" / "⊖￥5,000" / "基本仕様" / "-" / "unknown" / "⊕￥0"
+ *  2. 文本价格单元格："＋￥10,000" / "－￥5,000" / "基本仕様" / "-" / "unknown" / "＋￥0"
  *  3. 矩阵 priceMatrix：14 列 = 7尺寸 × (R/L, CR/CL)，字段键如 "1620 R/L"
  *
  * 用法（作为全局命名空间 RAKUVIA.price 挂载）：
@@ -20,9 +20,9 @@
     if (str === '-') return { type: 'na' };                 // 不可选
     if (/^unknown$/i.test(str)) return { type: 'unknown' }; // 手册未标注
     if (/基本仕様|基本/.test(str)) return { type: 'basic', text: str };
-    var m = str.match(/^([⊕⊖±])\s*￥\s*([\d,]+)$/);
+    var m = str.match(/^([＋－±])\s*￥\s*([\d,]+)$/);
     if (m) {
-      var sign = m[1] === '⊖' ? -1 : 1;
+      var sign = m[1] === '－' ? -1 : 1;
       var amount = parseInt(m[2].replace(/,/g, ''), 10);
       return { type: 'num', sign: sign, amount: amount * sign, text: str };
     }
@@ -32,12 +32,12 @@
     return { type: 'text', text: str };
   }
 
-  /** 数字差价 → 显示文本（如 10000 → "⊕￥10,000"，-5000 → "⊖￥5,000"，0 → "基本仕様"） */
+  /** 数字差价 → 显示文本（如 10000 → "＋￥10,000"，-5000 → "－￥5,000"，0 → "基本仕様"） */
   function fmtDiff(n) {
     if (n == null || isNaN(n)) return '—';
     if (n === 0) return '基本仕様';
     var abs = Math.abs(n).toLocaleString('ja-JP');
-    return (n > 0 ? '⊕￥' : '⊖￥') + abs;
+    return (n > 0 ? '＋￥' : '－￥') + abs;
   }
 
   /**

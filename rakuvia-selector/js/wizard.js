@@ -366,10 +366,10 @@
 
   function priceNum(d, oi, o) {
     var v = optPriceText(d, oi, o);
-    var m = String(v).match(/[⊕⊖]?\s*￥\s*([\d,]+)/);
+    var m = String(v).match(/[＋－]?\s*￥\s*([\d,]+)/);
     if (!m) return null;
     var n = parseInt(m[1].replace(/,/g, ''), 10);
-    return String(v).indexOf('⊖') >= 0 ? -n : n;
+    return String(v).indexOf('－') >= 0 ? -n : n;
   }
 
   function colorRowHtml(d, oi, o) {
@@ -650,7 +650,7 @@
         var nameCell = l.base
           ? '<b>' + esc(l.nameZh) + '</b><div class="ja">' + esc(l.nameJa) + '</div>'
           : esc(l.nameZh) + '<div class="ja">' + esc(l.nameJa) + '</div>';
-        var amount = l.base ? P.yen(r.basePrice) : (l.diff > 0 ? '⊕' : l.diff < 0 ? '⊖' : '') + P.yen(Math.abs(l.diff));
+        var amount = l.base ? P.yen(r.basePrice) : (l.diff > 0 ? '＋' : l.diff < 0 ? '－' : '') + P.yen(Math.abs(l.diff));
         html += '<tr>' +
           '<td>' + nameCell + '</td>' +
           '<td>' + esc(l.code || '') + '</td>' +
