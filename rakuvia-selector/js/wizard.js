@@ -29,6 +29,11 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+  function tp(zh, ja) {
+    if (LANG === 'ja') return ja;
+    if (LANG === 'zh') return zh;
+    return zh + ' / ' + ja;
+  }
 
   /* ---------------- 初始化（事件只绑一次） ---------------- */
   function init(data) {
@@ -335,16 +340,16 @@
   function optPriceText(d, oi, o) {
     if (!o) return '—';
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
-    if (o.isBasic === true) return t('基本', '基本仕様');
+    if (o.isBasic === true) return tp('基本', '基本仕様');
     if (o.priceMatrix || (Array.isArray(o.colorRows) && o.colorRows.length)) {
       var cell = P.matrixCell(o, Q.state.size, Q.state.doorPos, Q.doorColorIdx());
       if (cell != null) return cell;
-      return t('按尺寸·位置', 'サイズ別');
+      return tp('按尺寸·位置', 'サイズ別');
     }
     if (o.pricesBySize) {
       var v = P.priceBySize(o, Q.state.size);
       if (v != null) return typeof v === 'number' ? P.fmtDiff(v) : String(v);
-      return t('按尺寸', 'サイズ別');
+      return tp('按尺寸', 'サイズ別');
     }
     if (o.prices) {
       var keys = Object.keys(o.prices);
@@ -352,14 +357,14 @@
     }
     if (d.id === 'wall_front' || d.id === 'wall_peri') {
       if (d.id === 'wall_front' || (Q.state.sel.wall_mode || 'フルカラー') === 'アクセントカラー') {
-        return t('按 Class 查价', 'Class別');
+        return tp('按 Class 查价', 'Class別');
       }
       return '—';
     }
     if (Array.isArray(o.options) && o.options.length) {
       var subs = o.options.map(function (s) { return s.price1620 != null ? s.price1620 : s.price; })
         .filter(function (v) { return v != null && String(v).indexOf('unknown') < 0; });
-      return subs.length ? String(subs[0]) + t(' 起', '〜') : t('含组合', '組合あり');
+      return subs.length ? String(subs[0]) + tp(' 起', '〜') : tp('含组合', '組合あり');
     }
     return '—';
   }
