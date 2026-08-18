@@ -20,9 +20,9 @@
 
   /* ---------------- 双语 ---------------- */
   function t(zh, ja) {
-    if (LANG === 'ja') return ja;
-    if (LANG === 'zh') return zh;
-    return zh + ' <span class="ja">' + ja + '</span>';
+    if (LANG === 'ja') return esc(ja);
+    if (LANG === 'zh') return esc(zh);
+    return esc(zh) + ' <span class="ja">' + esc(ja) + '</span>';
   }
   function esc(s) {
     return String(s == null ? '' : s)
@@ -259,7 +259,7 @@
       var cls = 'wstep' + (s.n === cur ? ' active' : '') + (stepState(s.n) ? ' done' : '');
       var label = s.n === 0 ? t('基本', '基本') : s.n;
       return '<button type="button" class="' + cls + '" data-step="' + s.n + '" title="' +
-        esc(t(s.titleZh, s.title)) + '">' + label + '</button>';
+        esc(s.titleZh + ' / ' + s.title) + '">' + label + '</button>';
     }).join('');
     els.stepper.innerHTML = html;
   }
@@ -268,7 +268,7 @@
     var st = Q.STEPS[Q.state.step];
     var html = '<div class="wiz-step-head">' +
       '<span class="wiz-step-no">' + t('步骤 / STEP', 'ステップ') + ' ' + st.n + ' / 12</span>' +
-      '<h3>' + esc(st.n === 0 ? t('基本套装', '基本プラン') : t(st.titleZh, st.title)) + '</h3>' +
+      '<h3>' + (st.n === 0 ? t('基本套装', '基本プラン') : t(st.titleZh, st.title)) + '</h3>' +
       '<p class="wiz-note">' + esc(st.note) + '</p></div>';
 
     if (st.n === 0) {
@@ -307,7 +307,7 @@
   /* ---------------- 维度渲染 ---------------- */
   function dimensionHtml(d) {
     var html = '<div class="opt-block" data-dim="' + d.id + '">' +
-      '<div class="dim-title">' + esc(t(d.titleZh, d.titleJa)) + '</div>';
+      '<div class="dim-title">' + t(d.titleZh, d.titleJa) + '</div>';
     switch (d.kind) {
       case 'radio': html += radioHtml(d); break;
       case 'mirror': html += mirrorHtml(d); break;
@@ -642,7 +642,7 @@
       var lines = byStep[s];
       var zh = lines[0].stepZh, ja = lines[0].stepJa;
       html += '<div class="doc-section">' +
-        '<div class="doc-sec-title"><span>' + t('STEP ' + s, 'STEP ' + s) + '</span>' + esc(s === '0' ? t('基本套装', '基本プラン') : t(zh, ja)) + '</div>' +
+        '<div class="doc-sec-title"><span>' + t('STEP ' + s, 'STEP ' + s) + '</span>' + (s === '0' ? t('基本套装', '基本プラン') : t(zh, ja)) + '</div>' +
         '<table class="quote-table"><thead><tr>' +
         '<th>' + t('品名', '品名') + '</th><th>' + t('記号', '記号') + '</th><th>' + t('型番', '型番') + '</th><th>' + t('仕様', '仕様') + '</th><th class="num">' + t('金额(税抜)', '金額(税抜)') + '</th>' +
         '</tr></thead><tbody>';
