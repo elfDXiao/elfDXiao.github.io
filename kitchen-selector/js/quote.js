@@ -10,7 +10,7 @@
  *     - フラット対面/デュアルトップ対面：先选 depth(80/98)，再查 prices["depth"+depth][grade][width]
  *     - 2列型：prices[grade] 为直接合计价（コンロ側180 + シンク側181.5）
  *   本体価格（税抜） = 基本セット価格 + Σ选项差价（＋加/－减）
- *   税込 = 本体 × 1.10；人民币 = 税込 × 汇率（纯物料价格，不含安装/工事费）
+ *   税込 = 本体 × 1.10；人民币为纯物料价格（不含安装/工事费）
  *
  * STEPS / DIMS 完全由 categories 的 step/name 驱动（不硬编码步数）：
  *   14 个 category → 13 个 distinct step（size+grade 同 step 2；depth 为合成维，仅 flat/dual）。

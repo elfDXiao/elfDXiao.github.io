@@ -674,7 +674,7 @@
       '<div class="doc-row big"><div class="doc-q">' + t('合計（漢数字大写）', '合計（漢数字）') + '</div><div class="doc-a">' + esc(Q.kanjiYen(r.totalInc)) + '</div></div>' +
       '<div class="doc-row big accent"><div class="doc-q">' + t('大陆地区价格（人民币 · 已含安装人工费）/ 中国本土価格（据付費込）', '中国本土価格（据付費込）') + '</div>' +
       '<div class="doc-a">' + (r.rmbAllIn != null ? '¥' + Number(r.rmbAllIn).toLocaleString() : t('请输入汇率', '為替を入力してください')) + '</div></div>' +
-      (rate ? '<div class="doc-formula">' + t('使用汇率：1日元 = ' + rate + ' 人民币 ｜ 公式：大陆地区价格 = 日元税込 × 汇率 × 0.7（7折，已含安装人工费）', '為替：1円 = ' + rate + ' RMB ｜ 中国本土価格 = 税込 × 為替 × 0.7（据付費込み）') + '</div>' : '') +
+      (rate ? '<div class="doc-formula">' + t('使用汇率：1日元 = ' + rate + ' 人民币 ｜ 大陆地区价格已含安装人工费', '為替：1円 = ' + rate + ' RMB ｜ 中国本土価格は据付人工費込み') + '</div>' : '') +
       '</div>';
 
     if (r.unknown.length) {
@@ -686,7 +686,7 @@
     html += '<div class="doc-footer">' +
       '<p>' + t('※ 所示价格为不含税参考价，最终以クリナップ正式見積書为准', '※ 表示価格は税抜きの参考価格です。正式な見積はお見積書でご確認ください') + '</p>' +
       '<p>※ ' + t('基本セット価格は取付・設置費別（不含安装费）／窓本体・窓枠は含まれません（不含窗本体/窗框）', '基本セット価格（取付・設置費別）／窓本体・窓枠は含まれません') + '</p>' +
-      '<p>※ ' + t('大陸地区価格は税込 × 為替 × 0.7（7折）で算出し、据付人工費込みです（大陆地区价格=日元税込×汇率×0.7，已含安装人工费）', '中国本土価格は税込×為替×0.7で算出（据付人工費込み）') + '</p>' +
+      '<p>※ ' + t('大陸地区価格は据付人工費込みです（大陆地区价格已含安装人工费）', '中国本土価格は据付人工費込み') + '</p>' +
       (head.remark ? '<p>' + t('備考：' + head.remark, '備考：' + head.remark) + '</p>' : '') +
       '</div>';
 
@@ -710,7 +710,7 @@
     lines.push('—'.repeat(30));
     lines.push('日元合计（税抜）：' + P.yen(r.totalEx));
     lines.push('日元合计（税込）：' + P.yen(r.totalInc));
-    if (r.rmbAllIn != null) lines.push('大陆地区价格（人民币含安装，7折）：¥' + Number(r.rmbAllIn).toLocaleString());
+    if (r.rmbAllIn != null) lines.push('大陆地区价格（人民币·已含安装人工费）：¥' + Number(r.rmbAllIn).toLocaleString());
     var text = lines.join('\n');
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () { flash('已复制到剪贴板'); });
