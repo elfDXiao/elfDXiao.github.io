@@ -1,5 +1,5 @@
 /**
- * quote.js — Cleanup STEDIA 系统厨房报价引擎：维度配置 + 状态 + 计价 + 组合约束
+ * quote.js — Cleanup Stedia 系统厨房报价引擎：维度配置 + 状态 + 计价 + 组合约束
  *
  * 纯逻辑（无 DOM 依赖），供 wizard.js 调用；挂 window.KITCHEN.quote。
  * 依赖：window.KITCHEN_DATA（products.js）、window.KITCHEN.price（price.js）。

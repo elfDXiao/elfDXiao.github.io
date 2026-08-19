@@ -4,10 +4,10 @@
  */
 window.KITCHEN_DATA = {
   "meta": {
-    "source": "クリナップ Cleanup STEDIA（ステディア）システムキッチン プランニングガイド（0259_stediaca_v2.pdf，188 頁完整版）",
+    "source": "クリナップ Cleanup Stedia（ステディア）システムキッチン プランニングガイド（0259_stediaca_v2.pdf，188 頁完整版）",
     "brand": "クリナップ Cleanup",
     "product": "システムキッチン（系统厨房）",
-    "series": "ステディア（STEDIA）",
+    "series": "ステディア（Stedia）",
     "currency": "JPY",
     "taxRate": 0.1,
     "priceNote": "表示価格は税抜き価格です（不含税）。＋=加价、－=减价（相对所选パッケージプラン的基本仕様）。",
@@ -2689,11 +2689,11 @@ window.KITCHEN_DATA = {
       ],
       "downloads": [
         {
-          "label": "STEDIA プランニングガイド（手册 PDF）",
+          "label": "Stedia プランニングガイド（手册 PDF）",
           "file": "manual/0259_stediaca_unlocked.pdf"
         },
         {
-          "label": "Cleanup STEDIA 官网",
+          "label": "Cleanup Stedia 官网",
           "url": "https://cleanup.jp/"
         }
       ],

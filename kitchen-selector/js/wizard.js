@@ -1,5 +1,5 @@
 /**
- * wizard.js — Cleanup STEDIA 系统厨房选型报价 UI（elf_D老肖的世界 风格，分步向导 + 报价单两个标签页）
+ * wizard.js — Cleanup Stedia 系统厨房选型报价 UI（elf_D老肖的世界 风格，分步向导 + 报价单两个标签页）
  *
  * 视图：选型向导（横向步骤条 + 选项区 + 右侧合计栏）/ 报价单（見積書）
  * 依赖：window.KITCHEN_DATA、window.KITCHEN.price、window.KITCHEN.quote
@@ -1110,7 +1110,7 @@
     html += '<div class="doc-header">' +
       '<div class="doc-brand">elf_D老肖的世界<span>DESIGN STUDIO</span></div>' +
       '<h1>' + t('報 价 单', '見 積 書') + '</h1>' +
-      '<div class="doc-sub">' + esc(meta.brand || 'クリナップ Cleanup') + ' ' + esc(meta.series || 'ステディア（STEDIA）') + ' システムキッチン ／ 系统厨房</div>' +
+      '<div class="doc-sub">' + esc(meta.brand || 'クリナップ Cleanup') + ' ' + esc(meta.series || 'ステディア（Stedia）') + ' システムキッチン ／ 系统厨房</div>' +
       '<div class="doc-meta">' +
       '<span>' + t('日期 / 日付：', '日付：') + esc(head.date || dateNow()) + '</span>' +
       '<span>' + t('布局 / レイアウト：', 'レイアウト：') + tp(Q.layoutNameZh(), Q.layoutNameJa()) + '</span>' +
@@ -1182,7 +1182,7 @@
   /* ---------------- 复制选型清单 ---------------- */
   function copyList() {
     var r = Q.computeQuote();
-    var lines = ['【Cleanup STEDIA 系统厨房 見積（报价）选型清单】'];
+    var lines = ['【Cleanup Stedia 系统厨房 見積（报价）选型清单】'];
     lines.push('布局：' + Q.layoutNameZh() + ' / ' + Q.layoutNameJa() +
       ' ｜ 套餐：' + Q.planNameZh() + ' / ' + Q.planNameJa() +
       ' ｜ 间口：' + (Q.state.layout === 'tworow' ? '固定组合' : Q.state.width + 'cm') +

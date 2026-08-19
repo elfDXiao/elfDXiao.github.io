@@ -1,5 +1,5 @@
 /**
- * wizard.js — CleanUp rakuvia 整体浴室选型报价 UI（elf_D老肖的世界 风格，原格式：分步向导 + 报价单 两个标签页）
+ * wizard.js — Cleanup Rakuvia 整体浴室选型报价 UI（elf_D老肖的世界 风格，原格式：分步向导 + 报价单 两个标签页）
  *
  * 视图：选型向导（横向步骤条 + 选项区 + 右侧合计栏）/ 报价单（見積書）
  * 依赖：window.RAKUVIA_DATA、window.RAKUVIA.price、window.RAKUVIA.quote
@@ -632,7 +632,7 @@
     html += '<div class="doc-header">' +
       '<div class="doc-brand">elf_D老肖的世界<span>DESIGN STUDIO</span></div>' +
       '<h1>' + t('報 价 单', '見 積 書') + '</h1>' +
-      '<div class="doc-sub">CleanUp rakuvia（クリナップ）システムバス ／ 整体浴室</div>' +
+      '<div class="doc-sub">Cleanup Rakuvia（クリナップ）システムバス ／ 整体浴室</div>' +
       '<div class="doc-meta">' +
       '<span>' + t('日期 / 日付：', '日付：') + esc(head.date || dateNow()) + '</span>' +
       '<span>' + t('尺寸 / サイズ：', 'サイズ：') + esc(r.size) + '</span>' +
@@ -701,7 +701,7 @@
   /* ---------------- 复制选型清单 ---------------- */
   function copyList() {
     var r = Q.computeQuote();
-    var lines = ['【rakuvia 系统浴室 見積（报价）选型清单】'];
+    var lines = ['【Rakuvia 系统浴室 見積（报价）选型清单】'];
     lines.push('尺寸：' + r.size + ' ｜ 门位置：' + r.doorPos);
     lines.push('—'.repeat(30));
     r.lines.forEach(function (l) {
