@@ -1,5 +1,5 @@
 /* 厨房选型系统数据（由 data/products.json 生成：window.KITCHEN_DATA）
- * 源: 厨房选型系统/data/products.json（v2 手册 188p 全量 + reviewer/translator 修正）
+ * 源: 厨房选型系统/data/products.json（v2 手册 188p 全量 + 不选选项）
  * 价格符号：＋(U+FF0B)=加价 －(U+FF0D)=减价；UTF-8 无 BOM；width=cm 字符串。
  */
 window.KITCHEN_DATA = {
@@ -2161,6 +2161,13 @@ window.KITCHEN_DATA = {
           "priceDiff": null,
           "model": "ZZJFNA411SY",
           "note": "单元价 ¥207,000（差价待核）"
+        },
+        {
+          "code": "none",
+          "name_ja": "水栓なし",
+          "name_zh": "不装水龙头",
+          "priceDiff": -67000,
+          "note": "手册未显式写「不选」减额，按本体价推断（纯物料价，不含安装）（基准=浄水器一体型シングルレバー水栓本体）"
         }
       ]
     },
@@ -2291,6 +2298,13 @@ window.KITCHEN_DATA = {
           "priceDiff": null,
           "model": "ZHAR7R17AGK-K",
           "note": "差价待核"
+        },
+        {
+          "code": "none",
+          "name_ja": "コンロなし",
+          "name_zh": "不装燃气灶",
+          "priceDiff": -171000,
+          "note": "手册未显式写「不选」减额，按本体价推断（纯物料价，不含安装）（基准=ガラストップコンロ XSS 本体）"
         }
       ]
     },
@@ -2366,6 +2380,19 @@ window.KITCHEN_DATA = {
           ],
           "model": "ZRS90SCD21FS(R-L)",
           "note": "対面専用；单元价 サイド ¥199,000–223,000 / センター ¥248,000–272,000；差价待核（page-79，非 page-8 共通オプション）"
+        },
+        {
+          "code": "none",
+          "name_ja": "レンジフードなし",
+          "name_zh": "不装抽油烟机",
+          "priceMatrix": {
+            "class1": -209000,
+            "class2": -188000,
+            "class3": -157000,
+            "class4": -151000,
+            "class5": -148000
+          },
+          "note": "手册未显式写「不选」减额，按本体价推断（纯物料价，不含安装）（基准=シンプルスリムレンジフード本体，随 class 递变）"
         }
       ]
     },

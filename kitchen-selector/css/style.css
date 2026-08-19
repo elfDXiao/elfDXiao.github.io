@@ -133,8 +133,11 @@ img { max-width: 100%; display: block; }
 .multi-item .check-row { margin-bottom: 4px; }
 .multi-sub { margin: 0 0 12px 34px; }
 .opt-sub { border: 1px solid var(--line); background: var(--paper-2); padding: 12px 14px; margin-bottom: 10px; }
-.wu-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.wu-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 10px; }
 .wu-title { font-family: var(--serif); font-size: 14px; letter-spacing: .05em; }
+.wu-head .wu-right { display: flex; align-items: center; gap: 10px; }
+.unit-price { font-family: var(--serif); font-size: 13px; color: var(--accent); letter-spacing: .03em; white-space: nowrap; }
+.unit-price.pending { color: var(--ink-3); }
 .btn-sm { padding: 4px 12px; font-size: 12px; }
 .sum-row.warn .v { color: #b03a2e; }
 .sum-row.warn .k { color: #b03a2e; }

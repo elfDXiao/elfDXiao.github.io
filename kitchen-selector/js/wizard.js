@@ -854,12 +854,20 @@
     { code: 'none', zh: '不安装吊柜', ja: '吊戸棚なし' }
   ];
 
+  function wuPriceBadge(u) {
+    var v = Q.wallUnitPriceFor(u);
+    if (v == null) return '<span class="unit-price pending">' + t('价格待核', '価格未定') + '</span>';
+    if (v === 0) return '<span class="unit-price">' + t('基本仕様', '基本仕様') + '</span>';
+    return '<span class="unit-price">' + t('单元价', 'ユニット価格') + ' ' + P.yen(v) + '</span>';
+  }
+
   function wuUnitCard(u, idx, total) {
     var WU = DATA.wallCabinetUnits || {};
     var html = '<div class="opt-sub" data-wu-card="' + idx + '">';
-    html += '<div class="wu-head"><span class="wu-title">' + t('上柜单元', '上戸棚ユニット') + ' ' + (idx + 1) + '</span>';
-    if (total > 1) html += '<button type="button" class="btn btn-line btn-sm" data-wu-del="' + idx + '">' + t('删除', '削除') + '</button>';
-    html += '</div>';
+    html += '<div class="wu-head"><span class="wu-title">' + t('上柜单元', '上戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
+      '<span class="wu-right">' + wuPriceBadge(u) +
+      (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-wu-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
+      '</span></div>';
     html += '<div class="sub-row"><span class="dim-sub-title">' + t('单元类型 / タイプ：', 'タイプ：') + '</span>';
     WU_TYPE_OPTS.forEach(function (tp) {
       var on = u.type === tp.code;
@@ -988,12 +996,19 @@
     return html;
   }
 
+  function cabPriceBadge(u) {
+    var v = Q.cabUnitContribution(u);
+    if (v === 0) return '<span class="unit-price">' + t('基本仕様 0', '基本仕様 0') + '</span>';
+    return '<span class="unit-price">' + t('配件', 'オプション') + ' ' + P.yen(v) + '</span>';
+  }
+
   function cabUnitCard(u, idx, total) {
     var CT = DATA.cabinetTypes || {};
     var html = '<div class="opt-sub" data-cab-card="' + idx + '">';
-    html += '<div class="wu-head"><span class="wu-title">' + t('下柜单元', '下戸棚ユニット') + ' ' + (idx + 1) + '</span>';
-    if (total > 1) html += '<button type="button" class="btn btn-line btn-sm" data-cab-del="' + idx + '">' + t('删除', '削除') + '</button>';
-    html += '</div>';
+    html += '<div class="wu-head"><span class="wu-title">' + t('下柜单元', '下戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
+      '<span class="wu-right">' + cabPriceBadge(u) +
+      (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-cab-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
+      '</span></div>';
     // 位置
     html += '<div class="sub-row"><span class="dim-sub-title">' + t('位置 / タイプ：', 'タイプ：') + '</span>';
     Q.cabUnitPositions().forEach(function (pos) {
