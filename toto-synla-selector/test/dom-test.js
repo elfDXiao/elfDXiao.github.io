@@ -98,7 +98,7 @@ function waitFor(win, check, ms) {
   const qtext = doc.querySelector('#quoteDoc').textContent;
   assert('报价单含品番 HLV', qtext.indexOf('HLV1616U') >= 0);
   assert('报价单含税込合計', qtext.indexOf('税込') >= 0);
-  assert('报价单含公式说明 0.7', qtext.indexOf('0.7') >= 0);
+  assert('报价单含已含安装人工费说明', qtext.indexOf('已含安装人工费') >= 0 || qtext.indexOf('据付人工費込み') >= 0);
 
   console.log('== 返回选型 + 语言切换 ==');
   doc.querySelector('#btnBack').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
