@@ -1,0 +1,22 @@
+// stress-render.js — 全量数据渲染压力检查（door 98 / window 139 等大选项组）
+const fs = require('fs'), path = require('path');
+const { JSDOM } = require('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom');
+const ROOT = 'D:/DSH工作区/toto-synla/web';
+const dom = new JSDOM(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'), { runScripts: 'outside-only', url: 'file:///D:/DSH工作区/toto-synla/web/index.html' });
+const { window } = dom, { document } = window;
+['data/products.js', 'js/price.js', 'js/quote.js', 'js/wizard.js'].forEach(f => window.eval(fs.readFileSync(path.join(ROOT, f), 'utf8')));
+window.SYNLA.wizard.init(window.SYNLA_DATA);
+const t0 = Date.now();
+document.querySelector('#wizStepper .wstep[data-step="13"]').click();
+const doorCards = document.querySelectorAll('#wizBody .opt-block[data-dim="door"] input[type="radio"]').length;
+const t13 = Date.now();
+document.querySelector('#wizStepper .wstep[data-step="14"]').click();
+const winMulti = document.querySelectorAll('#wizBody input[name="multi_window"]').length;
+const miscMulti = document.querySelectorAll('#wizBody input[name="multi_misc"]').length;
+const t14 = Date.now();
+console.log('door 选项:', doorCards, '| window 选项:', winMulti, '| misc 选项:', miscMulti);
+console.log('step13 渲染(ms):', t13 - t0, '| step14 渲染(ms):', t14 - t13);
+const ok = doorCards >= 90 && winMulti >= 130 && miscMulti >= 60;
+console.log('RESULT:', ok ? 'OK' : 'FAIL');
+dom.window.close();
+process.exit(ok ? 0 : 1);
