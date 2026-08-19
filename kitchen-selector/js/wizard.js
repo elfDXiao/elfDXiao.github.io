@@ -224,18 +224,65 @@
         if (tgt.checked) wu7.extras[ek] = true; else delete wu7.extras[ek];
         renderStep(); renderSummary(); return;
       }
-      // 下柜单元类型（cabunit）
+      // 下柜单元（cabunit，多单元列表）
+      if (tgt.hasAttribute('data-cab-pos')) {
+        var cu0 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        var newPos = tgt.getAttribute('data-cab-pos');
+        var C0 = (DATA.cabinetTypes || {})[newPos];
+        cu0.pos = newPos;
+        cu0.t = (C0 && C0.types && C0.types.length) ? 0 : null;
+        cu0.w = (C0 && C0.widths && C0.widths[0]) || null;
+        cu0.d = (C0 && C0.depth && C0.depth[0]) || null;
+        renderStep(); renderSummary(); return;
+      }
       if (tgt.hasAttribute('data-cab-type')) {
-        var cpos = tgt.getAttribute('data-cab-pos'); var cu = Q.state.cabunit || {}; cu[cpos] = cu[cpos] || {};
-        cu[cpos].t = Number(tgt.getAttribute('data-cab-type')); Q.state.cabunit = cu; renderStep(); renderSummary(); return;
+        var cu1 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu1.t = Number(tgt.getAttribute('data-cab-type'));
+        renderStep(); renderSummary(); return;
       }
       if (tgt.hasAttribute('data-cab-width')) {
-        var cpos2 = tgt.getAttribute('data-cab-pos'); var cu2 = Q.state.cabunit || {}; cu2[cpos2] = cu2[cpos2] || {};
-        cu2[cpos2].w = tgt.getAttribute('data-cab-width'); Q.state.cabunit = cu2; renderStep(); renderSummary(); return;
+        var cu2 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu2.w = tgt.getAttribute('data-cab-width');
+        renderStep(); renderSummary(); return;
       }
       if (tgt.hasAttribute('data-cab-depth')) {
-        var cpos3 = tgt.getAttribute('data-cab-pos'); var cu3 = Q.state.cabunit || {}; cu3[cpos3] = cu3[cpos3] || {};
-        cu3[cpos3].d = tgt.getAttribute('data-cab-depth'); Q.state.cabunit = cu3; renderStep(); renderSummary(); return;
+        var cu3 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu3.d = tgt.getAttribute('data-cab-depth');
+        renderStep(); renderSummary(); return;
+      }
+      if (tgt.hasAttribute('data-cab-acc')) {
+        var cu4 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu4.acc = cu4.acc || {};
+        var accCode = tgt.getAttribute('data-cab-acc');
+        if (tgt.checked) {
+          var accOpt = Q.cat('cabinet').options.find(function (x) { return x.code === accCode; });
+          if (accOpt && accOpt.pricesBySize) cu4.acc[accCode] = {};
+          else if (accOpt && Array.isArray(accOpt.items) && accOpt.items.length) cu4.acc[accCode] = {};
+          else cu4.acc[accCode] = true;
+        } else {
+          delete cu4.acc[accCode];
+        }
+        renderStep(); renderSummary(); return;
+      }
+      if (tgt.hasAttribute('data-cab-acc-w')) {
+        var cu5 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu5.acc = cu5.acc || {};
+        var acWCode = tgt.getAttribute('data-cab-acc');
+        cu5.acc[acWCode] = cu5.acc[acWCode] || {};
+        var wval = tgt.getAttribute('data-cab-acc-w');
+        if (wval === '') delete cu5.acc[acWCode].w;
+        else cu5.acc[acWCode].w = wval;
+        renderStep(); renderSummary(); return;
+      }
+      if (tgt.hasAttribute('data-cab-acc-i')) {
+        var cu6 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
+        cu6.acc = cu6.acc || {};
+        var acICode = tgt.getAttribute('data-cab-acc');
+        cu6.acc[acICode] = cu6.acc[acICode] || {};
+        var ival = tgt.getAttribute('data-cab-acc-i');
+        if (ival === '') delete cu6.acc[acICode].i;
+        else cu6.acc[acICode].i = Number(ival);
+        renderStep(); renderSummary(); return;
       }
 
       if (!dim) return;
@@ -272,6 +319,18 @@
         var idx = Number(tgt.getAttribute('data-wu-del'));
         var us = Q.state.sub.wallcabinet && Q.state.sub.wallcabinet.units;
         if (us && us.length > 1) us.splice(idx, 1);
+        renderStep(); renderSummary();
+        return;
+      }
+      // 下柜单元 新增（宽度硬约束）/删除
+      if (tgt.hasAttribute('data-cab-add')) {
+        var ok = Q.cabAddUnit({ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} });
+        if (!ok) flash(t('下柜总宽将超厨房间口，请选择更小间口或删除单元', '下戸棚幅合計が厨房間口を超えます。より小さい間口を選択するかユニットを削除してください'));
+        renderStep(); renderSummary();
+        return;
+      }
+      if (tgt.hasAttribute('data-cab-del')) {
+        Q.cabDelUnit(Number(tgt.getAttribute('data-cab-del')));
         renderStep(); renderSummary();
         return;
       }
@@ -898,43 +957,96 @@
     return html;
   }
 
-  function cabunitHtml(d) {
-    var CT = DATA.cabinetTypes || {};
-    var html = '';
-    var positions = [
-      { code: 'sink', zh: '水槽柜', ja: 'シンクキャビネット' },
-      { code: 'base', zh: '基础柜', ja: 'ベースキャビネット' },
-      { code: 'cooktop', zh: '灶具柜', ja: 'コンロキャビネット' },
-      { code: 'corner', zh: '转角柜', ja: 'コーナーキャビネット' }
-    ];
-    positions.forEach(function (pos) {
-      var C = CT[pos.code];
-      if (!C) return;
-      var sel = Q.state.cabunit[pos.code] || {};
-      html += '<div class="sub-row" style="margin-bottom:6px;"><span class="dim-sub-title">' + esc(pos.zh) + ' <span class="ja">' + esc(pos.ja) + '</span>：</span>';
-      (C.types || []).forEach(function (tp, ti) {
-        var on = sel.t === ti;
-        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_' + pos.code + '_t" data-cab-pos="' + pos.code + '" data-cab-type="' + ti + '"' + (on ? ' checked' : '') + '>' + esc(tp.name_zh || tp.name_ja) + (tp.isBasic ? ' <b>基本</b>' : '') + '</label>';
+  function cabAccHtml(o, sub, idx) {
+    var checked = sub != null;
+    var html = '<div class="multi-item"><label class="check-row' + (checked ? ' on' : '') + '">' +
+      '<input type="checkbox" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '"' + (checked ? ' checked' : '') + '>' +
+      '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
+      priceSpan(multiPriceText(o, sub)) + '</label>';
+    if (checked && o.pricesBySize) {
+      var w = (sub && sub.w) || null;
+      html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('间口', '間口') + '：</span>';
+      html += '<label class="sub-chip' + (w == null ? ' on' : '') + '"><input type="radio" name="cabacc_w_' + o.code + '_' + idx + '" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '" data-cab-acc-w=""' + (w == null ? ' checked' : '') + '>' + t('未选', '未選択') + '</label>';
+      Object.keys(o.pricesBySize).forEach(function (wk) {
+        var on = w === wk;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cabacc_w_' + o.code + '_' + idx + '" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '" data-cab-acc-w="' + esc(wk) + '"' + (on ? ' checked' : '') + '>' + esc(wk) + 'cm</label>';
       });
       html += '</div>';
-      if (C.widths && C.widths.length) {
-        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('间口', '間口') + '：</span>';
-        C.widths.forEach(function (wv) {
-          var on = sel.w === wv;
-          html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_' + pos.code + '_w" data-cab-pos="' + pos.code + '" data-cab-width="' + esc(wv) + '"' + (on ? ' checked' : '') + '>' + esc(wv) + 'cm</label>';
-        });
-        html += '</div>';
-      }
-      if (C.depth && C.depth.length) {
-        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('奥行', '奥行') + '：</span>';
-        C.depth.forEach(function (dv) {
-          var on = sel.d === dv;
-          html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_' + pos.code + '_d" data-cab-pos="' + pos.code + '" data-cab-depth="' + esc(dv) + '"' + (on ? ' checked' : '') + '>' + esc(dv) + '</label>';
-        });
-        html += '</div>';
-      }
+    }
+    if (checked && Array.isArray(o.items) && o.items.length) {
+      var i = (sub && typeof sub.i === 'number') ? sub.i : null;
+      html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('类型', 'タイプ') + '：</span>';
+      html += '<label class="sub-chip' + (i == null ? ' on' : '') + '"><input type="radio" name="cabacc_i_' + o.code + '_' + idx + '" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '" data-cab-acc-i=""' + (i == null ? ' checked' : '') + '>' + t('未选', '未選択') + '</label>';
+      o.items.forEach(function (it, ii) {
+        var on = i === ii;
+        var p = typeof it.price === 'number' ? P.fmtDiff(it.price) : (it.price || '');
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cabacc_i_' + o.code + '_' + idx + '" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '" data-cab-acc-i="' + ii + '"' + (on ? ' checked' : '') + '>' + esc(it.name_zh || it.name_ja || '') + ' <b>' + esc(p) + '</b></label>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function cabUnitCard(u, idx, total) {
+    var CT = DATA.cabinetTypes || {};
+    var html = '<div class="opt-sub" data-cab-card="' + idx + '">';
+    html += '<div class="wu-head"><span class="wu-title">' + t('下柜单元', '下戸棚ユニット') + ' ' + (idx + 1) + '</span>';
+    if (total > 1) html += '<button type="button" class="btn btn-line btn-sm" data-cab-del="' + idx + '">' + t('删除', '削除') + '</button>';
+    html += '</div>';
+    // 位置
+    html += '<div class="sub-row"><span class="dim-sub-title">' + t('位置 / タイプ：', 'タイプ：') + '</span>';
+    Q.cabUnitPositions().forEach(function (pos) {
+      var on = u.pos === pos;
+      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_pos_' + idx + '" data-cab-idx="' + idx + '" data-cab-pos="' + pos + '"' + (on ? ' checked' : '') + '>' + esc(Q.cabUnitPosName(pos, 'zh')) + ' <span class="ja">' + esc(Q.cabUnitPosName(pos, 'ja')) + '</span></label>';
     });
-    html += '<p class="muted">' + t('以上单元类型均为基本仕様（无加减差价，类型差价在别册），仅记录于报价单。', '上記ユニットタイプはすべて基本仕様（差額なし）です。') + '</p>';
+    html += '</div>';
+    var C = CT[u.pos];
+    if (C && C.types && C.types.length) {
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('类型 / 種類：', '種類：') + '</span>';
+      C.types.forEach(function (tp, ti) {
+        var on = u.t === ti;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_type_' + idx + '" data-cab-idx="' + idx + '" data-cab-type="' + ti + '"' + (on ? ' checked' : '') + '>' + esc(tp.name_zh || tp.name_ja) + (tp.isBasic ? ' <b>基本</b>' : '') + '</label>';
+      });
+      html += '</div>';
+    }
+    if (C && C.widths && C.widths.length) {
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('间口', '間口') + '：</span>';
+      C.widths.forEach(function (wv) {
+        var on = u.w === wv;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_w_' + idx + '" data-cab-idx="' + idx + '" data-cab-width="' + esc(wv) + '"' + (on ? ' checked' : '') + '>' + esc(wv) + 'cm</label>';
+      });
+      html += '</div>';
+    }
+    if (C && C.depth && C.depth.length) {
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('奥行', '奥行') + '：</span>';
+      C.depth.forEach(function (dv) {
+        var on = u.d === dv;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_d_' + idx + '" data-cab-idx="' + idx + '" data-cab-depth="' + esc(dv) + '"' + (on ? ' checked' : '') + '>' + esc(dv) + '</label>';
+      });
+      html += '</div>';
+    }
+    // 配件（按位置过滤）
+    var accs = Q.cabAccessoriesFor(u.pos);
+    if (accs.length) {
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('配件 / オプション：', 'オプション：') + '</span></div>';
+      accs.forEach(function (o) {
+        var sub = (u.acc && u.acc[o.code]) || null;
+        html += cabAccHtml(o, sub, idx);
+      });
+    }
+    html += '<p class="muted">' + t('下柜单元类型为基本仕様（无差价），配件按勾选计价。', '下戸棚ユニットタイプは基本仕様（差額なし）、オプションは選択で加算。') + '</p>';
+    html += '</div>';
+    return html;
+  }
+
+  function cabunitHtml(d) {
+    var units = Q.state.cabunit || [];
+    var html = '';
+    units.forEach(function (u, idx) {
+      html += cabUnitCard(u, idx, units.length);
+    });
+    html += '<button type="button" class="btn btn-line" data-cab-add>' + t('＋ 新增下柜单元', '＋ 下戸棚ユニット追加') + '</button>';
     return html;
   }
 

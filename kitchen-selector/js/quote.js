@@ -120,7 +120,8 @@
     var KIND = { layout: 'layout', plan: 'plan', size: 'size', grade: 'grade', door: 'door', faucet: 'faucet', peripheral: 'peripheral', other: 'other', wallcabinet: 'wallunit' };
     DIMS.length = 0;
     DATA.categories.forEach(function (c) {
-      // additive:true 的分类 = 多选加购（如 cabinet 下柜），其余按 KIND 映射，缺省 radio
+      if (c.id === 'cabinet') return;   // 下柜配件已并入 cabunit，不再单独渲染
+      // additive:true 的分类 = 多选加购，其余按 KIND 映射，缺省 radio
       var kind = c.additive === true ? 'multi' : (KIND[c.id] || 'radio');
       DIMS.push({ id: c.id, step: c.step, cat: c.id, kind: kind, titleJa: c.name_ja, titleZh: c.name_zh });
     });
@@ -129,10 +130,14 @@
     if (sizeIdx >= 0) {
       DIMS.splice(sizeIdx + 1, 0, { id: 'depth', step: DIMS[sizeIdx].step, cat: null, kind: 'depth', titleJa: '奥行', titleZh: '深度' });
     }
-    // 合成「下柜单元类型」维（基本仕様展示），插到 cabinet 之前（与 cabinet 同 step）
-    var cabIdx = DIMS.findIndex(function (d) { return d.id === 'cabinet'; });
-    if (cabIdx >= 0) {
-      DIMS.splice(cabIdx, 0, { id: 'cabunit', step: DIMS[cabIdx].step, cat: null, kind: 'cabunit', titleJa: '下柜单元类型（フロアキャビネット）', titleZh: '下柜单元类型' });
+    // 合成「下柜单元」维（多单元列表），放在原 cabinet step 位置（cabinet 分类已跳过渲染）
+    var cabCat = cat('cabinet');
+    if (cabCat) {
+      var cabStep = cabCat.step;
+      var cabIdx = DIMS.findIndex(function (d) { return d.step > cabStep; });
+      var cabDim = { id: 'cabunit', step: cabStep, cat: null, kind: 'cabunit', titleJa: '下柜（フロアキャビネット）', titleZh: '下柜' };
+      if (cabIdx < 0) DIMS.push(cabDim);
+      else DIMS.splice(cabIdx, 0, cabDim);
     }
   }
   function dim(id) { return DIMS.find(function (d) { return d.id === id; }); }
@@ -417,32 +422,79 @@
     wuUnits().forEach(function (s) { sum += parseWidthCm(s.width); });
     return sum;
   }
-  /** 下柜单元宽度总和（sink/base/cooktop/corner） */
+  /** 下柜单元宽度总和（数组各单元间口） */
   function sumCabUnitWidth() {
     var sum = 0;
-    cabUnitPositions().forEach(function (pos) {
-      var sel = state.cabunit[pos];
-      if (sel) sum += parseWidthCm(sel.w);
-    });
+    (state.cabunit || []).forEach(function (u) { sum += parseWidthCm(u.w); });
     return sum;
   }
 
-  /** 下柜单元类型选择：全部基本仕様 0 差价，仅展示 */
+  /* ---- 下柜单元（cabunit，多单元列表，对齐 wallunit） ----
+   * state.cabunit = [ { pos, t, w, d, acc:{code:sub} }, ... ]；pos∈sink/base/cooktop/corner
+   * 类型（t）为基本仕様 0 差价；配件（acc，来自 cabinet category 9 项）按类型显示并计价。
+   */
+  var CAB_ACC_TYPES = { sink_outlet: ['sink'], cooktop_drawer: ['cooktop'], frypan_rack: ['cooktop'] };
   function cabUnitPositions() { return ['sink', 'base', 'cooktop', 'corner']; }
-  function cabUnitLabel(lang) {
-    var CT = DATA.cabinetTypes || {};
-    var c = state.cabunit || {};
-    var items = [];
-    cabUnitPositions().forEach(function (pos) {
-      var sel = c[pos], C = CT[pos];
-      if (!sel || !C || !C.types) return;
-      var type = C.types[sel.t];
-      if (!type) return;
-      var name = lang === 'ja' ? (type.name_ja || '') : (type.name_zh || type.name_ja || '');
-      var label = name + (sel.w ? ' ' + sel.w + 'cm' : '') + (sel.d ? ' 奥行' + String(sel.d).replace(/^D/, '') + 'cm' : '');
-      items.push(label);
+  function cabUnitPosName(pos, lang) {
+    var CT = DATA.cabinetTypes || {}, C = CT[pos];
+    if (!C) return pos;
+    return lang === 'ja' ? (C.name_ja || pos) : (C.name_zh || C.name_ja || pos);
+  }
+  /** 某位置可用的配件（cabinet category 选项按 CAB_ACC_TYPES 过滤） */
+  function cabAccessoriesFor(pos) {
+    return cat('cabinet').options.filter(function (o) {
+      var types = CAB_ACC_TYPES[o.code];
+      return !types || types.indexOf(pos) >= 0;
     });
-    return items;
+  }
+  /** 单个下柜单元的差价 = Σ配件价（类型本身 0） */
+  function cabUnitContribution(unit) {
+    var sum = 0;
+    var acc = unit.acc || {};
+    cat('cabinet').options.forEach(function (o) {
+      if (acc[o.code] == null) return;
+      var v = multiOptionDiff(o, acc[o.code]);
+      if (typeof v === 'number') sum += v;
+    });
+    return sum;
+  }
+  /** 全部下柜单元差价之和 */
+  function cabUnitTotal() {
+    var sum = 0;
+    (state.cabunit || []).forEach(function (u) { sum += cabUnitContribution(u); });
+    return sum;
+  }
+  /** 新增下柜单元：宽度硬约束（加入后总宽 > 厨房间口则阻止），返回 true/false */
+  function cabAddUnit(unit) {
+    var units = state.cabunit || [];
+    var newW = parseWidthCm(unit.w);
+    var kitchenW = parseWidthCm(state.width);
+    if (newW > 0 && kitchenW > 0 && sumCabUnitWidth() + newW > kitchenW) return false;
+    units.push(unit);
+    state.cabunit = units;
+    return true;
+  }
+  function cabDelUnit(idx) {
+    var units = state.cabunit || [];
+    if (units.length > 1) units.splice(idx, 1);
+    state.cabunit = units;
+  }
+  function cabUnitLabelFor(unit, lang) {
+    var CT = DATA.cabinetTypes || {};
+    var C = CT[unit.pos];
+    var parts = [cabUnitPosName(unit.pos, lang)];
+    if (C && C.types && C.types[unit.t]) {
+      var tp = C.types[unit.t];
+      parts.push(lang === 'ja' ? (tp.name_ja || '') : (tp.name_zh || tp.name_ja || ''));
+    }
+    if (unit.w) parts.push(unit.w + 'cm');
+    if (unit.d) parts.push('奥行' + String(unit.d).replace(/^D/, '') + 'cm');
+    var acc = unit.acc || {};
+    cat('cabinet').options.forEach(function (o) {
+      if (acc[o.code] == null) return;
+      parts.push(multiLabel(o, acc[o.code], lang));
+    });
+    return parts.join('・');
   }
 
   function contributionFor(dimId) {
@@ -456,7 +508,7 @@
       case 'other': return otherContribution();
       case 'multi': return multiContribution(dimId);
       case 'wallunit': return wallUnitContribution();
-      case 'cabunit': return 0;            // 下柜单元类型 = 基本仕様
+      case 'cabunit': return cabUnitTotal();   // 下柜单元差价 = Σ配件价
       case 'radio': {
         if (dimId === 'worktop') return worktopContribution();
         var o = selOption(dimId);
@@ -546,12 +598,15 @@
         return out;
       }
       case 'cabunit': {
-        var itemsZh = cabUnitLabel('zh'), itemsJa = cabUnitLabel('ja');
-        if (!itemsZh.length) return out;
-        out.nameZh = itemsZh.join('；');
-        out.nameJa = itemsJa.join('；');
+        // 多单元列表在 computeQuote 里逐单元出明细行；此处返回聚合（供外部/合计展示用）
+        var units = state.cabunit || [];
+        if (!units.length) return out;
+        var nz = [], nj = [];
+        units.forEach(function (u) { nz.push(cabUnitLabelFor(u, 'zh')); nj.push(cabUnitLabelFor(u, 'ja')); });
+        out.nameZh = nz.join('、');
+        out.nameJa = nj.join('、');
         out.code = 'cabunit';
-        out.diff = 0;
+        out.diff = cabUnitTotal();
         return out;
       }
       default: return out;
@@ -631,6 +686,21 @@
               code: 'wallunit:' + u.type, model: '', extra: wallUnitExtraLabelFor(u), diff: v, base: false
             });
           }
+        });
+        return;
+      }
+      // 下柜多单元：逐单元出明细行
+      if (d.kind === 'cabunit') {
+        var cunits = state.cabunit || [];
+        var csm = stepMeta(d.step);
+        cunits.forEach(function (u) {
+          var v = cabUnitContribution(u);
+          total += v;
+          lines.push({
+            step: d.step, stepZh: csm.titleZh, stepJa: csm.title,
+            nameZh: cabUnitLabelFor(u, 'zh'), nameJa: cabUnitLabelFor(u, 'ja'),
+            code: 'cabunit:' + u.pos, model: '', extra: '', diff: v, base: false
+          });
         });
         return;
       }
@@ -772,7 +842,8 @@
       DATA = data; P = window.KITCHEN.price;
       buildStepsAndDims();
       state.layout = 'i'; state.plan = 'basic'; state.width = '255'; state.depth = '98'; state.grade = 'class5';
-      state.sel = {}; state.sub = {}; state.toggles = {}; state.cabunit = {};
+      state.sel = {}; state.sub = {}; state.toggles = {};
+      state.cabunit = [{ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} }];
       state.sub.wallcabinet = { units: [{ type: 'standard', height: '70' }] };
       var colors = currentDoorColors();
       if (colors.length) {
@@ -792,11 +863,12 @@
     peripheralPrice: peripheralPrice, peripheralTable: peripheralTable, otherPriceFor: otherPriceFor,
     wu: wu, wuUnits: wuUnits, wuSetHood: wuSetHood, wallUnitBasePrice: wallUnitBasePrice, wallUnitRacksPrice: wallUnitRacksPrice, wallUnitLedPrice: wallUnitLedPrice, wallUnitPriceFor: wallUnitPriceFor, wallUnitContribution: wallUnitContribution, wallUnitTypeName: wallUnitTypeName, wallUnitLabelFor: wallUnitLabelFor, wallUnitExtraLabelFor: wallUnitExtraLabelFor,
     parseWidthCm: parseWidthCm, sumWallUnitWidth: sumWallUnitWidth, sumCabUnitWidth: sumCabUnitWidth,
-    cabUnitPositions: cabUnitPositions, cabUnitLabel: cabUnitLabel,
+    cabUnitPositions: cabUnitPositions, cabUnitPosName: cabUnitPosName, cabAccessoriesFor: cabAccessoriesFor, cabUnitContribution: cabUnitContribution, cabUnitTotal: cabUnitTotal, cabAddUnit: cabAddUnit, cabDelUnit: cabDelUnit, cabUnitLabelFor: cabUnitLabelFor,
     disabledReason: disabledReason, autoFix: autoFix,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
-      state.sel = {}; state.sub = {}; state.toggles = {}; state.cabunit = {};
+      state.sel = {}; state.sub = {}; state.toggles = {};
+      state.cabunit = [{ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} }];
       state.sub.wallcabinet = { units: [{ type: 'standard', height: '70' }] };
       state.layout = 'i'; state.plan = 'basic'; state.width = '255'; state.depth = '98'; state.grade = 'class5';
       var colors = currentDoorColors();
