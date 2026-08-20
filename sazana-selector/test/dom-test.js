@@ -44,22 +44,17 @@ function waitFor(win, check, ms) {
   assert('タイプ 5 个', doc.querySelectorAll('#wizBody input[name="dim_type"]').length === 5);
   assert('默认日元合计(税抜) = ￥1,449,000', doc.querySelector('#sumJPY').textContent.indexOf('1,449,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
-  console.log('== 壁柄联动（step 2） ==');
+  console.log('== 壁柄第一段（46 选项：39 柄 4面同色 + ACC/SHUHEN） ==');
   doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 14; }, 2000);
-  assert('壁柄 14 选项', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 14);
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 46; }, 2000);
+  assert('壁柄 46 选项（第一段直接可选）', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 46);
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAA1"]').click();  // T タイプ +126,000
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0; }, 2000);
   assert('选 EGAA1 后合计 = 1,575,000', doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0, doc.querySelector('#sumJPY').textContent);
-
-  console.log('== 壁柄花纹两段选择（HⅡ クラス → 柄 chips） ==');
-  doc.querySelector('#wizBody input[name="dim_wall"][data-code="HⅡ"]').click();
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length >= 20; }, 2000);
-  const h2pats = doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length;
-  assert('HⅡ 4面同色柄 chips ≥ 20', h2pats >= 20, h2pats);
-  doc.querySelector('#wizBody input[name="wall_pattern"][data-wall-pattern="EGAB5"]').click();
-  await waitFor(win, function () { return doc.querySelector('#wizBody').textContent.indexOf('品番：EGAB5') >= 0; }, 2000);
-  assert('HⅡ 柄品番 EGAB5 显示', doc.querySelector('#wizBody').textContent.indexOf('品番：EGAB5') >= 0);
+  // HⅡ 柄 EGAB5 第一段直接点击（T タイプ +84,000）——无第二段
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAB5"]').click();
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0; }, 2000);
+  assert('选 EGAB5（HⅡ柄）后合计 = 1,533,000（+84,000）', doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
   console.log('== アクセントプラン两段（ACC_* → アクセント柄 + 周辺グレード + 周辺柄） ==');
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="ACC_PRE"]').click();

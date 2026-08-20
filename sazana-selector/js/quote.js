@@ -183,9 +183,11 @@
   function wallGradeOf(wallCode) {
     if (WALL_ACC_GRADE[wallCode]) return WALL_ACC_GRADE[wallCode];
     if (WALL_SHUHEN_GRADE[wallCode]) return null;
-    if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') return 'プレミアムグレード';
     var o = opt('wall', wallCode);
-    return o ? String(o.name_ja || '').split('柄')[0].trim() : null;
+    if (!o) return null;
+    if (o.grade) return o.grade;
+    if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') return 'プレミアムグレード';
+    return String(o.name_ja || '').split('柄')[0].trim() || null;
   }
   /** アクセントプラン组合价：ACC_* × 周辺グレード（priceBySurround；T タイプ用 accentPriceMatrix L2 调整） */
   function wallContribution() {
@@ -326,23 +328,32 @@
             }
             if (!out.extra) out.extra = '周辺グレード ' + sg;
           } else if (pc) {
-            // HⅡ/HⅠ/BASIC クラスの柄 / SHUHEN の周辺柄
-            var fs = fourSamePatterns(c).find(function (x) { return String(x.code) === String(pc); });
-            if (fs) {
-              out.nameJa += '・' + fs.name_ja;
-              out.nameZh += '・' + fs.name_zh;
-              out.model = fs.code;
+            // 4面同色柄（第一段直接选项，无第二段）／SHUHEN の周辺柄
+            if (o.fourSame) {
+              out.model = c;   // 柄品番 = 选项 code
+              out.extra = (o.grade || '') + (o.note && /照明限定/.test(o.note) ? ' ⚠照明限定' : '');
             } else {
-              var sp3 = sazanaSurroundPattern(pc);
-              if (sp3) {
-                out.nameJa += '・' + sp3.name_ja;
-                out.nameZh += '・' + sp3.name_zh;
-                out.model = sp3.code;
+              var fs = fourSamePatterns(c).find(function (x) { return String(x.code) === String(pc); });
+              if (fs) {
+                out.nameJa += '・' + fs.name_ja;
+                out.nameZh += '・' + fs.name_zh;
+                out.model = fs.code;
               } else {
-                var ap2 = sazanaAccentPattern(pc);
-                if (ap2) { out.nameJa += '・' + ap2.name_ja; out.nameZh += '・' + ap2.name_zh; out.model = ap2.code_front || pc; }
+                var sp3 = sazanaSurroundPattern(pc);
+                if (sp3) {
+                  out.nameJa += '・' + sp3.name_ja;
+                  out.nameZh += '・' + sp3.name_zh;
+                  out.model = sp3.code;
+                } else {
+                  var ap2 = sazanaAccentPattern(pc);
+                  if (ap2) { out.nameJa += '・' + ap2.name_ja; out.nameZh += '・' + ap2.name_zh; out.model = ap2.code_front || pc; }
+                }
               }
             }
+          } else if (o.fourSame) {
+            // 4面同色柄（无花纹子选）：model = 柄品番
+            out.model = c;
+            out.extra = (o.grade || '') + (o.note && /照明限定/.test(o.note) ? ' ⚠照明限定' : '');
           }
         }
         out.diff = contributionFor(dimId);

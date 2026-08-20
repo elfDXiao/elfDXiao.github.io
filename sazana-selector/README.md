@@ -91,17 +91,13 @@ toto-sazana/
 7. エアインオーバーヘッドシャワー 1317/1216/1116/1220/1818 不可
 8. 数据驱动：sizes/types/priceByType 限定自动生效
 
-## 五、壁柄花纹级 UI（sazanaWallPatterns 45 柄）
+## 五、壁柄花纹级 UI（第一段重构：39 柄 4面同色直接可选）
 
-- **数据**：`sazana-wall-patterns.json` 并入 `window.SAZANA_DATA.sazanaWallPatterns`——accentPatterns 37 柄（プレミアム 5/HⅡ 20/HⅠ 6/BASIC 5，含正面 EG2**/浴槽横 EG3** 品番）+ surroundPatterns 8 柄（HⅡ 3/HⅠ 2/BASIC 3）+ accentPriceMatrix（アクセントグレード×周辺グレード 4×3，每格 L1=P/S/N/F・L2=T タイプ）
-- **四类第二段选择**（wizard wallPatternHtml）：
-  1. 4面同色柄（EGAA1 等）：直接显示柄信息（价格已含 priceByType）
-  2. HⅡ/HⅠ/BASIC クラス：从 wall 选项 note 解析 4面同色柄 chips（25/6/4 柄，品番 EGAB5 等）
-  3. ACC_* アクセントプラン：アクセントパネル柄 chips（按グレード过滤）+ 周辺グレード chips（HⅡ/HⅠ/BASIC）+ 周辺柄 chips（按周辺グレード过滤）
-  4. SHUHEN_*：周辺パネル柄 chips
-- **价格叠加**：ACC_* 组合价 = `priceBySurround[周辺グレード]`（T タイプ用 accentPriceMatrix L2 调整 +21,000 等）；4面同色/クラス走 priceByType；花纹柄净差 0（不重复计价）
-- **品番输出**：报价单明细含花纹名 + 品番（4面同色=EGAA1；クラス柄=EGAB5；アクセント=EG2J1+EGAG2（アクセント+周辺））
-- **约束**：S/F/N 4面同色不可（priceByType null）；ミネラホワイト/コムホワイト系仅周辺パネル（UI 过滤）；未选周辺グレード时 ACC_* 贡献 null（报价单提示待选择）
+- **第一段直接可选**：wall 分类 46 选项——39 个 4面同色柄（プレミアム 4/HⅡ 25/HⅠ 6/BASIC 4，gen-products 从クラス note 展开为独立选项，各带 priceByType）＋ 4 个 ACC_* ＋ 3 个 SHUHEN_*（移除 HⅡ/HⅠ/BASIC クラス占位）
+- **价格**：4面同色柄 priceByType（HⅡ P=63,000/T=84,000、HⅠ P=21,000/T=42,000、BASIC P=−21,000/T=0、プレミアム P=105,000/T=126,000）；ACC_* 组合价 = `priceBySurround[周辺グレード]`（T タイプ用 accentPriceMatrix L2 调整）
+- **两段式（仅 ACC_*/SHUHEN_*）**：ACC_* → アクセント柄 chips（37 柄按グレード过滤）＋ 周辺グレード chips ＋ 周辺柄 chips（8 柄）；SHUHEN_* → 周辺柄 chips；4面同色柄选中即完成（无第二段）
+- **品番输出**：报价单明细含花纹名 + 品番（4面同色=EGAB5 等；アクセント=EG2J1+EGAG2）
+- **数据**：`sazana-wall-patterns.json` 并入 `window.SAZANA_DATA.sazanaWallPatterns`（accentPatterns 37 + surroundPatterns 8 + accentPriceMatrix 4×3）
 
 ## 六、人民币说明规范（★ 用户明确要求，全站统一）
 
