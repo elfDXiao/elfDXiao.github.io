@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LIXIL Renobio Fit（リノビオフィット）整体浴室选型与报价：按官方手册步骤选配，中日双语，输入汇率生成大陆地区含安装价格，导出报价 PDF。">
+  <title>LIXIL Renobio Fit 整体浴室选型 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="https://elfDXiao.github.io/index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="https://elfDXiao.github.io/index.html">首页</a></li>
+        <li><a href="https://elfDXiao.github.io/database.html">产品资料库</a></li>
+        <li><a href="https://elfDXiao.github.io/furniture.html">全屋定制</a></li>
+        <li><a href="https://elfDXiao.github.io/kitchen.html">厨卫选型系统</a></li>
+        <li><a href="https://elfDXiao.github.io/studio.html">工作室案例</a></li>
+        <li><a href="https://elfDXiao.github.io/bathroom.html">浴室案例</a></li>
+        <li><a href="https://elfDXiao.github.io/survey.html">需求调查</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 03 · Bath Select</p>
+        <h1 class="sec-title">LIXIL Renobio Fit 整体浴室选型</h1>
+        <p class="sec-sub">LIXIL リノビオフィット（Renobio Fit）システムバスルーム在线选型：公寓改造专用 2 分割构造，按官方手册步骤选配（サイズ→タイプ→壁パネル→浴槽→…），提供中日双语，填入当日汇率自动生成大陆地区价格（已含安装人工费）。</p>
+        <div class="hero-actions" id="langBar">
+          <button type="button" class="btn btn-line lang-btn active" data-lang="both">中日双语</button>
+          <button type="button" class="btn btn-line lang-btn" data-lang="zh">中文</button>
+          <button type="button" class="btn btn-line lang-btn" data-lang="ja">日本語</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+
+        <!-- 顶部 tab：选型向导 / 报价单 -->
+        <div class="app-tabs" id="mainTabs">
+          <button type="button" class="tab-btn active" data-view="wizard">选型向导 <span class="ja">選型</span></button>
+          <button type="button" class="tab-btn" data-view="quote">报价单 <span class="ja">見積書</span></button>
+        </div>
+
+        <!-- ============ 视图 1：选型向导 ============ -->
+        <section id="view-wizard" class="view-panel active">
+          <div class="wizard-layout">
+            <div class="wizard-main">
+              <div class="wiz-stepper" id="wizStepper"></div>
+              <div class="wiz-tip" id="wizTip"></div>
+              <div class="wiz-body" id="wizBody"></div>
+
+              <div class="wizard-buttons">
+                <button type="button" class="btn btn-line" id="btnPrev">← 上一步</button>
+                <span class="spacer"></span>
+                <button type="button" class="btn btn-solid" id="btnNext">下一步 →</button>
+                <button type="button" class="btn btn-accent" id="btnFinish" hidden>生成报价单</button>
+              </div>
+
+              <div class="dl-row" id="dlRow" hidden>
+                <span class="dl-label">LIXIL Renobio Fit 资料下载 / 資料DL：</span>
+                <a class="download-link" href="https://elfDXiao.github.io/assets/pdf/骊住品牌小型浴室renobio Fit系列.pdf" download>Renobio Fit 手册 PDF</a>
+
+              </div>
+            </div>
+
+            <aside class="wizard-summary">
+              <div class="rate-box">
+                <label for="rate">汇率 / 為替（1日元 = 人民币）</label>
+                <input id="rate" type="number" step="0.0001" min="0.0001" placeholder="请手动输入当日汇率">
+                <p class="rate-hint">大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み</p>
+              </div>
+
+              <div class="sum-box" id="sumBox">
+                <h4>报价合计 / 見積合計</h4>
+                <div class="sum-row"><span class="k">类型 / タイプ</span><span class="v" id="sumType">M</span></div>
+                <div class="sum-row"><span class="k">尺寸 / サイズ</span><span class="v" id="sumSize">1616</span></div>
+                <div class="sum-row"><span class="k">门位 / ドア位置</span><span class="v" id="sumDoor">RL</span></div>
+                <div class="sum-row"><span class="k">基本规格价 / 標準仕様</span><span class="v" id="sumBase">—</span></div>
+                <div class="sum-row"><span class="k">选项合计 / オプション</span><span class="v" id="sumOpt">—</span></div>
+                <div class="sum-row"><span class="k">日元合计(税抜) / 円(税抜)</span><span class="v" id="sumJPY">—</span></div>
+                <div class="sum-row"><span class="k">日元合计(税込) / 円(税込)</span><span class="v" id="sumInc">—</span></div>
+                <div class="sum-row sum-total"><span class="k">大陆地区价格(人民币·含安装) / 中国本土価格</span><span class="v" id="sumRMB">—</span></div>
+              </div>
+
+              <div class="dl-box">
+                <div class="dl-box-title">LIXIL 资料下载 / 資料DL</div>
+                <a class="download-link" href="https://elfDXiao.github.io/assets/pdf/骊住品牌小型浴室renobio Fit系列.pdf" download>Renobio Fit 手册 PDF</a>
+
+              </div>
+
+              <div class="summary-actions">
+                <button type="button" class="btn btn-accent" id="sumToQuote">生成报价单</button>
+                <button type="button" class="btn btn-line" id="sumCopy">复制选型清单</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ 视图 2：报价单（見積書） ============ -->
+        <section id="view-quote" class="view-panel">
+          <div class="quote-toolbar no-print">
+            <button type="button" class="btn btn-line" id="btnPrint">🖨 打印 / PDF</button>
+            <button type="button" class="btn btn-line" id="btnCsv">⬇ CSV 导出</button>
+            <button type="button" class="btn btn-line" id="btnBack">← 返回选型</button>
+          </div>
+          <div class="customer-form no-print">
+            <div class="field"><label>客户名称 / お名前</label><input id="customerName" type="text" placeholder="（选填）"></div>
+            <div class="field"><label>联系电话 / 電話番号</label><input id="customerPhone" type="text" placeholder="（选填）"></div>
+            <div class="field"><label>备注 / 備考</label><input id="customerNote" type="text" placeholder="（选填）"></div>
+          </div>
+          <article class="survey-doc" id="quoteDoc"></article>
+        </section>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="https://elfDXiao.github.io/database.html">日系产品资料库</a>
+          <a href="https://elfDXiao.github.io/furniture.html">全屋定制展示</a>
+          <a href="https://elfDXiao.github.io/kitchen.html">厨卫选型系统</a>
+          <a href="https://elfDXiao.github.io/studio.html">工作室案例</a>
+          <a href="https://elfDXiao.github.io/bathroom.html">浴室案例</a>
+          <a href="https://elfDXiao.github.io/survey.html">需求调查系统</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:xtqsbx@gmail.com">xtqsbx@gmail.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 数据（顺序：数据 → 工具 → 引擎 → UI） -->
+  <script src="data/products.js"></script>
+  <script src="js/price.js"></script>
+  <script src="js/quote.js"></script>
+  <script src="js/wizard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      window.RENOBIO.wizard.init(window.RENOBIO_DATA);
+    });
+  </script>
+</body>
+</html>
