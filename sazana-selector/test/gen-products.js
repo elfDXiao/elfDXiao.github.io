@@ -50,11 +50,43 @@ categories.push({
 
 d.categories.forEach(c => {
   if (c.id === 'size') return;
+  let options = c.options.map(o => convertOption(o, c.id));
+  // ★ wall 分类重构：把 HⅡ/HⅠ/BASIC クラス占位展开为 4面同色柄独立选项（第一段直接可选）
+  if (c.id === 'wall') {
+    options = [];
+    c.options.forEach(o => {
+      const conv = convertOption(o, c.id);
+      if ((o.code === 'HⅡ' || o.code === 'HⅠ' || o.code === 'BASIC') && o.note) {
+        // note 解析「柄名/品番、柄名/品番...」→ 每柄独立选项
+        const re = /([^/、]+)\/([A-Za-z0-9]+)/g;
+        let m;
+        const cls = String(o.name_ja || '').split('柄')[0].trim();
+        while ((m = re.exec(o.note)) !== null) {
+          options.push({
+            code: m[2],
+            name_ja: m[1].replace(/^柄[:：]\s*/, '') + '（' + cls + '）',
+            name_zh: m[1].replace(/^柄[:：]\s*/, ''),
+            priceByType: conv.priceByType || {},
+            grade: cls,
+            class: cls,
+            fourSame: true
+          });
+        }
+      } else {
+        if (conv.code === 'EGAA1' || conv.code === 'EGAC3' || conv.code === 'EGAH6' || conv.code === 'EGAW4') {
+          conv.grade = 'プレミアムグレード';
+          conv.class = 'プレミアムグレード';
+          conv.fourSame = true;
+        }
+        options.push(conv);
+      }
+    });
+  }
   categories.push({
     id: c.id, name_ja: c.name_ja || c.id, name_zh: c.name_zh || c.id,
     step: c.step, pages: c.pages || [],
     description_zh: c.description_zh || '',
-    options: c.options.map(o => convertOption(o, c.id))
+    options: options
   });
 });
 
