@@ -504,17 +504,53 @@
   }
 
   function radioHtml(d) {
-    var html = '<div class="opt-grid">';
-    var codes = Q.codesOf(d);
-    codes.forEach(function (code) {
+    // 壁柄（wall）：分组渲染——跳色计划/周边板 在前，四面同色 39 柄在后，各带标题
+    if (d.id === 'wall') {
+      var codes = Q.codesOf(d);
+      var accCodes = [], shuCodes = [], fourCodes = [];
+      codes.forEach(function (code) {
+        if (code.indexOf('ACC_') === 0) accCodes.push(code);
+        else if (code.indexOf('SHUHEN_') === 0) shuCodes.push(code);
+        else fourCodes.push(code);
+      });
+      var html = '';
+      // 跳色计划组（ACC + SHUHEN）
+      if (accCodes.length || shuCodes.length) {
+        html += '<div class="dim-group-title">' + t('跳色计划 / アクセントプラン', 'アクセントプラン') + '</div>';
+        html += '<div class="opt-grid">';
+        accCodes.concat(shuCodes).forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+      }
+      // 四面同色组
+      if (fourCodes.length) {
+        html += '<div class="dim-group-title">' + t('四面同色 / 4面同色プラン（' + fourCodes.length + ' 柄）', '4面同色プラン（' + fourCodes.length + ' 柄）') + '</div>';
+        html += '<div class="opt-grid">';
+        fourCodes.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+      }
+      var chips = pseudoChips(d);
+      if (chips) html += '<div class="sub-row">' + chips + '</div>';
+      return html;
+    }
+    var html2 = '<div class="opt-grid">';
+    var codes2 = Q.codesOf(d);
+    codes2.forEach(function (code) {
       var o = Q.opt(d.id, code);
       if (!o) return;
-      html += optionLabel(d, code, o);
+      html2 += optionLabel(d, code, o);
     });
-    html += '</div>';
-    var chips = pseudoChips(d);
-    if (chips) html += '<div class="sub-row">' + chips + '</div>';
-    return html;
+    html2 += '</div>';
+    var chips2 = pseudoChips(d);
+    if (chips2) html2 += '<div class="sub-row">' + chips2 + '</div>';
+    return html2;
   }
 
   /** multi：复选框行（单品/可叠加项） */

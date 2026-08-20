@@ -100,6 +100,7 @@ img { max-width: 100%; display: block; }
 
 /* 维度块 */
 .opt-block { border: 1px solid var(--line); background: #fff; padding: 16px 16px 18px; margin-bottom: 14px; }
+.dim-group-title { margin: 14px 0 8px; font-family: var(--serif); font-size: 14px; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 4px; }
 .dim-title { font-family: var(--serif); font-size: 16px; margin-bottom: 12px; }
 .dim-title .ja { font-family: var(--sans); font-size: 12px; color: var(--ink-3); margin-left: 6px; }
 .dim-sub-title { font-size: 13px; color: var(--ink-2); margin-right: 8px; }
