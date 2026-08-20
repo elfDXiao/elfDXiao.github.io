@@ -784,3 +784,190 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   letter-spacing: .18em;
   font-size: 14.5px;
 }
+
+/* =========================================================
+   浴室案例 · 360° 全景实拍（bathroom360.html / pano-viewer.js）
+   ========================================================= */
+
+/* 入口横幅（bathroom.html） */
+.entry-360 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  border: 1px solid var(--ink);
+  background: linear-gradient(120deg, var(--paper) 0%, var(--accent-soft) 100%);
+  padding: clamp(26px, 4.5vw, 48px) clamp(24px, 4vw, 44px);
+  transition: border-color .3s, transform .3s, box-shadow .3s;
+}
+.entry-360:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 20px 44px rgba(33,31,27,.1); }
+.entry-360 .sec-title { font-size: clamp(22px, 3.4vw, 34px); margin-top: 14px; }
+.entry-360 .sec-sub { margin-top: 10px; font-size: 14px; }
+.entry-360-go {
+  flex: none;
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: .08em;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 14px 22px;
+  white-space: nowrap;
+  transition: background .25s;
+}
+.entry-360:hover .entry-360-go { background: var(--accent); }
+.entry-360-go i { font-style: normal; margin-left: 8px; display: inline-block; transition: transform .25s; }
+.entry-360:hover .entry-360-go i { transform: translateX(4px); }
+
+/* 案例卡片 360 角标 */
+.case-pano {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  background: var(--accent);
+  color: #fff;
+  padding: 5px 12px;
+  z-index: 2;
+}
+.case-card-pano .case-thumb::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(33,31,27,.25) 0%, transparent 42%);
+  pointer-events: none;
+}
+.case-tip {
+  margin: -14px 0 26px;
+  font-size: 13px;
+  color: var(--ink-3);
+  letter-spacing: .05em;
+}
+
+/* 360° 全景查看器弹层 */
+.pano-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 3vw;
+  overflow: auto;
+}
+.pano-modal.open { display: flex; }
+.pano-backdrop { position: absolute; inset: 0; background: rgba(16,14,12,.94); }
+.pano-card {
+  position: relative;
+  width: min(1180px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: var(--paper);
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+}
+.pano-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #141210;
+  overflow: hidden;
+  touch-action: none;
+  outline: none;
+  flex: none;
+}
+.pano-stage canvas { display: block; }
+.pano-spinner {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  color: rgba(255,255,255,.85);
+  font-size: 12px; letter-spacing: .25em;
+  z-index: 2;
+  background: #141210;
+}
+.pano-spinner span {
+  width: 34px; height: 34px;
+  border: 2px solid rgba(255,255,255,.25);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: panoSpin .9s linear infinite;
+}
+@keyframes panoSpin { to { transform: rotate(360deg); } }
+.pano-error {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; letter-spacing: .08em; text-align: center;
+  z-index: 3; background: #141210; padding: 20px;
+}
+.pano-error p { max-width: 560px; }
+.pano-error .pano-btn { margin-top: 18px; }
+.pano-hint {
+  position: absolute;
+  left: 50%; bottom: 64px;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,.92);
+  background: rgba(33,31,27,.6);
+  font-size: 12.5px;
+  letter-spacing: .18em;
+  padding: 9px 18px;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity .6s;
+}
+.pano-toolbar {
+  position: absolute;
+  right: 14px; top: 12px;
+  display: flex; gap: 8px;
+  z-index: 4;
+}
+.pano-btn {
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.92);
+  background: rgba(33,31,27,.55);
+  border: 1px solid rgba(255,255,255,.18);
+  padding: 7px 14px;
+  transition: background .2s, border-color .2s;
+  backdrop-filter: blur(4px);
+}
+.pano-btn:hover { background: rgba(33,31,27,.85); border-color: rgba(255,255,255,.45); }
+.pano-btn.is-off { color: rgba(255,255,255,.55); text-decoration: line-through; }
+.pano-close { width: 38px; height: 38px; padding: 0; font-size: 16px; line-height: 1; }
+
+/* 信息面板：查看工具下方的文字说明 */
+.pano-info { padding: 26px clamp(20px, 4vw, 40px) 34px; }
+.pano-title {
+  font-family: var(--serif);
+  font-size: clamp(20px, 3vw, 28px);
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+}
+.pano-date { font-family: var(--sans); font-size: 12px; color: var(--ink-3); letter-spacing: .15em; }
+.pano-fields {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+.pano-field {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 12px 16px;
+}
+.pano-field span { display: block; font-size: 11px; letter-spacing: .2em; color: var(--ink-3); text-transform: uppercase; }
+.pano-field b { display: block; margin-top: 5px; font-family: var(--serif); font-size: 16.5px; font-weight: 500; color: var(--ink); }
+.pano-field.pano-price { border-color: var(--accent); background: var(--accent-soft); }
+.pano-field.pano-price b { color: var(--accent); font-size: 19px; }
+.pano-price-note { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.pano-desc { margin-top: 14px; color: var(--ink-2); font-size: 14.5px; max-width: 760px; }
+.pano-tags { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+.pano-tags span { font-size: 11px; letter-spacing: .15em; padding: 5px 14px; border: 1px solid var(--line); color: var(--ink-2); }
+
+@media (max-width: 680px) {
+  .entry-360 { flex-direction: column; align-items: flex-start; }
+  .entry-360-go { align-self: stretch; text-align: center; }
+  .pano-modal { padding: 0; }
+  .pano-card { max-height: 100vh; }
+  .pano-stage { aspect-ratio: 4 / 3; }
+  .pano-hint { display: none; }
+}

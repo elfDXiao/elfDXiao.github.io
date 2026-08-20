@@ -5,10 +5,11 @@
    ========================================================= */
 window.initMapExplorer = function (config) {
   'use strict';
-  if (!window.CHINA_MAP || !window.CITY_DATA || !window.CASE_DATA) return;
 
   var type = config.type;
-  var ds = window.CASE_DATA[type];
+  var base = config.dataSource || window.CASE_DATA;
+  if (!base || !window.CHINA_MAP || !window.CITY_DATA) return;
+  var ds = base[type];
   if (!ds) return;
 
   var state = { prov: null, city: null };
@@ -142,22 +143,32 @@ window.initMapExplorer = function (config) {
 
     cases.forEach(function (c, i) {
       var card = document.createElement('article');
-      card.className = 'case-card';
+      card.className = 'case-card' + (c.pano ? ' case-card-pano' : '');
       card.setAttribute('role', 'button');
       card.tabIndex = 0;
+      var thumb = c.thumb || window.PH.image(1, ds.hue, ds.label);
+      var meta = c.meta || (c.pano ? (c.brand || '') + ' · ' + (c.series || '') : '');
       card.innerHTML =
         '<div class="case-thumb">' +
-          '<img src="' + window.PH.image(1, ds.hue, ds.label) + '" alt="' + escapeAttr(c.title) + '">' +
-          '<span class="img-count">' + c.images + ' 张</span>' +
+          '<img src="' + escapeAttr(thumb) + '" alt="' + escapeAttr(c.title) + '">' +
+          (c.pano ? '<span class="case-pano">360° 全景</span>' : '') +
+          (c.images ? '<span class="img-count">' + c.images + ' 张</span>' : '') +
         '</div>' +
         '<div class="case-body">' +
-          '<div class="meta">' + escapeHtml(c.meta) + '</div>' +
+          '<div class="meta">' + escapeHtml(meta) + '</div>' +
           '<h3>' + escapeHtml(c.title) + '</h3>' +
-          '<div class="price">' + escapeHtml(c.price) + '<small>点击查看详情</small></div>' +
+          '<div class="price">' + escapeHtml(c.price) + '<small>' + (c.pano ? '点击查看 360° 全景' : '点击查看详情') + '</small></div>' +
         '</div>';
-      card.addEventListener('click', function () { openLightbox(c, i); });
+      card.addEventListener('click', function () {
+        if (config.onOpenCase) config.onOpenCase(c, i, pName, cName);
+        else openLightbox(c, i);
+      });
       card.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(c, i); }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (config.onOpenCase) config.onOpenCase(c, i, pName, cName);
+          else openLightbox(c, i);
+        }
       });
       caseGridEl.appendChild(card);
     });

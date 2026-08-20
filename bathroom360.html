@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="整体浴室中国落地实例 —— 点击中国地图选择省份与城市，浏览落地案例与价格。">
-  <title>整体浴室中国落地实例 · elf_D老肖的世界</title>
+  <meta name="description" content="整体浴室中国落地实例 360° 全景 —— 点击省份与城市，进入实拍全景，第一人称环顾整个浴室空间，查看品牌、系列与含安装价格。">
+  <title>浴室案例 · 360° 全景实拍 · elf_D老肖的世界</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -31,23 +31,9 @@
   <main>
     <section class="page-hero">
       <div class="container">
-        <p class="breadcrumb">Section 05 · Unit Bath</p>
-        <h1 class="sec-title">整体浴室中国落地实例</h1>
-        <p class="sec-sub">日式整体浴室在中国的落地项目实拍：从户型适配、吊装运输到安装验收。点击地图选择省份与城市查看。</p>
-      </div>
-    </section>
-
-    <!-- 360° 全景入口 -->
-    <section class="section-tight">
-      <div class="container">
-        <a class="entry-360 reveal" href="bathroom360.html">
-          <div class="entry-360-body">
-            <span class="sec-label">360° Panorama</span>
-            <h2 class="sec-title">浴室案例 · 360° 全景实拍</h2>
-            <p class="sec-sub">点击省份与城市，进入该城市安装的整体浴室 360° 全景，<em>拖动鼠标第一人称环顾</em>整个浴室空间，查看品牌、系列与含安装价格。</p>
-          </div>
-          <span class="entry-360-go">进入查看 360°<i>→</i></span>
-        </a>
+        <p class="breadcrumb">Section 05 · Unit Bath · 360°</p>
+        <h1 class="sec-title">浴室案例 · 360° 全景实拍</h1>
+        <p class="sec-sub">点击省份与城市，进入该城市安装的整体浴室 360° 全景。拖动鼠标即可<em>第一人称环顾</em>整个浴室空间，滚轮缩放、支持全屏与触摸。</p>
       </div>
     </section>
 
@@ -57,49 +43,36 @@
         <div class="sec-head reveal">
           <span class="sec-label">Explore</span>
           <h2 class="sec-title">选择省份与城市</h2>
-          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。</p>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可看到该城市安装的整体浴室列表。</p>
         </div>
         <div class="explorer-wrap reveal">
           <div class="explorer-stage">
             <div class="map-box">
-              <div id="mapBathroom"></div>
-              <p class="map-hint" id="hintBathroom">请点击地图上的省份开始浏览</p>
+              <div id="map360"></div>
+              <p class="map-hint" id="hint360">请点击地图上的省份开始浏览</p>
             </div>
           </div>
           <div class="sel-box">
             <h3>选择城市</h3>
-            <div class="crumb" id="crumbBathroom">请先在左侧地图选择省份</div>
-            <div id="cityPanelBathroom" style="display:none;">
-              <div class="city-grid" id="cityGridBathroom"></div>
+            <div class="crumb" id="crumb360">请先在左侧地图选择省份</div>
+            <div id="cityPanel360" style="display:none;">
+              <div class="city-grid" id="cityGrid360"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 案例 -->
-    <section class="section bg-alt" id="caseSectionBathroom" style="display:none;">
+    <!-- 案例列表 -->
+    <section class="section bg-alt" id="caseSection360" style="display:none;">
       <div class="container">
-        <div class="case-section-title"><h2 id="caseTitleBathroom"></h2></div>
-        <div class="case-grid" id="caseGridBathroom"></div>
-        <p class="case-empty" id="caseEmptyBathroom" style="display:none;"></p>
+        <div class="case-section-title"><h2 id="caseTitle360"></h2></div>
+        <p class="case-tip">点击任意案例卡片，即可打开 360° 全景并查看品牌、系列与含安装价格。</p>
+        <div class="case-grid" id="caseGrid360"></div>
+        <p class="case-empty" id="caseEmpty360" style="display:none;"></p>
       </div>
     </section>
   </main>
-
-  <!-- 灯箱 -->
-  <div class="lightbox" id="lbBathroom">
-    <div class="lb-card">
-      <div class="lb-media">
-        <button class="lb-close" id="lbCloseBathroom" aria-label="关闭">✕</button>
-        <span class="lb-count" id="lbCountBathroom"></span>
-        <div id="lbMediaBathroom"></div>
-        <button class="lb-nav lb-prev" id="lbPrevBathroom" aria-label="上一张">‹</button>
-        <button class="lb-nav lb-next" id="lbNextBathroom" aria-label="下一张">›</button>
-      </div>
-      <div class="lb-body" id="lbBodyBathroom"></div>
-    </div>
-  </div>
 
   <footer class="site-footer">
     <div class="container">
@@ -133,30 +106,66 @@
 
   <script src="js/china-map-data.js"></script>
   <script src="js/city-data.js"></script>
-  <script src="js/case-data.js"></script>
+  <script src="js/case360-data.js"></script>
   <script src="js/ph.js"></script>
   <script src="js/map-explorer.js"></script>
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/pano-viewer.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
       window.initMapExplorer({
-        type: 'bathroom',
-        mapId: 'mapBathroom',
-        hintId: 'hintBathroom',
-        crumbId: 'crumbBathroom',
-        cityId: 'cityPanelBathroom',
-        cityGridId: 'cityGridBathroom',
-        caseSectionId: 'caseSectionBathroom',
-        caseTitleId: 'caseTitleBathroom',
-        caseGridId: 'caseGridBathroom',
-        caseEmptyId: 'caseEmptyBathroom',
-        lightboxId: 'lbBathroom',
-        lbMediaId: 'lbMediaBathroom',
-        lbCountId: 'lbCountBathroom',
-        lbBodyId: 'lbBodyBathroom',
-        lbPrevId: 'lbPrevBathroom',
-        lbNextId: 'lbNextBathroom',
-        lbCloseId: 'lbCloseBathroom'
+        type: 'bathroom360',
+        dataSource: { bathroom360: window.CASE360_DATA },
+        mapId: 'map360',
+        hintId: 'hint360',
+        crumbId: 'crumb360',
+        cityId: 'cityPanel360',
+        cityGridId: 'cityGrid360',
+        caseSectionId: 'caseSection360',
+        caseTitleId: 'caseTitle360',
+        caseGridId: 'caseGrid360',
+        caseEmptyId: 'caseEmpty360',
+        onOpenCase: function (c, i, provName, cityName) {
+          window.PanoViewer.open({
+            title: c.title,
+            date: c.date,
+            province: provName || '',
+            city: cityName || '',
+            brand: c.brand,
+            series: c.series,
+            price: c.price,
+            priceNote: c.priceNote,
+            desc: c.desc,
+            tags: c.tags,
+            image: c.image
+          });
+        }
       });
+
+      // 深链：bathroom360.html?pano=<id> 直接打开指定案例
+      var q = new URLSearchParams(window.location.search);
+      var pid = q.get('pano');
+      if (pid && window.CASE360_DATA) {
+        var found = null, fProv = '', fCity = '';
+        Object.keys(window.CASE360_DATA.provinces).forEach(function (pa) {
+          var p = window.CASE360_DATA.provinces[pa];
+          Object.keys(p.cities).forEach(function (ca) {
+            var city = p.cities[ca];
+            city.cases.forEach(function (caseItem) {
+              if (caseItem.id === pid) { found = caseItem; fProv = p.name; fCity = city.name; }
+            });
+          });
+        });
+        if (found) {
+          window.PanoViewer.open({
+            title: found.title, date: found.date,
+            province: fProv, city: fCity,
+            brand: found.brand, series: found.series,
+            price: found.price, priceNote: found.priceNote,
+            desc: found.desc, tags: found.tags, image: found.image
+          });
+        }
+      }
     });
   </script>
   <script src="js/main.js"></script>
