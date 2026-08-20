@@ -616,6 +616,49 @@
     }
   }
 
+  /** 尺寸卡片备用价：当前タイプ/設置无价时，返回该尺寸可用的价格（优先当前タイプ，其次最低タイプ） */
+  function sizeAltPrice(code) {
+    var tbp = DATA.meta.typeBasePrices;
+    if (!tbp) return null;
+    var t = typeCode(), inst = installCode();
+    // 0) 当前タイプ当前設置有价 → 直接返回
+    if (tbp[t] && tbp[t][code] && typeof tbp[t][code][inst] === 'number') {
+      return { price: tbp[t][code][inst], type: t, install: inst };
+    }
+    // 1) 当前タイプ另一設置
+    var otherInst = inst === 'M' ? 'U' : 'M';
+    if (tbp[t] && tbp[t][code] && typeof tbp[t][code][otherInst] === 'number') {
+      return { price: tbp[t][code][otherInst], type: t, install: otherInst };
+    }
+    // 2) 其他タイプ最低价（当前設置优先，其次另一設置）
+    var best = null;
+    var keys = Object.keys(tbp);
+    for (var i = 0; i < keys.length; i++) {
+      var ft = keys[i];
+      if (ft === t) continue;
+      var bySize = tbp[ft];
+      if (!bySize || !bySize[code]) continue;
+      var v = bySize[code][inst];
+      if (typeof v === 'number' && (!best || v < best.price)) {
+        best = { price: v, type: ft, install: inst };
+      }
+    }
+    if (!best) {
+      // 3) 其他タイプ另一設置
+      for (var j = 0; j < keys.length; j++) {
+        var ft2 = keys[j];
+        if (ft2 === t) continue;
+        var bySize2 = tbp[ft2];
+        if (!bySize2 || !bySize2[code]) continue;
+        var v2 = bySize2[code][otherInst];
+        if (typeof v2 === 'number' && (!best || v2 < best.price)) {
+          best = { price: v2, type: ft2, install: otherInst };
+        }
+      }
+    }
+    return best;
+  }
+
   /** 尺寸切换（wizard 调用）：自动修复タイプ/設置（该尺寸无定价时） */
   function setSize(code) {
     state.size = code;
@@ -627,11 +670,17 @@
       if (tbp[t][code] && tbp[t][code][otherInst] != null) {
         state.sel.install = otherInst;
       } else {
-        // 换タイプ
-        var fallback = ['C', 'S', 'V', 'P', 'A'];
-        for (var i = 0; i < fallback.length; i++) {
-          var f = fallback[i];
-          if (tbp[f] && tbp[f][code] && tbp[f][code][inst] != null) { state.sel.type = f; break; }
+        // 换タイプ（与卡片显示的最低可用一致）
+        var alt = sizeAltPrice(code);
+        if (alt) {
+          state.sel.type = alt.type;
+          if (alt.install && alt.install !== inst) state.sel.install = alt.install;
+        } else {
+          var fallback = ['C', 'S', 'V', 'P', 'A'];
+          for (var i = 0; i < fallback.length; i++) {
+            var f = fallback[i];
+            if (tbp[f] && tbp[f][code] && tbp[f][code][inst] != null) { state.sel.type = f; break; }
+          }
         }
       }
     }
@@ -712,7 +761,7 @@
     installCode: installCode, doorPosCode: doorPosCode,
     productNo: productNo,
     computeQuote: computeQuote, contributionFor: contributionFor, describe: describe,
-    disabledReason: disabledReason, autoFix: autoFix, setSize: setSize,
+    disabledReason: disabledReason, autoFix: autoFix, setSize: setSize, sizeAltPrice: sizeAltPrice,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
       state.sel = {}; state.multi = {}; state.sub = {};

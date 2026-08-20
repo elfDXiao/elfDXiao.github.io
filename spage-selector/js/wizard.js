@@ -271,11 +271,28 @@
       var on = o.code === Q.state.size ? ' on' : '';
       var byType = o.pricesByType ? o.pricesByType[Q.typeCode()] : null;
       var price = (byType && typeof byType === 'object') ? byType[Q.installCode()] : byType;
-      var priceTxt = typeof price === 'number' ? P.yen(price) : tp('无该型号', '—');
+      var priceTxt, hint = '';
+      if (typeof price === 'number') {
+        priceTxt = P.yen(price);
+      } else {
+        // 当前タイプ/設置无价 → 找该尺寸其他タイプ×設置的最低可用价，并提示点击可切换
+        var alt = Q.sizeAltPrice(o.code);
+        if (alt) {
+          priceTxt = P.yen(alt.price);
+          var curT = Q.typeCode();
+          if (alt.type === curT) {
+            hint = '<span class="size-alt">' + esc(tp('当前設置无 ' + curT + 'タイプ，点击切换設置', 'この設置には ' + curT + ' タイプ設定なし、クリックで設置切替')) + '</span>';
+          } else {
+            hint = '<span class="size-alt">' + esc(tp('当前型号无 ' + curT + 'タイプ，最低可用 ' + alt.type + 'タイプ', 'このタイプには設定なし、最低 ' + alt.type + ' タイプ')) + '</span>';
+          }
+        } else {
+          priceTxt = tp('无该型号', '—');
+        }
+      }
       html += '<div class="size-card' + on + '" data-size="' + esc(o.code) + '">' +
         '<div class="size-code">' + esc(o.code) + '</div>' +
         '<div class="size-name">' + esc(o.name_zh || o.name_ja) + '</div>' +
-        '<div class="size-price">' + priceTxt + '</div></div>';
+        '<div class="size-price">' + priceTxt + '</div>' + hint + '</div>';
     });
     html += '</div>';
     html += '<p class="base-meta">※ ' + t('1620 Pタイプ 戸建用 標準仕様価格 ¥3,377,000（税抜）；1624 仅戸建、1622/1418/1317 仅マンション', '1620 Pタイプ 戸建用 標準仕様価格 ¥3,377,000（税抜）；1624 は戸建のみ、1622/1418/1317 はマンションのみ') + '</p>';

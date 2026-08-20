@@ -72,6 +72,11 @@ r = Q.computeQuote();
 assert('P1622 マンション → 3,547,000', r.totalEx === 3547000, r.totalEx);
 assert('1622 时 U 禁用', !!Q.disabledReason('install', 'U'));
 Q.setSize('1620');
+// sizeAltPrice：无"无该型号"，显示备用可用价
+var alt1622 = Q.sizeAltPrice('1622');
+assert('sizeAltPrice 1622 → P+M 3,547,000（同タイプ换設置优先）', alt1622 && alt1622.price === 3547000 && alt1622.type === 'P', JSON.stringify(alt1622));
+var alt1216 = Q.sizeAltPrice('1216');
+assert('sizeAltPrice 1216 → 最低可用タイプ V', alt1216 && alt1216.type === 'V', JSON.stringify(alt1216));
 Q.reset();
 
 console.log('== 寒冷地（region C）标准价 +5,000 ==');
@@ -105,6 +110,38 @@ console.log('== multi 叠加 ==');
 Q.state.multi.bathroom_tv = { K56: true };
 r = Q.computeQuote();
 assert('浴室テレビ(+334,000) → 3,711,000', r.totalEx === 3711000, r.totalEx);
+Q.reset();
+
+console.log('== 壁パネル花纹级（wallPatterns 47 柄） ==');
+assert('wallPatterns 47 柄', DATA.wallPatterns.patterns.length === 47, DATA.wallPatterns.patterns.length);
+// プレミアムⅡ 全面 + SC 柄 = 0 差价（净差 0）
+Q.state.sel.wall = '0';
+Q.state.sub.wall_pattern = 'SC';
+r = Q.computeQuote();
+assert('プレミアムⅡ 全面 + SC = 0 差价（3,377,000）', r.totalEx === 3377000, r.totalEx);
+assert('明细含花纹名 オプトライン', (function () { var d2 = Q.describe('wall'); return (d2.nameJa || '').indexOf('オプトライン') >= 0; })(), Q.describe('wall').nameJa);
+assert('花纹品番 SC', Q.wallPatternPartNo(Q.wallPattern('SC'), '全面張り') === 'SC');
+Q.reset();
+// GRB（セラミックアクセント +460,000）+ ストラータム = 460,000
+Q.state.sel.wall = 'GRB';
+Q.state.sub.wall_pattern = 'ストラータム';
+r = Q.computeQuote();
+assert('GRB + ストラータム → +460,000 → 3,837,000', r.totalEx === 3837000, r.totalEx);
+assert('セラミック花纹品番 2X', Q.wallPatternPartNo(Q.wallPattern('ストラータム'), 'アクセントB面') === '2X');
+Q.reset();
+// セラミック全面不可（wall 0 + ストラータム → 禁）
+Q.state.sel.wall = '0';
+assert('全面張り时セラミック花纹禁用', !!Q.disabledReason('wall', 'ストラータム'));
+Q.reset();
+// 花纹 class 不匹配（wall 0 プレミアムⅡ + アーテクトC 72）
+Q.state.sel.wall = '0';
+assert('クラス不匹配花纹禁用', (function () { Q.state.sub.wall_pattern = '72'; return !!Q.disabledReason('wall', '72'); })());
+Q.reset();
+// 花纹净差逻辑：wall 1 プレミアムⅠ −40,000 + 05 柄（净差 0）
+Q.state.sel.wall = '1';
+Q.state.sub.wall_pattern = '05';
+r = Q.computeQuote();
+assert('プレミアムⅠ 全面 + 05 = −40,000（净差 0）→ 3,337,000', r.totalEx === 3337000, r.totalEx);
 Q.reset();
 
 console.log('== 约束 ==');

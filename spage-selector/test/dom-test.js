@@ -68,6 +68,24 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumOpt').textContent.indexOf('574,000') >= 0; }, 2000);
   assert('勾选浴室テレビ后选项合计 = 574,000（壁240,000+TV334,000）', doc.querySelector('#sumOpt').textContent.indexOf('574,000') >= 0, doc.querySelector('#sumOpt').textContent);
 
+  console.log('== 壁パネル花纹两段选择 ==');
+  doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 16; }, 2000);
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="0"]').click();   // 全面張り プレミアムⅡ
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 8; }, 2000);
+  assert('プレミアムⅡ 花纹 7+未指定 = 8 chips', doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 8);
+  doc.querySelector('#wizBody input[name="wall_pattern"][data-wall-pattern="SC"]').click();
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('3,781,000') >= 0; }, 2000);
+  assert('选 SC 花纹后合计 3,781,000（M 3,447,000+TV 334,000，净差 0）', doc.querySelector('#sumJPY').textContent.indexOf('3,781,000') >= 0, doc.querySelector('#sumJPY').textContent);
+  assert('花纹区含品番 SC', doc.querySelector('#wizBody').textContent.indexOf('品番：SC') >= 0);
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="GRB"]').click();  // セラミックアクセント
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 3; }, 2000);
+  assert('セラミック 花纹 2+未指定 = 3 chips', doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 3);
+  doc.querySelector('#wizBody input[name="wall_pattern"][data-wall-pattern="ストラータム"]').click();
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('4,241,000') >= 0; }, 2000);
+  assert('GRB + ストラータム → 4,241,000（3,447,000+460,000+334,000）', doc.querySelector('#sumJPY').textContent.indexOf('4,241,000') >= 0, doc.querySelector('#sumJPY').textContent);
+  assert('花纹区含照明限定警告', doc.querySelector('#wizBody').textContent.indexOf('照明限定') >= 0);
+
   console.log('== 汇率 / 人民币（0.75 计价，页面无公式） ==');
   const rate = doc.querySelector('#rate');
   rate.value = '0.05';
@@ -79,6 +97,8 @@ function waitFor(win, check, ms) {
   assert('rate-hint 无公式（仅含安装费描述）', rateHint.indexOf('安装') >= 0 && rateHint.indexOf('0.75') < 0 && rateHint.indexOf('×') < 0, rateHint);
 
   console.log('== 生成报价单 ==');
+  doc.querySelector('#wizStepper .wstep[data-step="15"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+  await waitFor(win, function () { return !doc.querySelector('#btnFinish').hidden; }, 2000);
   const finish = doc.querySelector('#btnFinish');
   assert('步骤 15 显示生成报价单按钮', finish && !finish.hidden);
   finish.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
