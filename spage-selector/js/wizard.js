@@ -260,8 +260,7 @@
     Q.cat('size').options.forEach(function (o) {
       var on = o.code === Q.state.size ? ' on' : '';
       var byType = o.pricesByType ? o.pricesByType[Q.typeCode()] : null;
-      var um = byType ? byType[o.code] : null;
-      var price = um ? um[Q.installCode()] : null;
+      var price = (byType && typeof byType === 'object') ? byType[Q.installCode()] : byType;
       var priceTxt = typeof price === 'number' ? P.yen(price) : tp('无该型号', '—');
       html += '<div class="size-card' + on + '" data-size="' + esc(o.code) + '">' +
         '<div class="size-code">' + esc(o.code) + '</div>' +
