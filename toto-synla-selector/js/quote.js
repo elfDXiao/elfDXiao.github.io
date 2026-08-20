@@ -7,7 +7,7 @@
  * 计价模型（全部手册价为税抜き）：
  *   本体価格（税抜）= 基本セット価格（meta.typeBasePrices[タイプ][サイズ]） + Σ选项差价
  *   税込 = 本体 × 1.10（消費税10%，四舍五入到日元）
- *   人民币含安装价 = 税込 × 汇率 × 0.7（7 折）
+ *   人民币含安装价 = 税込 × 汇率 × 0.85（85 折）
  *
  * 维度 kind：
  *   radio — 单选（state.sel[dimId] = option code）；可带 none:true（「なし」chip）或 basic:{...}（虚拟基本项）
@@ -350,7 +350,7 @@
     });
     var tax = Math.round(total * (DATA.meta.taxRate || 0.10));
     var totalInc = total + tax;
-    var rmbAllIn = (state.rate && state.rate > 0) ? Math.round(totalInc * state.rate * 0.7) : null;
+    var rmbAllIn = (state.rate && state.rate > 0) ? Math.round(totalInc * state.rate * 0.85) : null;
     return {
       base: base, basePrice: basePriceValue,
       lines: lines, unknown: unknown,

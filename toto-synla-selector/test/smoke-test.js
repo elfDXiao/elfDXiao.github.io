@@ -158,7 +158,7 @@ assert('CSV 含品番', csv.indexOf('HLV1616UG X3A F') >= 0);
 console.log('== 汇率 / 人民币 ==');
 Q.setRate(0.05);
 r = Q.computeQuote();
-assert('rate=0.05 → rmbAllIn = round(3,440,800×0.05×0.7) = 120,428', r.rmbAllIn === 120428, r.rmbAllIn);
+assert('rate=0.05 → rmbAllIn = round(3,440,800×0.05×0.85) = 146,234', r.rmbAllIn === 146234, r.rmbAllIn);
 Q.setRate(0);
 r = Q.computeQuote();
 assert('rate=0 → rmbAllIn null', r.rmbAllIn === null, r.rmbAllIn);

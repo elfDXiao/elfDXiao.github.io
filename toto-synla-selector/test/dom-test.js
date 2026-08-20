@@ -82,7 +82,7 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumOpt').textContent.indexOf('81,300') >= 0; }, 2000);
   assert('勾选タオル棚后选项合计 = 81,300（壁柄74,200+タオル棚7,100）', doc.querySelector('#sumOpt').textContent.indexOf('81,300') >= 0, doc.querySelector('#sumOpt').textContent);
 
-  console.log('== 汇率 / 人民币（7折） ==');
+  console.log('== 汇率 / 人民币（85折） ==');
   const rate = doc.querySelector('#rate');
   rate.value = '0.05';
   rate.dispatchEvent(new win.Event('input', { bubbles: true }));
