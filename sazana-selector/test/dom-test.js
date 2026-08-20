@@ -52,20 +52,46 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0; }, 2000);
   assert('选 EGAA1 后合计 = 1,575,000', doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
+  console.log('== 壁柄花纹两段选择（HⅡ クラス → 柄 chips） ==');
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="HⅡ"]').click();
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length >= 20; }, 2000);
+  const h2pats = doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length;
+  assert('HⅡ 4面同色柄 chips ≥ 20', h2pats >= 20, h2pats);
+  doc.querySelector('#wizBody input[name="wall_pattern"][data-wall-pattern="EGAB5"]').click();
+  await waitFor(win, function () { return doc.querySelector('#wizBody').textContent.indexOf('品番：EGAB5') >= 0; }, 2000);
+  assert('HⅡ 柄品番 EGAB5 显示', doc.querySelector('#wizBody').textContent.indexOf('品番：EGAB5') >= 0);
+
+  console.log('== アクセントプラン两段（ACC_* → アクセント柄 + 周辺グレード + 周辺柄） ==');
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="ACC_PRE"]').click();
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_surround"]').length === 3; }, 2000);
+  assert('周辺グレード 3 chips', doc.querySelectorAll('#wizBody input[name="wall_surround"]').length === 3);
+  const accPats = doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length;
+  assert('アクセント柄 chips ≥ 4（プレミアムグレード）', accPats >= 4, accPats);
+  doc.querySelector('#wizBody input[name="wall_surround"][data-wall-surround="周辺ベーシックグレード"]').click();
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_surround_pattern"]').length === 3; }, 2000);
+  assert('周辺柄 chips 3（ベーシックグレード）', doc.querySelectorAll('#wizBody input[name="wall_surround_pattern"]').length === 3);
+  doc.querySelector('#wizBody input[name="wall_pattern"][data-wall-pattern="EG2J1"]').click();
+  doc.querySelector('#wizBody input[name="wall_surround_pattern"][data-wall-surround-pattern="EGAG2"]').click();
+  await waitFor(win, function () { return doc.querySelector('#wizBody').textContent.indexOf('品番：EG2J1+EGAG2') >= 0; }, 2000);
+  assert('アクセント品番 EG2J1+EGAG2 显示', doc.querySelector('#wizBody').textContent.indexOf('EG2J1+EGAG2') >= 0);
+  // 价格：T タイプ ACC_PRE × 周辺BASIC = +31,500（L2）→ 1,449,000+31,500 = 1,480,500
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,480,500') >= 0; }, 2000);
+  assert('T タイプ ACC_PRE × 周辺BASIC → 1,480,500', doc.querySelector('#sumJPY').textContent.indexOf('1,480,500') >= 0, doc.querySelector('#sumJPY').textContent);
+
   console.log('== タイプ切换（P）联动本体价 ==');
   doc.querySelector('#wizStepper .wstep[data-step="0"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_type"]').length === 5; }, 2000);
   doc.querySelector('#wizBody input[name="dim_type"][data-code="P"]').click();
-  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,741,000') >= 0; }, 2000);
-  assert('切 P タイプ后合计 1,636,000+105,000 = 1,741,000', doc.querySelector('#sumJPY').textContent.indexOf('1,741,000') >= 0, doc.querySelector('#sumJPY').textContent);
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,646,500') >= 0; }, 2000);
+  assert('切 P タイプ后合计 1,636,000+10,500（ACC_PRE×周辺BASIC L1） = 1,646,500', doc.querySelector('#sumJPY').textContent.indexOf('1,646,500') >= 0, doc.querySelector('#sumJPY').textContent);
 
   console.log('== multi 渲染（step 6 便利アイテム） ==');
   doc.querySelector('#wizStepper .wstep[data-step="6"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="multi_clean_other"]').length >= 4; }, 2000);
   assert('便利アイテム multi ≥ 4 项', doc.querySelectorAll('#wizBody input[name="multi_clean_other"]').length >= 4);
   doc.querySelector('#wizBody input[name="multi_clean_other"][data-code="YFS32"]').click();  // おそうじ浴槽
-  await waitFor(win, function () { return doc.querySelector('#sumOpt').textContent.indexOf('294,700') >= 0; }, 2000);
-  assert('勾选おそうじ浴槽后选项合计 = 294,700（壁105,000+浴槽189,700）', doc.querySelector('#sumOpt').textContent.indexOf('294,700') >= 0, doc.querySelector('#sumOpt').textContent);
+  await waitFor(win, function () { return doc.querySelector('#sumOpt').textContent.indexOf('200,200') >= 0; }, 2000);
+  assert('勾选おそうじ浴槽后选项合计 = 200,200（壁10,500+浴槽189,700）', doc.querySelector('#sumOpt').textContent.indexOf('200,200') >= 0, doc.querySelector('#sumOpt').textContent);
 
   console.log('== 汇率 / 人民币（0.7 计价，页面无公式） ==');
   const rate = doc.querySelector('#rate');

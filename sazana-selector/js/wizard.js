@@ -96,6 +96,7 @@
         if (tgt.hasAttribute('data-code')) {
           var code = tgt.getAttribute('data-code');
           Q.state.sel[dimId] = code;
+          if (dimId === 'wall') { delete Q.state.sub.wall_pattern; delete Q.state.sub.wall_surround; delete Q.state.sub.wall_surround_pattern; }
           Q.autoFix(dimId, code);
         } else if (tgt.hasAttribute('data-basic')) {
           var vb = Q.virtualBasicOf(Q.dim(dimId));
@@ -103,6 +104,31 @@
         } else if (tgt.hasAttribute('data-none')) {
           delete Q.state.sel[dimId];
         }
+        renderStep(); renderSummary();
+        return;
+      }
+
+      // 壁柄花纹（第二段：4面同色クラス柄 / アクセント柄）
+      if (tgt.hasAttribute('data-wall-pattern')) {
+        var pcode = tgt.getAttribute('data-wall-pattern');
+        if (pcode) Q.state.sub.wall_pattern = pcode;
+        else delete Q.state.sub.wall_pattern;
+        renderStep(); renderSummary();
+        return;
+      }
+      // 壁柄周辺グレード（アクセントプラン）
+      if (tgt.hasAttribute('data-wall-surround')) {
+        var scode = tgt.getAttribute('data-wall-surround');
+        if (scode) { Q.state.sub.wall_surround = scode; delete Q.state.sub.wall_surround_pattern; }
+        else delete Q.state.sub.wall_surround;
+        renderStep(); renderSummary();
+        return;
+      }
+      // 壁柄周辺柄
+      if (tgt.hasAttribute('data-wall-surround-pattern')) {
+        var spcode = tgt.getAttribute('data-wall-surround-pattern');
+        if (spcode) Q.state.sub.wall_surround_pattern = spcode;
+        else delete Q.state.sub.wall_surround_pattern;
         renderStep(); renderSummary();
         return;
       }
@@ -325,7 +351,106 @@
       case 'multi': html += multiHtml(d); break;
       default: break;
     }
+    // 壁柄：花纹级第二段选择
+    if (d.id === 'wall') html += wallPatternHtml(d);
     html += '</div>';
+    return html;
+  }
+
+  /** 壁柄花纹第二段（4 类：4面同色柄信息 / クラス柄 / アクセント×周辺 / 周辺柄） */
+  function wallPatternHtml(d) {
+    var wallCode = Q.state.sel.wall;
+    if (!wallCode) return '';
+    var html = '';
+    var cur = Q.state.sub.wall_pattern;
+    var curSg = Q.state.sub.wall_surround;
+    var curSp = Q.state.sub.wall_surround_pattern;
+
+    // 1) 4面同色柄（EGAA1 等）：直接显示柄信息（价格已含），无 chips
+    if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') {
+      var o = Q.opt('wall', wallCode);
+      if (o) {
+        html += '<p class="muted" style="margin-top:10px;">' + t('壁柄：' + (o.name_ja || wallCode), '壁柄：' + (o.name_ja || wallCode)) + ' ／ 品番 ' + wallCode + '</p>';
+      }
+      return html;
+    }
+
+    // 2) アクセントプラン（ACC_*）：アクセント柄 + 周辺グレード + 周辺柄
+    if (Q.WALL_ACC_GRADE[wallCode]) {
+      var accGrade = Q.WALL_ACC_GRADE[wallCode];
+      var accList = Q.sazanaWallPatterns().filter(function (p) { return p.class === accGrade; });
+      // アクセント柄 chips
+      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('アクセントパネル柄：', 'アクセントパネル：') + '</span>';
+      accList.forEach(function (p) {
+        var on = cur === p.code_front;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code_front) + '"' + (on ? ' checked' : '') + '>' +
+          esc(p.name_ja || p.code_front) + (p.finish ? '（' + esc(p.finish) + '）' : '') +
+          (p.lightingLimited ? ' ⚠照明限定' : '') + '</label>';
+      });
+      html += '</div>';
+      // 周辺グレード chips
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード：', '周辺グレード：') + '</span>';
+      ['周辺ハイグレードⅡ', '周辺ハイグレードⅠ', '周辺ベーシックグレード'].forEach(function (g2) {
+        var o2 = Q.opt('wall', wallCode);
+        var price = (o2 && o2.priceBySurround && o2.priceBySurround[g2] != null) ? P.fmtDiff(o2.priceBySurround[g2]) : '—';
+        var on2 = curSg === g2;
+        html += '<label class="sub-chip' + (on2 ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_surround" data-wall-surround="' + esc(g2) + '"' + (on2 ? ' checked' : '') + '>' +
+          esc(g2.replace('周辺', '')) + ' <b>' + esc(price) + '</b></label>';
+      });
+      html += '</div>';
+      // 周辺柄 chips（按周辺グレード）
+      if (curSg) {
+        var sgKey = curSg.replace('周辺', '');
+        var surList = Q.sazanaSurroundPatterns().filter(function (p) { return p.class === sgKey; });
+        html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺パネル柄：', '周辺パネル柄：') + '</span>';
+        surList.forEach(function (p) {
+          var on3 = curSp === p.code;
+          html += '<label class="sub-chip' + (on3 ? ' on' : '') + '">' +
+            '<input type="radio" name="wall_surround_pattern" data-wall-surround-pattern="' + esc(p.code) + '"' + (on3 ? ' checked' : '') + '>' +
+            esc(p.name_ja || p.code) + '</label>';
+        });
+        html += '</div>';
+      }
+      // 品番提示
+      if (cur && curSg) {
+        var ap = Q.sazanaAccentPattern(cur);
+        var sp = curSp ? Q.sazanaSurroundPattern(curSp) : null;
+        var pn = (ap ? ap.code_front : cur) + (sp ? '+' + sp.code : '');
+        html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + pn, '品番：' + pn) + '</p>';
+      }
+      return html;
+    }
+
+    // 3) SHUHEN_*：周辺柄 chips
+    if (Q.WALL_SHUHEN_GRADE[wallCode]) {
+      var shGrade = Q.WALL_SHUHEN_GRADE[wallCode].replace('周辺', '');
+      var shList = Q.sazanaSurroundPatterns().filter(function (p) { return p.class === shGrade; });
+      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('周辺パネル柄：', '周辺パネル柄：') + '</span>';
+      shList.forEach(function (p) {
+        var on = cur === p.code;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + '>' +
+          esc(p.name_ja || p.code) + '</label>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    // 4) HⅡ/HⅠ/BASIC クラス：note 解析 4面同色柄 chips
+    var fourList = Q.fourSamePatterns(wallCode);
+    if (fourList.length) {
+      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('壁柄（' + fourList.length + ' 柄）：', '壁柄（' + fourList.length + ' 柄）：') + '</span>';
+      fourList.forEach(function (p) {
+        var on = cur === p.code;
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + '>' +
+          esc(p.name_ja || p.code) + ' <b>' + esc(p.code) + '</b></label>';
+      });
+      html += '</div>';
+      if (cur) html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + cur, '品番：' + cur) + '</p>';
+    }
     return html;
   }
 

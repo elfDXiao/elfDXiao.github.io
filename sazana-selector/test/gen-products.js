@@ -15,6 +15,7 @@ function convertOption(o, catId) {
   if (o.priceDiff != null) out.priceDiff = o.priceDiff;
   if (o.price != null) out.price = o.price;
   if (o.priceByType) out.priceByType = o.priceByType;
+  if (o.priceBySurround) out.priceBySurround = o.priceBySurround;   // 壁柄アクセント×周辺组合价
   if (o.pricesBySize) out.pricesBySize = o.pricesBySize;
   if (o.availability && typeof o.availability === 'object') {
     const sizes = Object.keys(o.availability).filter(k => o.availability[k] !== false);
@@ -23,7 +24,7 @@ function convertOption(o, catId) {
   if (o.types && Array.isArray(o.types)) out.types = o.types;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
-  const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize;
+  const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.priceBySurround || out.pricesBySize;
   if (!hasPrice && catId !== 'type' && catId !== 'size') out.priceDiff = 0;
   return out;
 }
@@ -87,9 +88,21 @@ const meta = {
 };
 
 const out = { meta, categories };
-const header = '/* TOTO サザナ（Sazana）选型报价系统数据（由 gen-products.js 从 sazana-data.json 生成，请勿手改）\n' +
+
+// ---------- 壁柄花纹级数据（sazana-wall-patterns.json：accentPatterns 37 + surroundPatterns 8 + accentPriceMatrix） ----------
+try {
+  const wp = JSON.parse(fs.readFileSync('D:/DSH工作区/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
+  out.sazanaWallPatterns = wp;
+  console.log('sazanaWallPatterns merged: accent=' + (wp.accentPatterns || []).length + ', surround=' + (wp.surroundPatterns || []).length);
+} catch (e) {
+  console.warn('wall-patterns merge failed: ' + e.message);
+  out.sazanaWallPatterns = { meta: {}, accentPriceMatrix: {}, accentPatterns: [], surroundPatterns: [] };
+}
+
+const header = '/* TOTO サザナ（Sazana）选型报价系统数据（由 gen-products.js 从 sazana-data.json + sazana-wall-patterns.json 生成，请勿手改）\n' +
   ' * 命名空间：window.SAZANA_DATA\n' +
-  ' * 价格字段：priceDiff / price / priceByType（タイプ键 P/T/S/N/F 或组键）/ pricesBySize\n' +
+  ' * 价格字段：priceDiff / price / priceByType（タイプ键 P/T/S/N/F 或组键）/ pricesBySize / priceBySurround（アクセント×周辺组合价）\n' +
+  ' * sazanaWallPatterns：壁柄花纹级数据（accentPatterns 37・surroundPatterns 8・accentPriceMatrix 4×3）\n' +
   ' * 人民币系数 rmbRate=0.7 仅存在于 meta（页面不显示算式）\n' +
   ' */\n';
 fs.writeFileSync(DST, header + 'window.SAZANA_DATA = ' + JSON.stringify(out) + ';\n', 'utf8');
