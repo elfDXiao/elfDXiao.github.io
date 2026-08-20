@@ -72,6 +72,11 @@ Q.reset();
 Q.setSize('1220');
 assert('1220 自动修复タイプ → T（N 无 1220 定价）', (function () { Q.state.sel.type = 'N'; Q.setSize('1220'); return Q.typeCode() !== 'N'; })());
 Q.reset();
+// sizeAltPrice：无"无该型号"，显示备用可用价
+Q.state.sel.type = 'N';
+var alt1220 = Q.sizeAltPrice('1220');
+assert('sizeAltPrice 1220（N 无价）→ 最低可用タイプ', alt1220 && typeof alt1220.price === 'number' && alt1220.type !== 'N', JSON.stringify(alt1220));
+Q.reset();
 
 console.log('== priceByType 多样键 ==');
 assert('壁柄 EGAA1 P = 105,000', P.priceFor(Q.cat('wall').options.find(o => o.code === 'EGAA1'), 'P', '1620') === 105000);

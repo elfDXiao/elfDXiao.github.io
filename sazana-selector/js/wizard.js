@@ -260,12 +260,23 @@
     Q.cat('size').options.forEach(function (o) {
       var on = o.code === Q.state.size ? ' on' : '';
       var byType = o.pricesByType ? o.pricesByType[Q.typeCode()] : null;
-      var price = byType ? byType[o.code] : null;
-      var priceTxt = typeof price === 'number' ? P.yen(price) : tp('无该型号', '—');
+      var price = (byType && typeof byType === 'object') ? byType[o.code] : byType;
+      var priceTxt, hint = '';
+      if (typeof price === 'number') {
+        priceTxt = P.yen(price);
+      } else {
+        var alt = Q.sizeAltPrice(o.code);
+        if (alt) {
+          priceTxt = P.yen(alt.price);
+          hint = '<span class="size-alt">' + esc(tp('当前型号无 ' + Q.typeCode() + 'タイプ，最低可用 ' + alt.type + 'タイプ', 'このタイプには設定なし、最低 ' + alt.type + ' タイプ')) + '</span>';
+        } else {
+          priceTxt = tp('无该型号', '—');
+        }
+      }
       html += '<div class="size-card' + on + '" data-size="' + esc(o.code) + '">' +
         '<div class="size-code">' + esc(o.code) + '</div>' +
         '<div class="size-name">' + esc(o.name_zh || o.name_ja) + '</div>' +
-        '<div class="size-price">' + priceTxt + '</div></div>';
+        '<div class="size-price">' + priceTxt + '</div>' + hint + '</div>';
     });
     html += '</div>';
     html += '<p class="base-meta">※ ' + t('1620 Tタイプ 本体価格 ¥1,449,000（税抜）；F タイプ仅 1620/1616/1618、N タイプ无 1220', '1620 Tタイプ 本体価格 ¥1,449,000（税抜）；F タイプは 1620/1616/1618 のみ、N タイプは 1220 なし') + '</p>';

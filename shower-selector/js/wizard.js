@@ -260,11 +260,22 @@
     Q.cat('size').options.forEach(function (o) {
       var on = o.code === Q.state.size ? ' on' : '';
       var price = o.pricesByType ? o.pricesByType[Q.typeCode()] : null;
-      var priceTxt = typeof price === 'number' ? P.yen(price) : tp('无该型号', '—');
+      var priceTxt, hint = '';
+      if (typeof price === 'number') {
+        priceTxt = P.yen(price);
+      } else {
+        var alt = Q.sizeAltPrice(o.code);
+        if (alt) {
+          priceTxt = P.yen(alt.price);
+          hint = '<span class="size-alt">' + esc(tp('当前型号无 ' + Q.typeCode() + 'タイプ，最低可用 ' + alt.type + 'タイプ', 'このタイプには設定なし、最低 ' + alt.type + ' タイプ')) + '</span>';
+        } else {
+          priceTxt = tp('无该型号', '—');
+        }
+      }
       html += '<div class="size-card' + on + '" data-size="' + esc(o.code) + '">' +
         '<div class="size-code">' + esc(o.code) + '</div>' +
         '<div class="size-name">' + esc(o.name_zh || o.name_ja) + '</div>' +
-        '<div class="size-price">' + priceTxt + '</div></div>';
+        '<div class="size-price">' + priceTxt + '</div>' + hint + '</div>';
     });
     html += '</div>';
     html += '<p class="base-meta">※ ' + t('0816 Gタイプ 基本套装价 ¥1,132,000（税抜）；7 种固定组合（0816 仅 G/X、0808 仅 T/L）', '0816 Gタイプ 基本セット価格 ¥1,132,000（税抜）；7 組合（0816 は G/X、0808 は T/L）') + '</p>';

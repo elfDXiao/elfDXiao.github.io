@@ -159,6 +159,27 @@
     return typeof v === 'number' ? v : 0;
   }
 
+  /** 尺寸卡片备用价：当前タイプ无价时，返回该尺寸最低可用タイプ价（含タイプ提示） */
+  function sizeAltPrice(code) {
+    var tbp = DATA.meta.typeBasePrices;
+    if (!tbp) return null;
+    var t = typeCode();
+    if (tbp[t] && typeof tbp[t][code] === 'number') {
+      return { price: tbp[t][code], type: t };
+    }
+    var best = null;
+    var keys = Object.keys(tbp);
+    for (var i = 0; i < keys.length; i++) {
+      var ft = keys[i];
+      if (ft === t) continue;
+      var v = tbp[ft] && tbp[ft][code];
+      if (typeof v === 'number' && (!best || v < best.price)) {
+        best = { price: v, type: ft };
+      }
+    }
+    return best;
+  }
+
   function isVirtualBasic(code) {
     return code === 'FAUCET_BASIC' || code === 'BATH_NONE' || code === 'SHOWER_BASIC' ||
       code === 'LIGHT_BASIC' || code === 'FAN_BASIC' || code === 'DOOR_BASIC';
@@ -486,7 +507,7 @@
     doorPosCode: doorPosCode,
     productNo: productNo,
     computeQuote: computeQuote, contributionFor: contributionFor, describe: describe,
-    disabledReason: disabledReason, autoFix: autoFix, setSize: setSize,
+    disabledReason: disabledReason, autoFix: autoFix, setSize: setSize, sizeAltPrice: sizeAltPrice,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
       state.sel = {}; state.multi = {};
