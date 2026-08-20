@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="工作室案例展示 —— 点击中国地图选择省份与城市，浏览落地案例与价格。">
+  <title>工作室案例展示 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+        <a href="index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+            <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫选型系统</a></li>
+        <li><a href="studio.html" class="active">工作室案例</a></li>
+        <li><a href="bathroom.html">浴室案例</a></li>
+        <li><a href="survey.html">需求调查</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 04 · Studio Works</p>
+        <h1 class="sec-title">工作室案例展示</h1>
+        <p class="sec-sub">工作室近年完成的真实落地项目。点击地图选择省份与城市，查看各地项目实景照片与造价说明。</p>
+      </div>
+    </section>
+
+    <!-- 地图 + 选城市 -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="sec-label">Explore</span>
+          <h2 class="sec-title">选择省份与城市</h2>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。</p>
+        </div>
+        <div class="explorer-wrap reveal">
+          <div class="explorer-stage">
+            <div class="map-box">
+              <div id="mapStudio"></div>
+              <p class="map-hint" id="hintStudio">请点击地图上的省份开始浏览</p>
+            </div>
+          </div>
+          <div class="sel-box">
+            <h3>选择城市</h3>
+            <div class="crumb" id="crumbStudio">请先在左侧地图选择省份</div>
+            <div id="cityPanelStudio" style="display:none;">
+              <div class="city-grid" id="cityGridStudio"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 案例 -->
+    <section class="section bg-alt" id="caseSectionStudio" style="display:none;">
+      <div class="container">
+        <div class="case-section-title"><h2 id="caseTitleStudio"></h2></div>
+        <div class="case-grid" id="caseGridStudio"></div>
+        <p class="case-empty" id="caseEmptyStudio" style="display:none;"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 灯箱 -->
+  <div class="lightbox" id="lbStudio">
+    <div class="lb-card">
+      <div class="lb-media">
+        <button class="lb-close" id="lbCloseStudio" aria-label="关闭">✕</button>
+        <span class="lb-count" id="lbCountStudio"></span>
+        <div id="lbMediaStudio"></div>
+        <button class="lb-nav lb-prev" id="lbPrevStudio" aria-label="上一张">‹</button>
+        <button class="lb-nav lb-next" id="lbNextStudio" aria-label="下一张">›</button>
+      </div>
+      <div class="lb-body" id="lbBodyStudio"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫选型系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">浴室案例</a>
+          <a href="survey.html">需求调查系统</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:xtqsbx@gmail.com">xtqsbx@gmail.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/china-map-data.js"></script>
+  <script src="js/city-data.js"></script>
+  <script src="js/case-data.js"></script>
+  <script src="js/ph.js"></script>
+  <script src="js/map-explorer.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.initMapExplorer({
+        type: 'studio',
+        mapId: 'mapStudio',
+        hintId: 'hintStudio',
+        crumbId: 'crumbStudio',
+        cityId: 'cityPanelStudio',
+        cityGridId: 'cityGridStudio',
+        caseSectionId: 'caseSectionStudio',
+        caseTitleId: 'caseTitleStudio',
+        caseGridId: 'caseGridStudio',
+        caseEmptyId: 'caseEmptyStudio',
+        lightboxId: 'lbStudio',
+        lbMediaId: 'lbMediaStudio',
+        lbCountId: 'lbCountStudio',
+        lbBodyId: 'lbBodyStudio',
+        lbPrevId: 'lbPrevStudio',
+        lbNextId: 'lbNextStudio',
+        lbCloseId: 'lbCloseStudio'
+      });
+    });
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>
