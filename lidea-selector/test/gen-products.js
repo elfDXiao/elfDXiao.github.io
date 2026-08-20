@@ -66,7 +66,7 @@ const meta = {
   product: d.meta.product || 'システムバスルーム（整体浴室）',
   currency: d.meta.currency || 'JPY',
   taxRate: d.meta.taxRate || 0.10,
-  rmbRate: 0.7,                          // ★ 人民币系数（仅计算用，页面不显示）
+  rmbRate: 0.65,                          // ★ 人民币系数（仅计算用，页面不显示）
   priceNote: d.meta.priceNote || '表示価格は税抜き価格です（不含税）。＋＝加价 －＝减价（相对標準仕様価格）。',
   basePlan: d.meta.basePlan || { size: '1616', type: 'M', price: 1379000 },
   typeBasePrices: typeBase,
@@ -93,7 +93,7 @@ const out = { meta, categories };
 const header = '/* LIXIL Lidea（リデア）选型报价系统数据（由 gen-products.js 从 lidea-data.json 生成，请勿手改）\n' +
   ' * 命名空间：window.LIDEA_DATA\n' +
   ' * 价格字段：priceDiff / price / priceByType（タイプ键 H|B|M|C 或组键 HBM/BMC/HMC/BM 或条件键 FaucetNone/ThermoMetal/UruAri 等，引擎按上下文解析）/ pricesBySize\n' +
-  ' * 人民币系数 rmbRate=0.7 仅存在于 meta（页面不显示算式）\n' +
+  ' * 人民币系数 rmbRate=0.65 仅存在于 meta（页面不显示算式）\n' +
   ' */\n';
 fs.writeFileSync(DST, header + 'window.LIDEA_DATA = ' + JSON.stringify(out) + ';\n', 'utf8');
 console.log('products.js written, bytes=' + Buffer.byteLength(header + 'window.LIDEA_DATA = ' + JSON.stringify(out) + ';\n'));

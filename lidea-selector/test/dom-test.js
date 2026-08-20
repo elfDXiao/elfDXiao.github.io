@@ -77,7 +77,7 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumOpt').textContent.indexOf('297,900') >= 0; }, 2000);
   assert('勾选 A70 后选项合计 = 297,900（W0 130,000+H3 151,000+A70 16,900）', doc.querySelector('#sumOpt').textContent.indexOf('297,900') >= 0, doc.querySelector('#sumOpt').textContent);
 
-  console.log('== 汇率 / 人民币（0.7 计价，页面无公式） ==');
+  console.log('== 汇率 / 人民币（0.65 计价，页面无公式） ==');
   const rate = doc.querySelector('#rate');
   rate.value = '0.05';
   rate.dispatchEvent(new win.Event('input', { bubbles: true }));

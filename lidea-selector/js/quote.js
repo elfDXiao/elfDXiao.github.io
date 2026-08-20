@@ -7,7 +7,7 @@
  * 计价模型（全部手册价为税抜き）：
  *   本体価格（税抜）= 標準仕様価格（meta.typeBasePrices[タイプ][サイズ]） + Σ选项差价
  *   税込 = 本体 × 1.10（消費税10%，四舍五入到日元）
- *   人民币含安装价 = 税込 × 汇率 × meta.rmbRate（0.7）—— 系数仅在计算代码中，页面不显示算式
+ *   人民币含安装价 = 税込 × 汇率 × meta.rmbRate（0.65）—— 系数仅在计算代码中，页面不显示算式
  *   写真セット価格 = 標準仕様価格 + オプション合計価格
  *
  * 条件键 priceByType（非タイプ字符键）按当前选择解析：
@@ -353,8 +353,8 @@
     });
     var tax = Math.round(total * (DATA.meta.taxRate || 0.10));
     var totalInc = total + tax;
-    // 大陆地区价格（人民币含安装费）= 日元税込 × 汇率 × rmbRate(0.7)；无有效汇率时为 null
-    var rmbRate = (DATA.meta.rmbRate != null) ? DATA.meta.rmbRate : 0.7;
+    // 大陆地区价格（人民币含安装费）= 日元税込 × 汇率 × rmbRate(0.65)；无有效汇率时为 null
+    var rmbRate = (DATA.meta.rmbRate != null) ? DATA.meta.rmbRate : 0.65;
     var rmbAllIn = (state.rate && state.rate > 0) ? Math.round(totalInc * state.rate * rmbRate) : null;
     return {
       base: base, basePrice: basePriceValue,

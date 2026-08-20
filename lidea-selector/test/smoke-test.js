@@ -1,5 +1,5 @@
 // smoke-test.js — LIXIL Lidea 报价系统核心逻辑自测（Node vm，无 DOM）
-// 真实数据（lidea-data.json 生成）：標準仕様価格矩阵/0.7 人民币/条件键 priceByType/约束/品番 BD/CSV
+// 真实数据（lidea-data.json 生成）：標準仕様価格矩阵/0.65 人民币/条件键 priceByType/约束/品番 BD/CSV
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -32,7 +32,7 @@ console.log('== 数据加载 ==');
 assert('categories = 31', DATA.categories.length === 31, DATA.categories.length);
 assert('size options = 9', Q.cat('size').options.length === 9);
 assert('type options = 4（H/B/M/C）', Q.cat('type').options.length === 4);
-assert('meta.rmbRate = 0.7', DATA.meta.rmbRate === 0.7, DATA.meta.rmbRate);
+assert('meta.rmbRate = 0.65', DATA.meta.rmbRate === 0.65, DATA.meta.rmbRate);
 assert('总选项 ≥ 457', DATA.categories.reduce((n, c) => n + c.options.length, 0) >= 457);
 
 console.log('== 標準仕様価格矩阵（抽查） ==');
@@ -51,10 +51,10 @@ assert('默认 totalInc = 1,516,900', r.totalInc === 1516900, r.totalInc);
 assert('默认无 unknown', r.unknown.length === 0, r.unknown);
 assert('默认品番 = BDUS-1616M-A+H(C)RL', Q.productNo() === 'BDUS-1616M-A+H(C)RL', Q.productNo());
 
-console.log('== ★ 人民币计价 rmbRate=0.7（税込×汇率×0.7） ==');
+console.log('== ★ 人民币计价 rmbRate=0.65（税込×汇率×0.65） ==');
 Q.setRate(0.05);
 r = Q.computeQuote();
-assert('rate=0.05 → rmbAllIn = round(1,516,900×0.05×0.7) = 53,092', r.rmbAllIn === 53092, r.rmbAllIn);
+assert('rate=0.05 → rmbAllIn = round(1,516,900×0.05×0.65) = 49,299', r.rmbAllIn === 49299, r.rmbAllIn);
 Q.setRate(0);
 r = Q.computeQuote();
 assert('rate=0 → rmbAllIn null', r.rmbAllIn === null, r.rmbAllIn);

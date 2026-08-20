@@ -55,7 +55,7 @@ lidea-bathroom/
 ```json
 {
   "meta": {
-    "brand": "LIXIL Lidea（リデア）", "series": "BD", "taxRate": 0.10, "rmbRate": 0.7,
+    "brand": "LIXIL Lidea（リデア）", "series": "BD", "taxRate": 0.10, "rmbRate": 0.65,
     "typeBasePrices": {"H":{"1616":1682000,...},"B":{...},"M":{...},"C":{...}},
     "sizeGroups": {"16□□":"1624・1620・1618・1616","13□□":"1318・1316","□□18":"S1818・1618・1318","□□16":"1616・1316・1216・S1216"},
     "coldRegionPatterns": {...}, "photoSetFormula": {...}
@@ -84,7 +84,7 @@ lidea-bathroom/
 
 - 本体価格（税抜）＝ `typeBasePrices[タイプ][サイズ]`（＋寒冷地 ¥5,000）＋ Σ选项差价（タイプ/条件键/尺寸取值）
 - 税込 ＝ 税抜 × 1.10
-- ★ 大陆地区价格 ＝ 税込 × 汇率 × `rmbRate(0.7)`，**页面/报价单不显示系数与算式**，仅标注「大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み」
+- ★ 大陆地区价格 ＝ 税込 × 汇率 × `rmbRate(0.65)`，**页面/报价单不显示系数与算式**，仅标注「大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み」
 - 写真セット価格 ＝ 標準仕様価格 ＋ オプション合計価格（手册各 PLAN 可复现）
 
 ## 四、已实现的组合约束（disabledReason / autoFix）
@@ -97,7 +97,7 @@ lidea-bathroom/
 
 ## 五、人民币说明规范（★ 用户明确要求，全站统一）
 
-- 系数 `rmbRate=0.7` 仅存在于 `products.js meta` 与 `quote.js` 计算代码
+- 系数 `rmbRate=0.65` 仅存在于 `products.js meta` 与 `quote.js` 计算代码
 - 页面可见位置（rate-hint / sec-sub / 报价单 doc-footer / sumRMB 标签 / copyList / meta description）一律**不显示系数或算式**
 - 只允许出现：「大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み」式描述
 - 已通过「无公式 grep 自查」：index.html / wizard.js / price.js 渲染路径不含 `0.7`、`7折`、`×汇率` 等字样
@@ -112,11 +112,11 @@ lidea-bathroom/
 
 ```bash
 node test/gen-products.js   # 重新生成 products.js（数据更新后必跑）
-node test/smoke-test.js     # 核心逻辑 ✅（0.7 计价/矩阵/条件键/约束/品番/CSV）
+node test/smoke-test.js     # 核心逻辑 ✅（0.65 计价/矩阵/条件键/约束/品番/CSV）
 node test/dom-test.js       # UI 渲染 ✅（jsdom 模拟 file:// 直开）
 ```
 
-smoke 特有断言：**0.7 人民币计价（M1616：1,379,000→税込 1,516,900→×0.05×0.7=53,092）**、標準仕様価格矩阵抽查、寒冷地 +5,000、1624 自动修复タイプ→M、条件键（water_pipe FaucetNone/WallFaucet、shower_head ThermoMetal/ShowerSystem、support_pack H16/H13）、约束（サポートパック C 不可、シャワーシステム×カウンター、うるつや×D5、兼用×浴槽側、K58 需 Q/T、アクアジェット→パン W autoFix、K20 尺寸限定）、品番 BDUS-1616M-A+H(C)RL、CSV。
+smoke 特有断言：**0.65 人民币计价（M1616：1,379,000→税込 1,516,900→×0.05×0.65=49,299）**、標準仕様価格矩阵抽查、寒冷地 +5,000、1624 自动修复タイプ→M、条件键（water_pipe FaucetNone/WallFaucet、shower_head ThermoMetal/ShowerSystem、support_pack H16/H13）、约束（サポートパック C 不可、シャワーシステム×カウンター、うるつや×D5、兼用×浴槽側、K58 需 Q/T、アクアジェット→パン W autoFix、K20 尺寸限定）、品番 BDUS-1616M-A+H(C)RL、CSV。
 
 ## 八、部署前收尾建议
 
