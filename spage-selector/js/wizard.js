@@ -96,6 +96,7 @@
         if (tgt.hasAttribute('data-code')) {
           var code = tgt.getAttribute('data-code');
           Q.state.sel[dimId] = code;
+          if (dimId === 'wall') delete Q.state.sub.wall_pattern;   // 换クラス/張り方 清花纹
           Q.autoFix(dimId, code);
         } else if (tgt.hasAttribute('data-basic')) {
           var vb = Q.virtualBasicOf(Q.dim(dimId));
@@ -103,6 +104,15 @@
         } else if (tgt.hasAttribute('data-none')) {
           delete Q.state.sel[dimId];
         }
+        renderStep(); renderSummary();
+        return;
+      }
+
+      // 壁パネル花纹（第二段选择）
+      if (tgt.hasAttribute('data-wall-pattern')) {
+        var pcode = tgt.getAttribute('data-wall-pattern');
+        if (pcode) Q.state.sub.wall_pattern = pcode;
+        else delete Q.state.sub.wall_pattern;
         renderStep(); renderSummary();
         return;
       }
@@ -316,7 +326,47 @@
       case 'multi': html += multiHtml(d); break;
       default: break;
     }
+    // 壁パネル：第二段花纹选择
+    if (d.id === 'wall') html += wallPatternHtml(d);
     html += '</div>';
+    return html;
+  }
+
+  /** 壁パネル花纹第二段（按当前クラス过滤 47 柄） */
+  function wallPatternHtml(d) {
+    if (!Q.state.sel.wall) return '';
+    var patterns = Q.wallPatterns();
+    var cls = Q.wallClassOfOption();
+    var furi = Q.wallFuriOfOption();
+    var list = patterns.filter(function (p) { return p.class === cls; });
+    if (!list.length) return '';
+    var cur = Q.state.sub.wall_pattern;
+    var html = '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' + t('花纹 / パターン：', 'パターン：') + '</span>';
+    html += '<label class="sub-chip' + (!cur ? ' on' : '') + '">' +
+      '<input type="radio" name="wall_pattern" data-wall-pattern=""' + (!cur ? ' checked' : '') + '>' +
+      t('未指定', '指定なし') + '</label>';
+    list.forEach(function (p) {
+      var on = cur === p.code;
+      var dis = Q.disabledReason('wall', p.code);
+      var price = (p.prices && p.prices[furi] != null) ? P.fmtDiff(p.prices[furi]) : '—';
+      var mark = '';
+      if (p.lightingLimited) mark += ' ⚠照明限定';
+      if (p.longLeadTime) mark += ' 納期+';
+      html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '">' +
+        '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+        esc(p.code + ' ' + (p.name_ja || '')) + (p.finish ? '（' + esc(p.finish) + '）' : '') + mark +
+        ' <b>' + esc(price) + '</b></label>';
+    });
+    html += '</div>';
+    if (cur) {
+      var pat = Q.wallPattern(cur);
+      if (pat) {
+        var pn = Q.wallPatternPartNo(pat, furi);
+        if (pn) html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + pn, '品番：' + pn) + '</p>';
+        if (pat.lightingLimited) html += '<p class="muted" style="color:#b03a2e;margin-top:2px;">⚠ ' + t('照明限定：需增加灯数或追加ダウンライト（HP）', '照明限定：灯数を増やすか追加ダウンライト（HP）が必要') + '</p>';
+        if (pat.longLeadTime) html += '<p class="muted" style="color:#a65b33;margin-top:2px;">' + t('納期：' + (typeof pat.longLeadTime === 'string' ? pat.longLeadTime : '通常納期+1週間'), typeof pat.longLeadTime === 'string' ? pat.longLeadTime : '通常納期+1週間') + '</p>';
+      }
+    }
     return html;
   }
 

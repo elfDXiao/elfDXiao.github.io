@@ -135,6 +135,7 @@
     doorPos: 'RL',           // ドア位置（默认 RL）
     sel: {},                 // { dimId: option code }   radio 维度
     multi: {},               // { dimId: { code: true } }  multi 维度
+    sub: {},                 // { wall_pattern: 花纹 code }  壁パネル花纹选择
     rate: null,              // 汇率（1日元=人民币）
     quoteHead: { no: '', date: '', valid: '', customer: '', address: '', dealer: '', person: '', remark: '' },
     lang: 'both'
@@ -179,6 +180,62 @@
     return c ? c : 'RL';
   }
   function typeGroup() { return P.typeGroupOf(typeCode()); }
+
+  /* ---------------- 壁パネル花纹（wallPatterns，47 柄） ---------------- */
+  /** wall 选项 code → 花纹 class（第一段选项的 class 组） */
+  var WALL_CLASS = {
+    '0': 'プレミアムⅡ', '1': 'プレミアムⅠ', '2': 'ハイクラス',
+    '1B': 'プレミアムⅡ', '2B': 'プレミアムⅡ', '1A': 'プレミアムⅠ', '2A': 'プレミアムⅠ',
+    '1H': 'ハイクラス', '2H': 'ハイクラス',
+    'PALL': 'アーテクトP', 'CALL': 'アーテクトC',
+    'GRB': 'グランクラス(セラミック)', 'GRC': 'グランクラス(セラミック)',
+    'PP': 'アーテクトP', 'CC': 'アーテクトC', 'CH': 'アーテクトC'
+  };
+  /** wall 选项 code → 張り方（prices 键） */
+  var WALL_FURI = {
+    '0': '全面張り', '1': '全面張り', '2': '全面張り', 'PALL': '全面張り', 'CALL': '全面張り',
+    '1B': 'アクセントB面', '2B': 'アクセントC面', '1A': 'アクセントB面', '2A': 'アクセントC面',
+    '1H': 'アクセントB面', '2H': 'アクセントC面', 'GRB': 'アクセントB面', 'GRC': 'アクセントC面',
+    'PP': 'アクセントB面', 'CC': 'アクセントB面', 'CH': 'アクセントB面'
+  };
+  function wallPatterns() { return (DATA.wallPatterns && DATA.wallPatterns.patterns) || []; }
+  function wallPattern(code) {
+    return wallPatterns().find(function (p) { return String(p.code) === String(code); }) || null;
+  }
+  /** 当前 wall 选项对应花纹 class（未选返回 null） */
+  function wallClassOfOption() {
+    var c = state.sel.wall;
+    return c ? (WALL_CLASS[c] || null) : null;
+  }
+  /** 当前张り方（prices 键） */
+  function wallFuriOfOption() {
+    var c = state.sel.wall;
+    return c ? (WALL_FURI[c] || '全面張り') : '全面張り';
+  }
+  /** 花纹品番：全面 → partNumbers['全面張り']；アクセント → 第一个アクセントベース列码 */
+  function wallPatternPartNo(pat, furi) {
+    if (!pat || !pat.partNumbers) return '';
+    if (furi === '全面張り') return pat.partNumbers['全面張り'] || '';
+    var keys = Object.keys(pat.partNumbers);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i].indexOf('アクセントベース') === 0) return pat.partNumbers[keys[i]] || '';
+    }
+    return '';
+  }
+  /** 花纹净差：pattern.prices[張り方] − 类级 priceDiff（同 class 柄价格一致时净差 0） */
+  function wallPatternContribution() {
+    var wallCode = state.sel.wall;
+    var patCode = state.sub.wall_pattern;
+    if (!wallCode || !patCode) return 0;
+    var pat = wallPattern(patCode);
+    if (!pat || !pat.prices) return 0;
+    var furi = wallFuriOfOption();
+    var p = pat.prices[furi];
+    if (p == null) return 0;   // 该张り方不可（セラミック全面 null）
+    var wallOpt = opt('wall', wallCode);
+    var base = (wallOpt && typeof wallOpt.priceDiff === 'number') ? wallOpt.priceDiff : 0;
+    return P.toAmount(p) - base;
+  }
 
   /** 基本セット価格（meta.typeBasePrices[タイプ][サイズ][設置]）＋寒冷地加价 */
   function basePrice() {
@@ -263,7 +320,13 @@
     switch (d.kind) {
       case 'radio': {
         var c = state.sel[dimId];
-        return c == null ? null : radioContribution(dimId, c);
+        if (c == null) return null;
+        var base = radioContribution(dimId, c);
+        if (dimId === 'wall') {
+          var extra = wallPatternContribution();
+          if (extra !== 0) return (base == null ? 0 : base) + extra;
+        }
+        return base;
       }
       case 'multi': {
         var m = state.multi[dimId];
@@ -300,6 +363,21 @@
         out.nameJa = o.name_ja || '';
         out.code = o.code || '';
         out.model = o.selectMark || '';
+        // 壁パネル：附加花纹名与品番
+        if (dimId === 'wall') {
+          var pc = state.sub.wall_pattern;
+          if (pc) {
+            var pat = wallPattern(pc);
+            if (pat) {
+              out.nameZh += '・' + (pat.name_zh || pat.code);
+              out.nameJa += '・' + (pat.name_ja || pat.code);
+              out.extra = pat.patternNo + (pat.finish ? '・' + pat.finish : '') +
+                (pat.lightingLimited ? ' ⚠照明限定' : '') +
+                (pat.longLeadTime ? ' 納期+' + (typeof pat.longLeadTime === 'string' ? pat.longLeadTime : '1週間') : '');
+              out.model = wallPatternPartNo(pat, wallFuriOfOption());
+            }
+          }
+        }
         out.diff = contributionFor(dimId);
         return out;
       }
@@ -416,13 +494,14 @@
     var d = dim(dimId);
     if (!d) return null;
     var isVB = isVirtualBasic(code);
+    var isPattern = (dimId === 'wall' && wallPattern(code) != null);   // 壁パネル花纹 code（不在 wall 分类）
     var o = opt(dimId, code);
-    if (!o && !isVB) return null;
+    if (!o && !isVB && !isPattern) return null;
     var size = sizeCode();
     var type = typeCode();
 
     // ---- 数据 schema 限定 ----
-    if (!isVB) {
+    if (!isVB && o) {
       if (Array.isArray(o.sizes)) {
         var okS = false;
         for (var i = 0; i < o.sizes.length; i++) {
@@ -506,6 +585,21 @@
     // ---- 大開口室内窓 13□□/1216/A タイプ不可 ----
     if (dimId === 'window_frame' && /^F6[5-9]|^F70/.test(code) && (/^13/.test(size) || size === '1216' || type === 'A')) {
       return '大開口室内窓不适用于当前型号/尺寸';
+    }
+
+    // ---- 壁パネル花纹约束（code 为花纹时校验 class/張り方匹配当前 wall 选项） ----
+    if (dimId === 'wall') {
+      var patCheck = wallPattern(code);
+      if (patCheck) {
+        var needClass = wallClassOfOption();
+        if (needClass && patCheck.class !== needClass) {
+          return '该花纹不适用于当前クラス';
+        }
+        var furiCheck = wallFuriOfOption();
+        if (patCheck.prices && patCheck.prices[furiCheck] == null) {
+          return '该花纹不提供' + furiCheck;
+        }
+      }
     }
 
     if (isVB) return null;
@@ -611,6 +705,9 @@
     cat: cat, dim: dim, opt: opt, selOpt: selOpt,
     codesOf: codesOf, catOpts: catOpts,
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
+    wallPatterns: wallPatterns, wallPattern: wallPattern,
+    wallClassOfOption: wallClassOfOption, wallFuriOfOption: wallFuriOfOption,
+    wallPatternPartNo: wallPatternPartNo, wallPatternContribution: wallPatternContribution,
     typeCode: typeCode, sizeCode: sizeCode, typeGroup: typeGroup, basePrice: basePrice,
     installCode: installCode, doorPosCode: doorPosCode,
     productNo: productNo,
@@ -618,7 +715,7 @@
     disabledReason: disabledReason, autoFix: autoFix, setSize: setSize,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
-      state.sel = {}; state.multi = {};
+      state.sel = {}; state.multi = {}; state.sub = {};
       state.size = '1620';
     },
     setQuoteHead: function (k, v) { state.quoteHead[k] = v; },
