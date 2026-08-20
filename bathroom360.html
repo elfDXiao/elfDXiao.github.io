@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="整体浴室中国落地实例 360° 全景 —— 点击省份与城市，进入实拍全景，第一人称环顾整个浴室空间，查看品牌、系列与含安装价格。">
+  <title>浴室案例 · 360° 全景实拍 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+        <a href="index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+            <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫选型系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html" class="active">浴室案例</a></li>
+        <li><a href="survey.html">需求调查</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="breadcrumb">Section 05 · Unit Bath · 360°</p>
+        <h1 class="sec-title">浴室案例 · 360° 全景实拍</h1>
+        <p class="sec-sub">点击省份与城市，进入该城市安装的整体浴室 360° 全景。拖动鼠标即可<em>第一人称环顾</em>整个浴室空间，滚轮缩放、支持全屏与触摸。</p>
+      </div>
+    </section>
+
+    <!-- 地图 + 选城市 -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="sec-label">Explore</span>
+          <h2 class="sec-title">选择省份与城市</h2>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可看到该城市安装的整体浴室列表。</p>
+        </div>
+        <div class="explorer-wrap reveal">
+          <div class="explorer-stage">
+            <div class="map-box">
+              <div id="map360"></div>
+              <p class="map-hint" id="hint360">请点击地图上的省份开始浏览</p>
+            </div>
+          </div>
+          <div class="sel-box">
+            <h3>选择城市</h3>
+            <div class="crumb" id="crumb360">请先在左侧地图选择省份</div>
+            <div id="cityPanel360" style="display:none;">
+              <div class="city-grid" id="cityGrid360"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 案例列表 -->
+    <section class="section bg-alt" id="caseSection360" style="display:none;">
+      <div class="container">
+        <div class="case-section-title"><h2 id="caseTitle360"></h2></div>
+        <p class="case-tip">点击任意案例卡片，即可打开 360° 全景并查看品牌、系列与含安装价格。</p>
+        <div class="case-grid" id="caseGrid360"></div>
+        <p class="case-empty" id="caseEmpty360" style="display:none;"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫选型系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">浴室案例</a>
+          <a href="survey.html">需求调查系统</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:xtqsbx@gmail.com">xtqsbx@gmail.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/china-map-data.js"></script>
+  <script src="js/city-data.js"></script>
+  <script src="js/case360-data.js"></script>
+  <script src="js/ph.js"></script>
+  <script src="js/map-explorer.js"></script>
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/pano-viewer.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.initMapExplorer({
+        type: 'bathroom360',
+        dataSource: { bathroom360: window.CASE360_DATA },
+        mapId: 'map360',
+        hintId: 'hint360',
+        crumbId: 'crumb360',
+        cityId: 'cityPanel360',
+        cityGridId: 'cityGrid360',
+        caseSectionId: 'caseSection360',
+        caseTitleId: 'caseTitle360',
+        caseGridId: 'caseGrid360',
+        caseEmptyId: 'caseEmpty360',
+        onOpenCase: function (c, i, provName, cityName) {
+          window.PanoViewer.open({
+            title: c.title,
+            date: c.date,
+            province: provName || '',
+            city: cityName || '',
+            brand: c.brand,
+            series: c.series,
+            price: c.price,
+            priceNote: c.priceNote,
+            desc: c.desc,
+            tags: c.tags,
+            image: c.image
+          });
+        }
+      });
+
+      // 深链：bathroom360.html?pano=<id> 直接打开指定案例
+      var q = new URLSearchParams(window.location.search);
+      var pid = q.get('pano');
+      if (pid && window.CASE360_DATA) {
+        var found = null, fProv = '', fCity = '';
+        Object.keys(window.CASE360_DATA.provinces).forEach(function (pa) {
+          var p = window.CASE360_DATA.provinces[pa];
+          Object.keys(p.cities).forEach(function (ca) {
+            var city = p.cities[ca];
+            city.cases.forEach(function (caseItem) {
+              if (caseItem.id === pid) { found = caseItem; fProv = p.name; fCity = city.name; }
+            });
+          });
+        });
+        if (found) {
+          window.PanoViewer.open({
+            title: found.title, date: found.date,
+            province: fProv, city: fCity,
+            brand: found.brand, series: found.series,
+            price: found.price, priceNote: found.priceNote,
+            desc: found.desc, tags: found.tags, image: found.image
+          });
+        }
+      }
+    });
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>
