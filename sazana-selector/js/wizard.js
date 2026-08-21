@@ -116,6 +116,17 @@
         renderStep(); renderSummary();
         return;
       }
+      // 墙面三模式（4SAME/FRONT_ACCENT/SIDE_ACCENT）切换：清 wall 选项与第二段
+      if (tgt.hasAttribute('data-wall-plan')) {
+        var plan = tgt.getAttribute('data-wall-plan');
+        Q.state.sub.wall_plan = plan;
+        delete Q.state.sel.wall;
+        delete Q.state.sub.wall_pattern;
+        delete Q.state.sub.wall_surround;
+        delete Q.state.sub.wall_surround_pattern;
+        renderStep(); renderSummary();
+        return;
+      }
       // 壁柄周辺グレード（アクセントプラン）
       if (tgt.hasAttribute('data-wall-surround')) {
         var scode = tgt.getAttribute('data-wall-surround');
@@ -366,6 +377,17 @@
     var curSg = Q.state.sub.wall_surround;
     var curSp = Q.state.sub.wall_surround_pattern;
 
+    // 0) 4SAME 模式：柄已在第一段直接选择（39 柄卡片），仅 Premium 镜面柄显示确认信息
+    if (Q.wallPlan() === '4SAME') {
+      if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') {
+        var o4 = Q.opt('wall', wallCode);
+        if (o4) {
+          html += '<p class="muted" style="margin-top:10px;">' + t('壁柄：' + (o4.name_zh || o4.name_ja || wallCode), '壁柄：' + (o4.name_ja || wallCode)) + ' ／ 品番 ' + wallCode + '</p>';
+        }
+      }
+      return html;
+    }
+
     // 1) 4面同色柄（EGAA1 等）：直接显示柄信息（价格已含），无 chips
     if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') {
       var o = Q.opt('wall', wallCode);
@@ -375,23 +397,27 @@
       return html;
     }
 
-    // 2) アクセントプラン（ACC_*）：アクセント柄 + 周辺グレード + 周辺柄
+    // 2) アクセントプラン（ACC_*）：跳色柄（先选，按模式方向 code_front/code_side）→ 周辺グレード → 周辺柄（四面墙板）
     if (Q.WALL_ACC_GRADE[wallCode]) {
       var accGrade = Q.WALL_ACC_GRADE[wallCode];
       var accList = Q.sazanaWallPatterns().filter(function (p) { return p.class === accGrade; });
-      // アクセント柄 chips
-      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('アクセントパネル柄 / 跳色面板花纹：', 'アクセントパネル柄：') + '</span>';
+      var dirCode = function (p) { return Q.wallPlan() === 'SIDE_ACCENT' ? (p.code_side || p.code_front) : (p.code_front || p.code_side); };
+      // 跳色柄 chips（先选）
+      html += '<div class="dim-group-title">' + t('跳色花纹（先选）/ アクセント柄（先に選択）', 'アクセント柄（先に選択）') + '</div>';
+      html += '<div class="sub-row" style="margin-top:4px;"><span class="dim-sub-title">' + t('跳色面板花纹（' + (Q.wallPlan() === 'SIDE_ACCENT' ? '浴槽横' : '器具面') + '）：', 'アクセントパネル柄：') + '</span>';
       accList.forEach(function (p) {
-        var on = cur === p.code_front;
+        var dc = dirCode(p);
+        var on = cur === dc;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
-          '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code_front) + '"' + (on ? ' checked' : '') + '>' +
-          esc(p.name_zh || p.name_ja || p.code_front) + ' <span class="ja">' + esc(p.name_ja || '') + '</span>' +
+          '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(dc) + '"' + (on ? ' checked' : '') + '>' +
+          esc(p.name_zh || p.name_ja || dc) + ' <span class="ja">' + esc(p.name_ja || '') + '</span>' +
           (p.finish ? '（' + esc(p.finish) + '）' : '') +
           (p.lightingLimited ? ' ⚠照明限定' : '') + '</label>';
       });
       html += '</div>';
-      // 周辺グレード chips
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード / 周边等级：', '周辺グレード：') + '</span>';
+      // 周辺グレード chips（四面墙板等级）
+      html += '<div class="dim-group-title">' + t('四面墙板等级 / 周辺グレード', '周辺グレード') + '</div>';
+      html += '<div class="sub-row" style="margin-top:4px;"><span class="dim-sub-title">' + t('周辺グレード / 周边等级：', '周辺グレード：') + '</span>';
       ['周辺ハイグレードⅡ', '周辺ハイグレードⅠ', '周辺ベーシックグレード'].forEach(function (g2) {
         var o2 = Q.opt('wall', wallCode);
         var price = (o2 && o2.priceBySurround && o2.priceBySurround[g2] != null) ? P.fmtDiff(o2.priceBySurround[g2]) : '—';
@@ -403,11 +429,12 @@
           esc(gZh) + ' <span class="ja">' + esc(gJa) + '</span> <b>' + esc(price) + '</b></label>';
       });
       html += '</div>';
-      // 周辺柄 chips（按周辺グレード）
+      // 周辺柄 chips（四面墙板色，按周辺グレード）
       if (curSg) {
         var sgKey = curSg.replace('周辺', '');
         var surList = Q.sazanaSurroundPatterns().filter(function (p) { return p.class === sgKey; });
-        html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺パネル柄 / 周边面板花纹：', '周辺パネル柄：') + '</span>';
+        html += '<div class="dim-group-title">' + t('四面墙板色 / 周辺パネル色', '周辺パネル色') + '</div>';
+        html += '<div class="sub-row" style="margin-top:4px;"><span class="dim-sub-title">' + t('周辺パネル柄 / 周边面板花纹：', '周辺パネル柄：') + '</span>';
         surList.forEach(function (p) {
           var on3 = curSp === p.code;
           html += '<label class="sub-chip' + (on3 ? ' on' : '') + '">' +
@@ -416,11 +443,11 @@
         });
         html += '</div>';
       }
-      // 品番提示
+      // 品番提示（按方向 code_front/code_side）
       if (cur && curSg) {
         var ap = Q.sazanaAccentPattern(cur);
         var sp = curSp ? Q.sazanaSurroundPattern(curSp) : null;
-        var pn = (ap ? ap.code_front : cur) + (sp ? '+' + sp.code : '');
+        var pn = (ap ? dirCode(ap) : cur) + (sp ? '+' + sp.code : '');
         html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + pn, '品番：' + pn) + '</p>';
       }
       return html;
@@ -507,38 +534,52 @@
   }
 
   function radioHtml(d) {
-    // 壁柄（wall）：分组渲染——跳色计划/周边板 在前，四面同色 39 柄在后，各带标题
+    // 壁柄（wall）：三模式（4SAME 四面同色 / FRONT_ACCENT 正面跳色 / SIDE_ACCENT 浴缸侧跳色）
     if (d.id === 'wall') {
-      var codes = Q.codesOf(d);
-      var accCodes = [], shuCodes = [], fourCodes = [];
-      codes.forEach(function (code) {
-        if (code.indexOf('ACC_') === 0) accCodes.push(code);
-        else if (code.indexOf('SHUHEN_') === 0) shuCodes.push(code);
-        else fourCodes.push(code);
-      });
+      var plan = Q.wallPlan();
+      var typeCode = Q.typeCode();
       var html = '';
-      html += '<p class="muted" style="margin:-4px 0 8px;">' +
-        t('先选跳色花纹，再选四面墙板色（跳色计划内含两段选择）', '先にアクセント柄、次に周辺パネル色を選択してください（アクセントプラン内で2段階選択）') + '</p>';
-      // 跳色计划组（ACC + SHUHEN）
-      if (accCodes.length || shuCodes.length) {
-        html += '<div class="dim-group-title">' + t('跳色计划 / アクセントプラン', 'アクセントプラン') + '</div>';
-        html += '<div class="opt-grid">';
-        accCodes.concat(shuCodes).forEach(function (code) {
-          var o = Q.opt(d.id, code);
-          if (!o) return;
-          html += optionLabel(d, code, o);
+      // 模式 chips（三模式，双语；4SAME 仅 P/T タイプ可选）
+      html += '<div class="sub-row" style="margin-top:-2px;"><span class="dim-sub-title">' + t('墙面模式 / 配色方案：', '壁面モード：') + '</span>';
+      [['4SAME', '四面同色', '4面同色'],
+        ['FRONT_ACCENT', '跳色器具面侧', '正面アクセント'],
+        ['SIDE_ACCENT', '跳色浴缸侧', '浴槽横アクセント']].forEach(function (m) {
+        var on = plan === m[0];
+        var dis = (m[0] === '4SAME' && (typeCode === 'S' || typeCode === 'N' || typeCode === 'F'));
+        html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '"' + (dis ? ' title="' + esc('四面同色仅 P/T タイプ可选（S/N/F 请选跳色）') + '"' : '') + '>' +
+          '<input type="radio" name="wall_plan" data-wall-plan="' + m[0] + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+          esc(m[1]) + ' <span class="ja">' + esc(m[2]) + '</span></label>';
+      });
+      html += '</div>';
+      if (plan === '4SAME') {
+        // 四面同色：39 柄按グレード分组渲染（第一段直接选柄）
+        var fours = Q.sazanaFourSame();
+        var groups = {};
+        fours.forEach(function (f) { (groups[f.class] = groups[f.class] || []).push(f); });
+        var gradeNames = {
+          'プレミアムグレード': ['プレミアム', '高端'],
+          'ハイグレードⅡ': ['ハイグレードⅡ', '高级Ⅱ'],
+          'ハイグレードⅠ': ['ハイグレードⅠ', '高级Ⅰ'],
+          'ベーシックグレード': ['ベーシック', '基础']
+        };
+        ['プレミアムグレード', 'ハイグレードⅡ', 'ハイグレードⅠ', 'ベーシックグレード'].forEach(function (g) {
+          var list = groups[g] || [];
+          if (!list.length) return;
+          var gn = gradeNames[g] || [g, g];
+          html += '<div class="dim-group-title">' + t('四面同色·' + gn[1] + ' / ' + gn[0] + '（' + list.length + ' 柄）', gn[0] + '柄（' + list.length + ' 種）') + '</div>';
+          html += '<div class="opt-grid">';
+          list.forEach(function (f) { html += optionLabel(d, f.code, f); });
+          html += '</div>';
         });
-        html += '</div>';
-      }
-      // 四面同色组
-      if (fourCodes.length) {
-        html += '<div class="dim-group-title">' + t('四面同色 / 4面同色プラン（' + fourCodes.length + ' 柄）', '4面同色プラン（' + fourCodes.length + ' 柄）') + '</div>';
+      } else {
+        // 跳色：先选跳色グレード（ACC_* 4 档）→ 第二段选柄（wallPatternHtml）
+        var accs = (Q.cat('wall') && Q.cat('wall').options.filter(function (o) { return String(o.code).indexOf('ACC_') === 0; })) || [];
+        var accTitle = plan === 'FRONT_ACCENT' ? '跳色グレード（器具面側）' : '跳色グレード（浴槽側）';
+        html += '<p class="muted" style="margin:-2px 0 8px;">' +
+          t('先选跳色花纹，再选四面墙板色（同页两段选择）', '先にアクセント柄、次に周辺パネル色を選択してください（同ページで2段階選択）') + '</p>';
+        html += '<div class="dim-group-title">' + t(accTitle + ' / ' + (plan === 'FRONT_ACCENT' ? '正面アクセント' : '浴槽横アクセント'), plan === 'FRONT_ACCENT' ? '正面アクセント' : '浴槽横アクセント') + '</div>';
         html += '<div class="opt-grid">';
-        fourCodes.forEach(function (code) {
-          var o = Q.opt(d.id, code);
-          if (!o) return;
-          html += optionLabel(d, code, o);
-        });
+        accs.forEach(function (o) { html += optionLabel(d, o.code, o); });
         html += '</div>';
       }
       var chips = pseudoChips(d);

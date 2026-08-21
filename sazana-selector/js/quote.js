@@ -46,7 +46,7 @@
     { id: 'water_pipe', step: 1, cat: 'water_pipe', kind: 'radio', codes: 'ALL', titleJa: '給水給湯配管', titleZh: '给水给汤配管' },
     { id: 'door_position', step: 1, cat: 'door_position', kind: 'radio', codes: 'ALL', titleJa: 'ドア位置', titleZh: '门位置' },
     // step 2
-    { id: 'wall', step: 2, cat: 'wall', kind: 'radio', codes: 'ALL', titleJa: '壁柄', titleZh: '壁面花纹' },
+    { id: 'wall', step: 2, cat: 'wall', kind: 'radio', codes: ['4SAME', 'SIDE_ACCENT', 'FRONT_ACCENT'], titleJa: '壁柄', titleZh: '壁面花纹' },
     // step 3
     { id: 'bt_shape', step: 3, cat: 'bathtub', kind: 'radio', codes: ['YYVL', 'YYLL', 'YYRL', 'YYKL', 'YYSL', 'YYWL', 'YYLB', 'YYRB', 'YYKB', 'YYSB', 'YYWB', 'YYLN', 'YYRN', 'YYKN', 'YYSN', 'YYWN'], titleJa: '浴槽形状', titleZh: '浴缸形状' },
     { id: 'bt_color', step: 3, cat: 'bathtub', kind: 'radio', codes: ['CW', 'CV', 'CP', 'CA', 'CK'], titleJa: '浴槽カラー', titleZh: '浴缸色' },
@@ -152,7 +152,13 @@
   }
   function typeGroup() { return P.typeGroupOf(typeCode()); }
 
-  /* ---------------- 壁柄花纹级（sazanaWallPatterns） ---------------- */
+  /** 壁柄花纹级（sazanaWallPatterns） */
+  /** 墙面三模式：4SAME（四面同色）/ FRONT_ACCENT（正面跳色=器具面侧）/ SIDE_ACCENT（浴缸侧跳色）；S/N/F タイプ默认跳色 */
+  function wallPlan() {
+    if (state.sub.wall_plan) return state.sub.wall_plan;
+    var t = typeCode();
+    return (t === 'S' || t === 'N' || t === 'F') ? 'FRONT_ACCENT' : '4SAME';
+  }
   /** ACC_* → アクセントグレード键（accentPriceMatrix 键） */
   var WALL_ACC_GRADE = {
     'ACC_PRE': 'プレミアムグレード', 'ACC_H2': 'ハイグレードⅡ', 'ACC_H1': 'ハイグレードⅠ', 'ACC_BASIC': 'ベーシックグレード'
@@ -169,7 +175,11 @@
   function sazanaSurroundPattern(code) {
     return sazanaSurroundPatterns().find(function (p) { return String(p.code) === String(code); }) || null;
   }
-  /** 4面同色クラス（HⅡ/HⅠ/BASIC）的柄：从 wall 选项 note 解析「柄名/品番」 */
+  /** 4面同色柄（wall 分类 fourSame=true 的 39 柄，按グレード分组渲染） */
+  function sazanaFourSame() {
+    return (cat('wall') && cat('wall').options.filter(function (o) { return o.fourSame === true; })) || [];
+  }
+  /** 4面同色クラス柄：从 wall 选项 note 解析「柄名/品番」（HⅡ/HⅠ/BASIC 占位展开用） */
   function fourSamePatterns(wallCode) {
     var o = opt('wall', wallCode);
     if (!o || !o.note) return [];
@@ -191,27 +201,30 @@
     if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') return 'プレミアムグレード';
     return String(o.name_ja || '').split('柄')[0].trim() || null;
   }
-  /** アクセントプラン组合价：ACC_* × 周辺グレード（priceBySurround；T タイプ用 accentPriceMatrix L2 调整） */
+  /** 壁柄贡献：4SAME（sel.wall=柄）priceByType；跳色（sel.wall=ACC_* グレード，sub.wall_pattern=柄）× 周辺グレード → accentPriceMatrix + L2 柄 +21,000 */
   function wallContribution() {
+    var plan = wallPlan();
     var wallCode = state.sel.wall;
     if (!wallCode) return null;
-    var o = opt('wall', wallCode);
-    if (!o) return null;
-    if (o.priceBySurround) {
-      var sg = state.sub.wall_surround;
-      if (!sg) return null;   // 未选周辺グレード → 待选择
-      var v = o.priceBySurround[sg];
-      if (v == null) return null;
-      if (typeCode() === 'T') {
-        var gradeKey = WALL_ACC_GRADE[wallCode];
-        var matrix = (DATA.sazanaWallPatterns && DATA.sazanaWallPatterns.accentPriceMatrix) || {};
-        if (gradeKey && matrix[gradeKey] && matrix[gradeKey][sg] && typeof matrix[gradeKey][sg].L2 === 'number') {
-          v = matrix[gradeKey][sg].L2;
-        }
-      }
-      return P.toAmount(v);
+    if (plan === '4SAME') {
+      // 4SAME：sel.wall 直接是 4面同色柄 code
+      var o4 = opt('wall', wallCode);
+      if (!o4 || !o4.fourSame) return null;
+      var tv4 = P.priceByTypeValue(o4, typeCode());
+      return typeof tv4 === 'number' ? P.toAmount(tv4) : null;
     }
-    return P.priceFor(o, typeCode(), sizeCode());
+    // 跳色：sel.wall=ACC_*（跳色板グレード），sub.wall_pattern=柄
+    var pc = state.sub.wall_pattern;
+    var sg = state.sub.wall_surround;
+    if (!pc || !sg) return null;
+    var ap = sazanaAccentPattern(pc);
+    if (!ap) return null;
+    var matrix = (DATA.sazanaWallPatterns && DATA.sazanaWallPatterns.accentPriceMatrix) || {};
+    var cell = matrix[ap.class] && matrix[ap.class][sg];
+    if (!cell) return null;
+    var v = (typeCode() === 'T') ? (cell.L2 != null ? cell.L2 : cell.L1) : (cell.L1 != null ? cell.L1 : cell.L2);
+    if (ap.level === 'L2' && typeof v === 'number') v += 21000;   // L2 柄（深色柄）+21,000
+    return P.toAmount(v);
   }
 
   /** 本体価格（meta.typeBasePrices[タイプ][サイズ]） */
@@ -305,20 +318,27 @@
         out.nameJa = o.name_ja || '';
         out.code = o.code || '';
         out.model = o.selectMark || '';
-        // 壁柄：花纹名 + 品番
+        // 壁柄：模式 + 花纹名 + 品番
         if (dimId === 'wall') {
+          var plan = wallPlan();
           var pc = state.sub.wall_pattern;
           var sg = state.sub.wall_surround;
           var sp = state.sub.wall_surround_pattern;
-          if (o.priceBySurround && sg) {
-            // ACC_*：アクセント柄 + 周辺グレード/柄
+          if (plan === '4SAME') {
+            // 四面同色：sel.wall = 柄 code
+            if (o && o.fourSame) {
+              out.model = c;
+              out.extra = (o.grade || '') + (o.note && /照明限定/.test(o.note) ? ' ⚠照明限定' : '');
+            }
+          } else {
+            // 跳色（正面/浴槽横）：sel.wall=ACC_*（グレード），柄在 sub.wall_pattern
             if (pc) {
               var ap = sazanaAccentPattern(pc);
               if (ap) {
                 out.nameZh += '・' + (ap.name_zh || pc);
                 out.nameJa += '・' + (ap.name_ja || pc);
-                out.model = ap.code_front || pc;
-                out.extra = 'アクセントパネル';
+                out.model = (plan === 'SIDE_ACCENT' ? ap.code_side : ap.code_front) || pc;
+                out.extra = (plan === 'SIDE_ACCENT') ? '浴槽横アクセント' : '正面アクセント';
               }
             }
             if (sp) {
@@ -328,34 +348,7 @@
                 out.model = out.model ? out.model + '+' + sp : sp;
               }
             }
-            if (!out.extra) out.extra = '周辺グレード ' + sg;
-          } else if (pc) {
-            // 4面同色柄（第一段直接选项，无第二段）／SHUHEN の周辺柄
-            if (o.fourSame) {
-              out.model = c;   // 柄品番 = 选项 code
-              out.extra = (o.grade || '') + (o.note && /照明限定/.test(o.note) ? ' ⚠照明限定' : '');
-            } else {
-              var fs = fourSamePatterns(c).find(function (x) { return String(x.code) === String(pc); });
-              if (fs) {
-                out.nameJa += '・' + fs.name_ja;
-                out.nameZh += '・' + fs.name_zh;
-                out.model = fs.code;
-              } else {
-                var sp3 = sazanaSurroundPattern(pc);
-                if (sp3) {
-                  out.nameJa += '・' + sp3.name_ja;
-                  out.nameZh += '・' + sp3.name_zh;
-                  out.model = sp3.code;
-                } else {
-                  var ap2 = sazanaAccentPattern(pc);
-                  if (ap2) { out.nameJa += '・' + ap2.name_ja; out.nameZh += '・' + ap2.name_zh; out.model = ap2.code_front || pc; }
-                }
-              }
-            }
-          } else if (o.fourSame) {
-            // 4面同色柄（无花纹子选）：model = 柄品番
-            out.model = c;
-            out.extra = (o.grade || '') + (o.note && /照明限定/.test(o.note) ? ' ⚠照明限定' : '');
+            if (!out.extra && sg) out.extra = '周辺グレード ' + sg;
           }
         }
         out.diff = contributionFor(dimId);
@@ -655,7 +648,7 @@
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
     sazanaWallPatterns: sazanaWallPatterns, sazanaSurroundPatterns: sazanaSurroundPatterns,
     sazanaAccentPattern: sazanaAccentPattern, sazanaSurroundPattern: sazanaSurroundPattern,
-    fourSamePatterns: fourSamePatterns, wallGradeOf: wallGradeOf,
+    fourSamePatterns: fourSamePatterns, sazanaFourSame: sazanaFourSame, wallGradeOf: wallGradeOf, wallPlan: wallPlan,
     WALL_ACC_GRADE: WALL_ACC_GRADE, WALL_SHUHEN_GRADE: WALL_SHUHEN_GRADE,
     typeCode: typeCode, sizeCode: sizeCode, typeGroup: typeGroup, basePrice: basePrice,
     doorPosCode: doorPosCode,
