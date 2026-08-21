@@ -48,7 +48,9 @@
     // step 2
     { id: 'wall', step: 2, cat: 'wall', kind: 'radio', codes: 'ALL', titleJa: '壁柄', titleZh: '壁面花纹' },
     // step 3
-    { id: 'bathtub', step: 3, cat: 'bathtub', kind: 'radio', codes: 'ALL', titleJa: '浴槽', titleZh: '浴缸' },
+    { id: 'bt_shape', step: 3, cat: 'bathtub', kind: 'radio', codes: ['YYVL', 'YYLL', 'YYRL', 'YYKL', 'YYSL', 'YYWL', 'YYLB', 'YYRB', 'YYKB', 'YYSB', 'YYWB', 'YYLN', 'YYRN', 'YYKN', 'YYSN', 'YYWN'], titleJa: '浴槽形状', titleZh: '浴缸形状' },
+    { id: 'bt_color', step: 3, cat: 'bathtub', kind: 'radio', codes: ['CW', 'CV', 'CP', 'CA', 'CK'], titleJa: '浴槽カラー', titleZh: '浴缸色' },
+    { id: 'bt_apron_color', step: 3, cat: 'bathtub', kind: 'radio', codes: ['YQALW', 'YQALV', 'YQALP', 'YQALA', 'YQALK', 'YQABA', 'YQABV', 'YQABP', 'YQABK'], titleJa: '浴槽エプロンカラー', titleZh: '裙板色' },
     { id: 'bt_extra', step: 3, cat: 'bathtub_extra', kind: 'radio', codes: ['KNA00', 'KNR6R', 'KNR6N', 'KNR6T', 'KNR6G', 'KNR8N', 'KNR8T', 'KNR8G'], titleJa: 'インテリア・バー（浴槽横）', titleZh: '内饰扶手杆（浴缸侧）' },
     { id: 'bt_grip', step: 3, cat: 'bathtub_extra', kind: 'radio', none: true, codes: ['YHH11', 'YHH12', 'YHH23', 'YHH24', 'YHA11', 'YHA01', 'YHH33', 'YHH34'], titleJa: 'ハンドグリップ', titleZh: '浴缸内扶手' },
     { id: 'furofuta', step: 3, cat: 'furofuta', kind: 'radio', codes: 'ALL', titleJa: 'ふろふた', titleZh: '浴缸盖' },
@@ -529,6 +531,26 @@
       return 'オーバーヘッドシャワー不适用于 ' + size;
     }
 
+    // ---- 浴缸色 × 浴缸形状联动（t32 浴缸颜色拆分） ----
+    var btShape = state.sel.bt_shape;
+    var isCleanL = btShape && String(btShape).indexOf('YY') === 0 && /^YY.L$/.test(String(btShape));   // YY*L お掃除ラクラク人大浴槽
+    // CK 珠宝黑：仅限 YY*L
+    if (dimId === 'bt_color' && code === 'CK' && btShape && !isCleanL) {
+      return '珠宝黑仅限自清洁大浴缸（お掃除ラクラク人大浴槽）';
+    }
+    // YQAL*（珠宝色裙板）：需 YY*L 同选（+¥31,400 且须同选）
+    if (dimId === 'bt_apron_color' && code.indexOf('YQAL') === 0 && btShape && !isCleanL) {
+      return '珠宝色裙板需与自清洁大浴缸（YY*L）同时选择';
+    }
+    // N・F タイプ：粉/水色/黑系 不可选（P/T/S のみ）
+    var typeNF = typeIs(['N', 'F']);
+    if (dimId === 'bt_color' && (code === 'CP' || code === 'CA' || code === 'CK') && typeNF) {
+      return '粉/水色/黑 浴缸色仅 P/T/S タイプ';
+    }
+    if (dimId === 'bt_apron_color' && (code === 'YQALP' || code === 'YQALA' || code === 'YQALK' || code === 'YQABP' || code === 'YQABK') && typeNF) {
+      return '粉/水色/黑 裙板色仅 P/T/S タイプ';
+    }
+
     if (isVB) return null;
     return null;
   }
@@ -538,6 +560,16 @@
     // おそうじ浴槽 → 断熱防水パン CXX01 自动
     if (dimId === 'clean_other' && (code === 'YFS32' || code === 'JLH11')) {
       if (!selIs('kudai', 'CXX01')) state.sel.kudai = 'CXX01';
+    }
+    // 浴缸形状切换：不适配的浴缸色/裙板色自动回退默认（CW / YQABA）
+    if (dimId === 'bt_shape') {
+      var isClean = String(code).indexOf('YY') === 0 && /^YY.L$/.test(String(code));
+      if (!isClean) {
+        if (state.sel.bt_color === 'CK') state.sel.bt_color = 'CW';
+        if (state.sel.bt_apron_color && String(state.sel.bt_apron_color).indexOf('YQAL') === 0) {
+          state.sel.bt_apron_color = 'YQABA';
+        }
+      }
     }
   }
 

@@ -93,6 +93,10 @@
         var oid = tgt.getAttribute('data-oid');
         if (oid) {
           Q.state.sel[dimId] = oid;
+          // 浴缸形状切换：色组回退第 1 色（FRP⇄大理石 5 色），oi 同步新形状
+          if (dimId === 'bathtub') {
+            Q.state.sub.bathtub = { oi: Number(oid.split('::')[1]), colorIdx: 0 };
+          }
           Q.autoFix(dimId, Number(oid.split('::')[1]));
         } else if (tgt.hasAttribute('data-item-oi')) {
           Q.state.sub[dimId] = { oi: Number(tgt.getAttribute('data-item-oi')), ii: Number(tgt.getAttribute('data-ii')) };
@@ -123,7 +127,8 @@
       if (tgt.hasAttribute('data-color-idx')) {
         var cOid = tgt.getAttribute('data-color-for') || Q.state.sel.door;
         var ci = Number(tgt.getAttribute('data-color-idx'));
-        Q.state.sub.door = { oi: Number(cOid.split('::')[1]), colorIdx: ci };
+        var cDim = tgt.getAttribute('data-color-dim') || 'door';
+        Q.state.sub[cDim] = { oi: Number(cOid.split('::')[1]), colorIdx: ci };
         renderStep(); renderSummary();
         return;
       }
@@ -378,11 +383,14 @@
   }
 
   function colorRowHtml(d, oi, o) {
+    var shapeSel = Q.state.sel[d.id] === Q.optionId(d.id, oi);   // 仅选中卡可交互
     return '<div class="sub-row">' + o.colorRows.map(function (r, ci) {
-      var on = Q.doorColorIdx() === ci;
-      return '<label class="sub-chip' + (on ? ' on' : '') + '" data-color-for="' + esc(Q.optionId(d.id, oi)) + '">' +
-        '<input type="radio" name="color_' + esc(Q.optionId(d.id, oi)) + '" data-color-idx="' + ci + '"' + (on ? ' checked' : '') + '>' +
-        esc(r.color_zh || r.color_ja) + '</label>';
+      var cur = Q.state.sub[d.id];
+      var on = cur && cur.oi === oi && cur.colorIdx === ci;
+      var dis = shapeSel ? '' : ' disabled';
+      return '<label class="sub-chip' + (on ? ' on' : '') + dis + '" data-color-for="' + esc(Q.optionId(d.id, oi)) + '">' +
+        '<input type="radio" name="color_' + esc(Q.optionId(d.id, oi)) + '" data-color-idx="' + ci + '" data-color-dim="' + esc(d.id) + '" data-color-for="' + esc(Q.optionId(d.id, oi)) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+        esc(r.color_zh || r.color_ja || '') + '</label>';
     }).join('') + '</div>';
   }
 
@@ -415,8 +423,22 @@
   }
 
   function radioHtml(d) {
-    var html = '<div class="opt-grid">';
-    d.idxs.forEach(function (oi) {
+    var html = '';
+    // 墙色块引导（跳色先选、四面后选）
+    if (d.id === 'wall_front' || d.id === 'wall_peri') {
+      html += '<p class="muted" style="margin:-4px 0 8px;">' +
+        t('先选跳色色，再选四面墙板色', '先にアクセント色、次に周辺パネル色を選択してください') + '</p>';
+    }
+    // アクセントカラー 模式：wall_peri 将 ★（accentPerimeterOk）色置顶
+    var idxs = d.idxs.slice();
+    if (d.id === 'wall_peri' && (Q.state.sel.wall_mode || 'フルカラー') === 'アクセントカラー') {
+      idxs.sort(function (a, b) {
+        var oa = Q.opt(d.id, a), ob = Q.opt(d.id, b);
+        return (ob && ob.accentPerimeterOk ? 1 : 0) - (oa && oa.accentPerimeterOk ? 1 : 0);
+      });
+    }
+    html += '<div class="opt-grid">';
+    idxs.forEach(function (oi) {
       var o = Q.opt(d.id, oi);
       if (!o) return;
       html += optionLabel(d, oi, o);

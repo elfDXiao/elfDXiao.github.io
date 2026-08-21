@@ -123,6 +123,12 @@ const meta = {
   sizeNames: d.meta.sizeNames || {},
   region: { H: { nameJa: '一般地仕様', nameZh: '一般地区规格', add: 0 }, C: { nameJa: '寒冷地仕様', nameZh: '寒冷地区规格', add: 5000 } },
   doorPositions: ['RL', 'LR', 'RC', 'LC', 'RLS', 'LRS', 'RCS', 'LCS'],
+  // ★ 壁パネルベース（四面墙板色）公共表 —— wizard/quote 统一读取（跳色花纹先选、四面墙板色后选）
+  wallBases: [
+    { code: 'HN301', name_ja: '鏡面ホワイト', name_zh: '镜面白', cls: 'high', priceDiff: 70000 },
+    { code: 'HN986', name_ja: 'クルムホワイト', name_zh: '云纹白', cls: 'high', priceDiff: 70000 },
+    { code: 'LE301', name_ja: 'マットホワイト', name_zh: '哑光白', cls: 'basic', priceDiff: 10000, default: true }
+  ],
   photoSetFormula: d.meta.photoSetFormula || '写真セット価格 = 標準仕様価格 + オプション合計価格（税別・取付費別途）',
   generatedBy: 'gen-products.js (engineer, AgentTeams 浴室选型系统专家团) — t23 数据接入',
   method: '从 data/renobio-data.json（data-analyst 提取）转换；不确定项见 数据提取说明.md',

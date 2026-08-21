@@ -1,4 +1,4 @@
-/**
+﻿/**
  * quote.js — TOTO Synla（シンラ）浴室报价系统：维度配置 + 状态 + 计价引擎 + 组合约束
  *
  * 纯逻辑（无 DOM 依赖），供 wizard.js 调用；挂 window.SYNLA.quote。
@@ -51,7 +51,7 @@
     { id: 'wall', step: 2, cat: 'wall', kind: 'wall', codes: 'ALL', titleJa: '壁柄', titleZh: '墙面花纹' },
     // step 3
     { id: 'bt_shape', step: 3, cat: 'bathtub', kind: 'radio', codes: ['BT_SUPERWIDE', 'BT_WIDE', 'BT_STRAIGHT', 'BT_STRAIGHTSTEP'], titleJa: '浴槽形状', titleZh: '浴缸形状' },
-    { id: 'bt_color', step: 3, cat: 'bathtub', kind: 'radio', codes: ['BT_COLOR_WHITE', 'BT_COLOR_IVORY', 'BT_COLOR_PINK', 'BT_COLOR_GREY', 'BT_COLOR_MARRON', 'BT_COLOR_BLACK'], titleJa: '浴槽カラー', titleZh: '浴缸颜色' },
+    { id: 'bt_color', step: 3, cat: 'bathtub', kind: 'radio', codes: ['BT_COLOR_WHITE', 'BT_COLOR_IVORY', 'BT_COLOR_PINK', 'BT_COLOR_GREY', 'BT_COLOR_MARRON', 'BT_COLOR_BLACK'], titleJa: '浴槽カラー', titleZh: '浴缸色' },
     { id: 'bt_headrest', step: 3, cat: 'bathtub', kind: 'radio', codes: ['YDM1N', 'YDM1L', 'YDM1B', 'YDM1K'], titleJa: 'ヘッドレスト', titleZh: '头枕' },
     { id: 'bt_bar', step: 3, cat: 'bathtub', kind: 'radio', codes: ['KNA00', 'KNR6R', 'KNR6N', 'KNR6T', 'KNR6G'], titleJa: 'インテリア・バー（浴槽横）', titleZh: '内饰扶手杆（浴缸侧）' },
     { id: 'rakuyu', step: 3, cat: 'bathtub', kind: 'radio', codes: ['FBH01', 'FBA00'], titleJa: '楽湯', titleZh: '气泡按摩浴' },

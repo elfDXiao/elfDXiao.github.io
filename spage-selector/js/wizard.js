@@ -117,6 +117,15 @@
         return;
       }
 
+      // 壁パネルベース（四面墙板色，第二段）
+      if (tgt.hasAttribute('data-wall-base')) {
+        var bcode = tgt.getAttribute('data-wall-base');
+        if (bcode) Q.state.sub.wall_base = bcode;
+        else delete Q.state.sub.wall_base;
+        renderStep(); renderSummary();
+        return;
+      }
+
       // multi 维度（复选框）
       if (tgt.name && tgt.name.indexOf('multi_') === 0) {
         var mid = tgt.name.replace('multi_', '');
@@ -349,7 +358,7 @@
     return html;
   }
 
-  /** 壁パネル花纹第二段（按当前クラス过滤 47 柄） */
+  /** 壁パネル花纹第二段：跳色花纹（先选）→ 四面墙板色（后选） */
   function wallPatternHtml(d) {
     if (!Q.state.sel.wall) return '';
     var patterns = Q.wallPatterns();
@@ -358,7 +367,14 @@
     var list = patterns.filter(function (p) { return p.class === cls; });
     if (!list.length) return '';
     var cur = Q.state.sub.wall_pattern;
-    var html = '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' + t('花纹 / パターン：', 'パターン：') + '</span>';
+    var acc = (furi !== '全面張り');
+    var html = '';
+
+    // 跳色花纹块（先选）—— アクセント張り時
+    if (acc) {
+      html += '<div class="dim-group-title">' + t('跳色花纹（先选）/ アクセント柄（先に選択）', 'アクセント柄（先に選択）') + '</div>';
+    }
+    html += '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' + t('花纹 / パターン：', 'パターン：') + '</span>';
     html += '<label class="sub-chip' + (!cur ? ' on' : '') + '">' +
       '<input type="radio" name="wall_pattern" data-wall-pattern=""' + (!cur ? ' checked' : '') + '>' +
       t('未指定', '指定なし') + '</label>';
@@ -375,11 +391,33 @@
         ' <b>' + esc(price) + '</b></label>';
     });
     html += '</div>';
+
+    // 四面墙板色块（后选）—— アクセント張り時
+    if (acc) {
+      html += '<div class="dim-group-title">' + t('四面墙板色 / ベースパネル色', 'ベースパネル色') + '</div>';
+      var bases = Q.wallBases();
+      var curBase = Q.wallBase();
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('四面墙板色（ベース）：', 'ベース：') + '</span>';
+      bases.forEach(function (b) {
+        var on = curBase === b.code;
+        var pn = '';
+        if (cur) {
+          var pat0 = Q.wallPattern(cur);
+          pn = pat0 ? Q.wallPatternPartNo(pat0, furi) : '';
+        }
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_base" data-wall-base="' + esc(b.code) + '"' + (on ? ' checked' : '') + '>' +
+          esc(b.name_zh) + ' <span class="ja">' + esc(b.name_ja) + '</span></label>';
+      });
+      html += '</div>';
+      html += '<p class="muted" style="margin-top:4px;">' + t('先选跳色花纹，再选四面墙板色；品番将按所选组合自动生成', '先にアクセント柄、次にベース色を選択してください。品番は選択した組合せから自動生成されます') + '</p>';
+    }
+
     if (cur) {
       var pat = Q.wallPattern(cur);
       if (pat) {
         var pn = Q.wallPatternPartNo(pat, furi);
-        if (pn) html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + pn, '品番：' + pn) + '</p>';
+        if (pn) html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + pn + (acc ? '（ベース ' + Q.wallBase() + '）' : ''), '品番：' + pn + (acc ? '（ベース ' + Q.wallBase() + '）' : '')) + '</p>';
         if (pat.lightingLimited) html += '<p class="muted" style="color:#b03a2e;margin-top:2px;">⚠ ' + t('照明限定：需增加灯数或追加ダウンライト（HP）', '照明限定：灯数を増やすか追加ダウンライト（HP）が必要') + '</p>';
         if (pat.longLeadTime) html += '<p class="muted" style="color:#a65b33;margin-top:2px;">' + t('納期：' + (typeof pat.longLeadTime === 'string' ? pat.longLeadTime : '通常納期+1週間'), typeof pat.longLeadTime === 'string' ? pat.longLeadTime : '通常納期+1週間') + '</p>';
       }

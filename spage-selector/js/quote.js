@@ -135,7 +135,7 @@
     doorPos: 'RL',           // ドア位置（默认 RL）
     sel: {},                 // { dimId: option code }   radio 维度
     multi: {},               // { dimId: { code: true } }  multi 维度
-    sub: {},                 // { wall_pattern: 花纹 code }  壁パネル花纹选择
+    sub: {},                 // { wall_pattern: 花纹 code, wall_base: ベース code }  壁パネル花纹＋四面墙板色选择
     rate: null,              // 汇率（1日元=人民币）
     quoteHead: { no: '', date: '', valid: '', customer: '', address: '', dealer: '', person: '', remark: '' },
     lang: 'both'
@@ -212,13 +212,39 @@
     var c = state.sel.wall;
     return c ? (WALL_FURI[c] || '全面張り') : '全面張り';
   }
-  /** 花纹品番：全面 → partNumbers['全面張り']；アクセント → 第一个アクセントベース列码 */
+  /** 壁パネルベース（四面墙板色）公共表（meta.wallBases，5 種） */
+  function wallBases() {
+    return (DATA.meta && DATA.meta.wallBases) || [
+      { code: 'HN986', name_ja: 'クルムホワイト', name_zh: '云纹白', cls: 'high' },
+      { code: 'HT613', name_ja: 'スタッコベージュ', name_zh: '灰泥米色', cls: 'high' },
+      { code: 'HT614', name_ja: 'モルティオダーク', name_zh: '墨灰暗纹', cls: 'high' },
+      { code: 'HT611', name_ja: 'シルバーグレー', name_zh: '银灰', cls: 'high' },
+      { code: 'HN301', name_ja: '鏡面ホワイト', name_zh: '镜面白', cls: 'high' }
+    ];
+  }
+  /** 当前ベース（四面墙板色；默认第一个） */
+  function wallBase() {
+    if (state.sub.wall_base) return state.sub.wall_base;
+    var bs = wallBases();
+    var def = null;
+    for (var i = 0; i < bs.length; i++) { if (bs[i].default) { def = bs[i].code; break; } }
+    return def || (bs.length ? bs[0].code : 'HN986');
+  }
+  /** 花纹品番：全面 → partNumbers['全面張り']；アクセント → partNumbers['アクセントベース=' + 所选ベース名] */
   function wallPatternPartNo(pat, furi) {
     if (!pat || !pat.partNumbers) return '';
     if (furi === '全面張り') return pat.partNumbers['全面張り'] || '';
+    // 按所选ベース（四面墙板色）取码
+    var base = wallBase();
+    var baseName = '';
+    var bs = wallBases();
+    for (var i = 0; i < bs.length; i++) { if (bs[i].code === base) { baseName = bs[i].name_ja; break; } }
+    var key = baseName ? 'アクセントベース=' + baseName + '/' + base : null;
+    if (key && pat.partNumbers[key]) return pat.partNumbers[key];
+    // 兜底：第一个アクセントベース键
     var keys = Object.keys(pat.partNumbers);
-    for (var i = 0; i < keys.length; i++) {
-      if (keys[i].indexOf('アクセントベース') === 0) return pat.partNumbers[keys[i]] || '';
+    for (var j = 0; j < keys.length; j++) {
+      if (keys[j].indexOf('アクセントベース') === 0) return pat.partNumbers[keys[j]] || '';
     }
     return '';
   }
@@ -756,6 +782,7 @@
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
     wallPatterns: wallPatterns, wallPattern: wallPattern,
     wallClassOfOption: wallClassOfOption, wallFuriOfOption: wallFuriOfOption,
+    wallPatterns: wallPatterns, wallPattern: wallPattern, wallBases: wallBases, wallBase: wallBase,
     wallPatternPartNo: wallPatternPartNo, wallPatternContribution: wallPatternContribution,
     typeCode: typeCode, sizeCode: sizeCode, typeGroup: typeGroup, basePrice: basePrice,
     installCode: installCode, doorPosCode: doorPosCode,

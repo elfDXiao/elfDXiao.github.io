@@ -61,14 +61,14 @@
     { id: 'door_towel',      step: 2, cat: 'door_2way',     kind: 'items', optIdx: 3, titleJa: 'ドア外付けタオル掛け', titleZh: '门外毛巾架' },
     // step 3
     { id: 'wall_mode',       step: 3, cat: null,            kind: 'custom', titleJa: 'ルームカラー', titleZh: '配色方案' },
-    { id: 'wall_front',      step: 3, cat: 'wall_color',    kind: 'radio', idxs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], titleJa: '正面壁カラー', titleZh: '正面墙颜色' },
-    { id: 'wall_peri',       step: 3, cat: 'wall_color',    kind: 'radio', idxs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], titleJa: '周辺壁カラー', titleZh: '周边墙颜色' },
+    { id: 'wall_front',      step: 3, cat: 'wall_color',    kind: 'radio', idxs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], titleJa: '跳色色（正面壁）／アクセント色（正面壁）', titleZh: '跳色色（正面墙）/ 跳色色（正面壁）' },
+    { id: 'wall_peri',       step: 3, cat: 'wall_color',    kind: 'radio', idxs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], titleJa: '四面墙板色（周辺壁）／周辺パネル色', titleZh: '四面墙板色（周辺壁）/ 周边墙颜色' },
     { id: 'ceiling',         step: 3, cat: 'ceiling',       kind: 'radio', idxs: [0, 1], titleJa: '天井', titleZh: '天花板' },
     // step 4
     { id: 'floor_mat',       step: 4, cat: 'floor',         kind: 'radio', idxs: [0], titleJa: 'フロア', titleZh: '地板' },
     { id: 'apron',           step: 4, cat: 'floor',         kind: 'radio', idxs: [1, 2], titleJa: '浴槽エプロン', titleZh: '浴缸围板' },
     { id: 'hair_catcher',    step: 4, cat: 'floor',         kind: 'radio', idxs: [3, 4], titleJa: 'ヘアキャッチャー', titleZh: '毛发收集器' },
-    { id: 'bathtub',         step: 4, cat: 'bathtub',       kind: 'radio', idxs: [0, 1, 2, 3], titleJa: '浴槽', titleZh: '浴缸' },
+    { id: 'bathtub',         step: 4, cat: 'bathtub',       kind: 'radio', idxs: [0, 1, 2, 3], titleJa: '浴槽', titleZh: '浴缸', colorSub: true },
     { id: 'drain',           step: 4, cat: 'bathtub',       kind: 'radio', idxs: [4, 5], titleJa: '浴槽排水栓', titleZh: '浴缸排水栓' },
     { id: 'handgrip',        step: 4, cat: 'bathtub',       kind: 'radio', idxs: [6, 7], titleJa: 'ハンドグリップ', titleZh: '浴缸扶手' },
     { id: 'jet',             step: 4, cat: 'bathtub',       kind: 'toggle', optIdx: 8, titleJa: '2穴ジェットエアーバス', titleZh: '气泡按摩浴（2穴）' },
@@ -475,9 +475,10 @@
         out.nameJa = o.name_ja || '';
         out.code = o.code || '';
         if (d.colorSub && o.colorRows) {
-          var ci = doorColorIdx();
+          var s0 = state.sub[dimId];
+          var ci = (s0 && typeof s0.colorIdx === 'number') ? s0.colorIdx : 0;
           var row = o.colorRows[ci];
-          if (row) out.extra = row.color_ja || '';
+          if (row) out.extra = (row.color_zh || row.color_ja || '') + '（' + (row.color_code || '') + '）';
         }
         out.diff = contributionFor(dimId);
         return out;

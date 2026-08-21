@@ -456,6 +456,14 @@
       var plan = Q.opt('wall', planCode);
       if (plan && Array.isArray(plan.subOptions)) {
         var cur = Q.state.sub.wall || {};
+        // 块标题双语（跳色花纹先选）
+        if (planCode === '4SAME') {
+          html += '<div class="dim-group-title">' + t('四面同色花纹 / 4面同色柄', '4面同色柄') + '</div>';
+        } else {
+          html += '<div class="dim-group-title">' + t('跳色花纹（先选）/ アクセント柄（先に選択）', 'アクセント柄（先に選択）') + '</div>';
+        }
+        html += '<p class="muted" style="margin:-2px 0 8px;">' +
+          t('先选跳色花纹，再选四面墙板等级', '先にアクセント柄、次に周辺グレードを選択してください') + '</p>';
         // 按 grade 分组显示
         var byGrade = {};
         plan.subOptions.forEach(function (s) { (byGrade[s.grade] = byGrade[s.grade] || []).push(s); });
@@ -476,11 +484,12 @@
           html += '</div>';
         });
 
-        // アクセントプラン：周辺グレード选择
+        // アクセントプラン：周辺グレード选择（四面墙板等级）
         if (planCode !== '4SAME' && cur.mark) {
           var sub = plan.subOptions.find(function (x) { return String(x.code) === String(cur.mark); });
           var grade = cur.grade || (sub && sub.grade) || 'hg2';
-          html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード / 周边等级：', '周辺グレード：') + '</span>';
+          html += '<div class="dim-group-title">' + t('四面墙板等级 / 周辺グレード', '周辺グレード') + '</div>';
+          html += '<div class="sub-row"><span class="dim-sub-title">' + t('四面墙板等级：', '周辺グレード：') + '</span>';
           ['premium', 'hg2', 'hg1', 'basic'].forEach(function (g2) {
             var on2 = grade === g2;
             var gJa = { premium: 'プレミアム', hg2: 'ハイグレードⅡ', hg1: 'ハイグレードⅠ', basic: 'ベーシック' }[g2];

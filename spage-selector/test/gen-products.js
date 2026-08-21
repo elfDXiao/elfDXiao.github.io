@@ -91,9 +91,41 @@ const meta = {
 };
 
 const out = { meta, categories };
-const header = '/* LIXIL SPAGE（スパージュ）选型报价系统数据（由 gen-products.js 从 spage-data.json 生成，请勿手改）\n' +
+
+// ---------- 壁パネル花纹级数据（spage-wall-patterns.json，47 柄） ----------
+try {
+  const wp = JSON.parse(fs.readFileSync('D:/DSH工作区/lidea-spage/data/spage-wall-patterns.json', 'utf8'));
+  out.wallPatterns = wp;
+  // ★ 从 partNumbers 键提取ベース（四面墙板色）公共表（アクセントベース=xxx/CODE 键）
+  const baseMap = {
+    'HN986': { code: 'HN986', name_ja: 'クルムホワイト', name_zh: '云纹白', cls: 'high' },
+    'HT613': { code: 'HT613', name_ja: 'スタッコベージュ', name_zh: '灰泥米色', cls: 'high' },
+    'HT614': { code: 'HT614', name_ja: 'モルティオダーク', name_zh: '墨灰暗纹', cls: 'high' },
+    'HT611': { code: 'HT611', name_ja: 'シルバーグレー', name_zh: '银灰', cls: 'high' },
+    'HN301': { code: 'HN301', name_ja: '鏡面ホワイト', name_zh: '镜面白', cls: 'high' }
+  };
+  const seen = [];
+  const BASE_ORDER = ['HN986', 'HT613', 'HT614', 'HT611', 'HN301'];
+  (wp.patterns || []).forEach(p => {
+    if (!p.partNumbers) return;
+    Object.keys(p.partNumbers).forEach(k => {
+      const m = k.match(/^アクセントベース=(.+)\/([A-Z0-9]+)$/);
+      if (m && baseMap[m[2]] && seen.indexOf(m[2]) < 0) seen.push(m[2]);
+    });
+  });
+  // 按固定顺序输出（缺省第一个 = HN986 クルムホワイト）
+  out.meta.wallBases = BASE_ORDER.filter(c => seen.indexOf(c) >= 0).map(c => baseMap[c]);
+  console.log('wallPatterns merged: ' + (wp.patterns || []).length + ' patterns, bases: ' + seen.join(','));
+} catch (e) {
+  console.warn('wall-patterns merge failed: ' + e.message);
+  out.wallPatterns = { meta: {}, patterns: [] };
+  out.meta.wallBases = [];
+}
+
+const header = '/* LIXIL SPAGE（スパージュ）选型报价系统数据（由 gen-products.js 从 spage-data.json + spage-wall-patterns.json 生成，请勿手改）\n' +
   ' * 命名空间：window.SPAGE_DATA\n' +
   ' * 价格字段：priceDiff / price / priceByType（タイプ键 P/C/S/V/A 或组键或条件键如 A/U・A/M）/ pricesBySize\n' +
+  ' * wallPatterns：壁パネル花纹级数据（47 柄，class/张り方/prices/partNumbers/照明限定/長納期）\n' +
   ' * 人民币系数 rmbRate=0.75 仅存在于 meta（页面不显示算式）\n' +
   ' */\n';
 fs.writeFileSync(DST, header + 'window.SPAGE_DATA = ' + JSON.stringify(out) + ';\n', 'utf8');
