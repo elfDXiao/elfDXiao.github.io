@@ -147,7 +147,21 @@
     var w = state.sel.wall;
     return w == null ? null : String(w);
   }
-  function wallBase() { return state.sub.wall_base || 'HN301'; }
+  /** 壁パネルベース（四面墙板色）公共表（meta.wallBases，wizard 渲染/quote 缺省读取） */
+  function wallBases() {
+    return (DATA.meta && DATA.meta.wallBases) || [
+      { code: 'HN301', name_ja: '鏡面ホワイト', name_zh: '镜面白', cls: 'high' },
+      { code: 'LE301', name_ja: 'マットホワイト', name_zh: '哑光白', cls: 'basic' }
+    ];
+  }
+  /** 当前ベース（アクセント時；默认 = 数据表 default 标记或第一个） */
+  function wallBase() {
+    if (state.sub.wall_base) return state.sub.wall_base;
+    var bs = wallBases();
+    var def = null;
+    for (var i = 0; i < bs.length; i++) { if (bs[i].default) { def = bs[i].code; break; } }
+    return def || (bs.length ? bs[0].code : 'HN301');
+  }
   /** ベースクラス：HN301/HT541/HT613/HT611=ハイ、LE301=ベーシック */
   function baseClassOf(b) { return b === 'LE301' ? 'basic' : 'high'; }
 
@@ -863,7 +877,7 @@
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
     typeCode: typeCode, sizeCode: sizeCode, basePrice: basePrice,
     doorPosCode: doorPosCode, sizeAltPrice: sizeAltPrice,
-    wallPatterns: wallPatterns, wallPattern: wallPattern, wallMode: wallMode, wallBase: wallBase,
+    wallPatterns: wallPatterns, wallPattern: wallPattern, wallBases: wallBases, wallMode: wallMode, wallBase: wallBase,
     wallContribution: wallContribution, wallPatternPartNo: wallPatternPartNo,
     wallPatternDisabled: wallPatternDisabled, wallBaseDisabled: wallBaseDisabled, wallPatternPrice: wallPatternPrice,
     currentHeadGroup: currentHeadGroup, currentHookKey: currentHookKey, currentDoorKindKey: currentDoorKindKey,

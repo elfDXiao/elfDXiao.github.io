@@ -158,6 +158,14 @@ const meta = {
   sizeNames: d.meta.sizeNames || {},
   region: { H: { nameJa: '一般地仕様', nameZh: '一般地区规格', add: 0 }, C: { nameJa: '寒冷地仕様', nameZh: '寒冷地区规格', add: 5000 } },
   doorPositions: ['RL', 'LR', 'RC', 'LC'],
+  // ★ 壁パネルベース（四面墙板色）公共表 —— wizard/quote 统一读取（跳色花纹先选、四面墙板色后选）
+  wallBases: [
+    { code: 'HN301', name_ja: '鏡面ホワイト', name_zh: '镜面白', cls: 'high', priceDiff: 0 },
+    { code: 'HT541', name_ja: 'ランダムウッド', name_zh: '随机木纹', cls: 'high', priceDiff: 0 },
+    { code: 'HT613', name_ja: 'スタッコベージュ', name_zh: '灰泥米色', cls: 'high', priceDiff: 0 },
+    { code: 'HT611', name_ja: 'シルバーグレー', name_zh: '银灰', cls: 'high', priceDiff: 0 },
+    { code: 'LE301', name_ja: 'マットホワイト', name_zh: '哑光白', cls: 'basic', priceDiff: 0 }
+  ],
   photoSetFormula: d.meta.photoSetFormula || '写真セット価格 = 標準仕様価格 + オプション合計価格（税別・取付費別途）',
   generatedBy: 'gen-products.js (engineer, AgentTeams 浴室选型系统专家团) — t27 数据接入',
   method: '从 data/shower-data.json（data-analyst 提取，MiMo 复核壁柄/シャワー表）转换；不确定项见 数据提取说明.md',

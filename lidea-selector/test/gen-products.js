@@ -23,6 +23,19 @@ function convertOption(o, catId) {
   if (o.types && Array.isArray(o.types)) out.types = o.types;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
+  // ★ t32 浴缸材质 sizes 补齐（《浴缸颜色结构.md》P.71 形状×材质对应）：
+  //   パールクォーツ（T6/T7/T8）= ミナモ系 1624/1620/S1818/1618/1616
+  //   ルフレトーン/FRP（TR~TD）= ミナモワイド除外 6 形状（全尺寸可用）
+  if (catId === 'bathtub' && /^T[0-9A-Z]$/.test(o.code)) {   // T6~T8 / TR~TV / TA~TD
+    if (o.code === 'T6' || o.code === 'T7' || o.code === 'T8') {
+      out.sizes = ['1624', '1620', 'S1818', '1618', '1616'];
+    } else {
+      out.sizes = ['1216', '1620', '1624', 'S1818/1618/1616', '1318/1316', 'S1216'];
+    }
+    out.material = (o.code === 'T6' || o.code === 'T7' || o.code === 'T8') ? 'パールクォーツ'
+      : (o.code === 'TR' || o.code === 'TT' || o.code === 'TS' || o.code === 'TW' || o.code === 'TU' || o.code === 'TV') ? 'ルフレトーン'
+      : 'FRP';
+  }
   const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize;
   if (!hasPrice && catId !== 'type' && catId !== 'size') out.priceDiff = 0;
   return out;
