@@ -29,7 +29,7 @@ function assert(name, cond, extra) {
 }
 
 console.log('== 数据加载 ==');
-assert('categories = 25（24 data + size 重建）', DATA.categories.length === 25, DATA.categories.length);
+assert('categories = 24（23 data + size 重建；原 size 分类已跳过避免重复）', DATA.categories.length === 24, DATA.categories.length);
 assert('选项总数 ≥ 690', DATA.categories.reduce((n, c) => n + c.options.length, 0) >= 690);
 assert('size options = 7', Q.cat('size').options.length === 7);
 assert('size 选项无单一 price/base_price 字段（计价不依赖）', (function () { var s = Q.cat('size').options.find(o => o.code === '1616'); return s.price == null && s.base_price == null; })(), JSON.stringify(Q.cat('size').options.find(o => o.code === '1616')));
