@@ -17,6 +17,7 @@ function convertOption(o, catId) {
   if (o.priceByType) out.priceByType = o.priceByType;
   if (o.priceBySurround) out.priceBySurround = o.priceBySurround;   // 壁柄アクセント×周辺组合价
   if (o.pricesBySize) out.pricesBySize = o.pricesBySize;
+  if (o.sizes) out.sizes = o.sizes;
   if (o.availability && typeof o.availability === 'object') {
     const sizes = Object.keys(o.availability).filter(k => o.availability[k] !== false);
     if (sizes.length) out.sizes = sizes;
