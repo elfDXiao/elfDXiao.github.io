@@ -365,9 +365,9 @@
     // アクセント：ベースパネル chips
     if (w === '1' || w === '2') {
       var bases = [
-        { code: 'LE301', name: 'マットホワイト/LE301（ベーシック）', price: 10000 },
-        { code: 'HN301', name: '鏡面ホワイト/HN301（ハイクラス）', price: 70000 },
-        { code: 'HN986', name: 'クルムホワイト/HN986（ハイクラス）', price: 70000 }
+        { code: 'LE301', name: 'マットホワイト', name_zh: '哑光白', cls: 'ベーシック', price: 10000 },
+        { code: 'HN301', name: '鏡面ホワイト', name_zh: '镜面白', cls: 'ハイクラス', price: 70000 },
+        { code: 'HN986', name: 'クルムホワイト', name_zh: '库尔姆白', cls: 'ハイクラス', price: 70000 }
       ];
       var curBase = Q.wallBase();
       html += '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' +
@@ -379,7 +379,7 @@
           (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
           '<input type="radio" name="wall_base" data-wall-base="' + esc(b.code) + '"' +
           (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-          esc(b.name) + ' <b>' + esc(P.fmtDiff(b.price)) + '</b></label>';
+          esc(b.name_zh) + ' <span class="ja">' + esc(b.name) + '</span> <b>' + esc(P.fmtDiff(b.price)) + '</b></label>';
       });
       html += '</div>';
     }
@@ -401,7 +401,7 @@
           (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
           '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' +
           (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-          '<span class="opt-name">' + esc(p.code + ' ' + (p.name_ja || '')) + '</span>' +
+          '<span class="opt-name">' + esc(p.name_zh || p.name_ja || p.code) + '<em>' + esc(p.code + ' ' + (p.name_ja || '')) + '</em></span>' +
           '<span class="opt-price">' + esc(priceTxt) + '</span></label>';
       });
       h += '</div>';

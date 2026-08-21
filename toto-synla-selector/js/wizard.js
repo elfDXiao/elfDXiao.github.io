@@ -459,9 +459,10 @@
         // 按 grade 分组显示
         var byGrade = {};
         plan.subOptions.forEach(function (s) { (byGrade[s.grade] = byGrade[s.grade] || []).push(s); });
-        var gradeNames = { 'プレミアム': 'プレミアム', 'ハイグレードⅡ': 'ハイグレードⅡ', 'ハイグレードⅠ': 'ハイグレードⅠ', 'ベーシック': 'ベーシック' };
+        var gradeNames = { 'プレミアム': ['プレミアム', '高端'], 'ハイグレードⅡ': ['ハイグレードⅡ', '高级Ⅱ'], 'ハイグレードⅠ': ['ハイグレードⅠ', '高级Ⅰ'], 'ベーシック': ['ベーシック', '基础'] };
         Object.keys(byGrade).forEach(function (g) {
-          html += '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' + esc(g) + '：</span>';
+          var gn = gradeNames[g] || [g, g];
+          html += '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' + t(gn[1] + ' / ' + gn[0], gn[0]) + '：</span>';
           byGrade[g].forEach(function (s) {
             var on = cur.mark === s.code;
             var price = planCode === '4SAME'
@@ -470,7 +471,7 @@
             var dis = Q.disabledReason('wall', s.code);
             html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '">' +
               '<input type="radio" name="wall_mark" data-wall-mark="' + esc(s.code) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-              esc(s.name_ja || s.code) + ' <b>' + esc(price) + '</b></label>';
+              esc(s.name_zh || s.name_ja || s.code) + ' <span class="ja">' + esc(s.name_ja || '') + '</span> <b>' + esc(price) + '</b></label>';
           });
           html += '</div>';
         });
@@ -479,14 +480,15 @@
         if (planCode !== '4SAME' && cur.mark) {
           var sub = plan.subOptions.find(function (x) { return String(x.code) === String(cur.mark); });
           var grade = cur.grade || (sub && sub.grade) || 'hg2';
-          html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード：', '周辺グレード：') + '</span>';
+          html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード / 周边等级：', '周辺グレード：') + '</span>';
           ['premium', 'hg2', 'hg1', 'basic'].forEach(function (g2) {
             var on2 = grade === g2;
             var gJa = { premium: 'プレミアム', hg2: 'ハイグレードⅡ', hg1: 'ハイグレードⅠ', basic: 'ベーシック' }[g2];
+            var gZh = { premium: '高端', hg2: '高级Ⅱ', hg1: '高级Ⅰ', basic: '基础' }[g2];
             var price = (sub && sub.surroundPrices && sub.surroundPrices[g2]) ? P.fmtDiff(sub.surroundPrices[g2][Q.typeGroup()]) : '—';
             html += '<label class="sub-chip' + (on2 ? ' on' : '') + '">' +
               '<input type="radio" name="wall_grade" data-wall-grade="' + g2 + '"' + (on2 ? ' checked' : '') + '>' +
-              esc(gJa) + ' <b>' + esc(price) + '</b></label>';
+              esc(gZh) + ' <span class="ja">' + esc(gJa) + '</span> <b>' + esc(price) + '</b></label>';
           });
           html += '</div>';
         }

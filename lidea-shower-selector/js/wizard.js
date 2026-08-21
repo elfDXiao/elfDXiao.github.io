@@ -365,11 +365,11 @@
     // アクセント：ベースパネル chips（5 種，价格按当前花纹动态）
     if (w === '1') {
       var bases = [
-        { code: 'HN301', name: '鏡面ホワイト/HN301（ハイクラス）' },
-        { code: 'HT541', name: 'ランダムウッド/HT541（ハイクラス）' },
-        { code: 'HT613', name: 'スタッコベージュ/HT613（ハイクラス）' },
-        { code: 'HT611', name: 'シルバーグレー/HT611（ハイクラス）' },
-        { code: 'LE301', name: 'マットホワイト/LE301（ベーシック）' }
+        { code: 'HN301', name: '鏡面ホワイト', name_zh: '镜面白', cls: 'ハイクラス' },
+        { code: 'HT541', name: 'ランダムウッド', name_zh: '随机木纹', cls: 'ハイクラス' },
+        { code: 'HT613', name: 'スタッコベージュ', name_zh: '灰泥米色', cls: 'ハイクラス' },
+        { code: 'HT611', name: 'シルバーグレー', name_zh: '银灰', cls: 'ハイクラス' },
+        { code: 'LE301', name: 'マットホワイト', name_zh: '哑光白', cls: 'ベーシック' }
       ];
       var curBase = Q.wallBase();
       var wallOpt = Q.opt('wall', w);
@@ -379,7 +379,7 @@
       bases.forEach(function (b) {
         var on = curBase === b.code;
         var dis = Q.wallBaseDisabled(b.code);
-        var priceTxt = b.name.indexOf('ベーシック') >= 0 ? 'ベーシック' : 'ハイクラス';
+        var priceTxt = b.cls === 'ベーシック' ? 'ベーシック' : 'ハイクラス';
         if (curPat && curPat.accentCodeByBase) {
           var combo = curPat.accentCodeByBase[b.code];
           if (combo && combo !== 'fullwall') {
@@ -392,7 +392,7 @@
           (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
           '<input type="radio" name="wall_base" data-wall-base="' + esc(b.code) + '"' +
           (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-          esc(b.name) + ' <b>' + esc(priceTxt) + '</b></label>';
+          esc(b.name_zh) + ' <span class="ja">' + esc(b.name) + '</span> <b>' + esc(priceTxt) + '</b></label>';
       });
       html += '</div>';
     }
@@ -415,7 +415,7 @@
           (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
           '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' +
           (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-          '<span class="opt-name">' + esc(p.code + ' ' + (p.name_ja || '')) + '</span>' +
+          '<span class="opt-name">' + esc(p.name_zh || p.name_ja || p.code) + '<em>' + esc(p.code + ' ' + (p.name_ja || '')) + '</em></span>' +
           '<span class="opt-price">' + esc(priceTxt) + '</span></label>';
       });
       h += '</div>';
