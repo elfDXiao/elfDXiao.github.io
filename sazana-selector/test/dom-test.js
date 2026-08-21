@@ -44,10 +44,10 @@ function waitFor(win, check, ms) {
   assert('タイプ 5 个', doc.querySelectorAll('#wizBody input[name="dim_type"]').length === 5);
   assert('默认日元合计(税抜) = ￥1,449,000', doc.querySelector('#sumJPY').textContent.indexOf('1,449,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
-  console.log('== 壁柄第一段（46 选项：39 柄 4面同色 + ACC/SHUHEN） ==');
+  console.log('== 壁柄第一段（三模式：默认四面同色 39 柄直接可选） ==');
   doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 46; }, 2000);
-  assert('壁柄 46 选项（第一段直接可选）', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 46);
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_plan"]').length === 3 && doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 39; }, 2000);
+  assert('三模式 chips 3 + 四面同色 39 柄（默认）', doc.querySelectorAll('#wizBody input[name="wall_plan"]').length === 3 && doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 39);
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAA1"]').click();  // T タイプ +126,000
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0; }, 2000);
   assert('选 EGAA1 后合计 = 1,575,000', doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0, doc.querySelector('#sumJPY').textContent);
@@ -56,7 +56,10 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0; }, 2000);
   assert('选 EGAB5（HⅡ柄）后合计 = 1,533,000（+84,000）', doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
-  console.log('== アクセントプラン两段（ACC_* → アクセント柄 + 周辺グレード + 周辺柄） ==');
+  console.log('== 跳色两段（切跳色器具面侧模式 → ACC_* → 跳色柄 + 周辺グレード + 周辺柄） ==');
+  doc.querySelector('#wizBody input[name="wall_plan"][data-wall-plan="FRONT_ACCENT"]').click();
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 4; }, 2000);
+  assert('跳色模式 ACC_* 4 个（跳色板グレード）', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 4);
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="ACC_PRE"]').click();
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_surround"]').length === 3; }, 2000);
   assert('周辺グレード 3 chips', doc.querySelectorAll('#wizBody input[name="wall_surround"]').length === 3);
