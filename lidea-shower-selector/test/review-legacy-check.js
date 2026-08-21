@@ -1,4 +1,4 @@
-﻿// reviewer t24: jsdom verify size cards (1115 detail) + wall two-stage rendering v3
+// reviewer t24: jsdom verify size cards (1115 detail) + wall two-stage rendering v3
 'use strict';
 const fs = require('fs'), path = require('path');
 const { JSDOM } = require('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom');
@@ -36,7 +36,7 @@ const patternOpts = document.querySelectorAll('#wizBody input[type="radio"]').le
 console.log('  选择后 radio 数:', patternOpts);
 const hasPattern = /HN\d{3}|LE\d{3}|花纹|柄/.test(afterText);
 check('选择 wall 后出现花纹/柄选项', hasPattern, afterText.slice(0, 120));
-const groupTitles = document.querySelectorAll('#wizBody .opt-group-title, #wizBody .group-title, #wizBody h5, #wizBody h6').length;
+const groupTitles = document.querySelectorAll('#wizBody .dim-group-title, #wizBody .opt-group-title, #wizBody .group-title, #wizBody h5, #wizBody h6').length;
 const strong = document.querySelectorAll('#wizBody strong').length;
 check('分组标题存在（クラス分组显示）', groupTitles + strong >= 1, groupTitles + strong);
 

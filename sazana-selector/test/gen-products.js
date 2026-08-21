@@ -24,6 +24,8 @@ function convertOption(o, catId) {
   if (o.types && Array.isArray(o.types)) out.types = o.types;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
+  // ★ t32 浴缸颜色拆分：YQABA 裙板白（N タイプ基本）补全全タイプ 0（目录：标准白裙板全タイプ可用）
+  if (catId === 'bathtub' && o.code === 'YQABA') out.priceByType = { P: 0, T: 0, S: 0, N: 0, F: 0 };
   const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.priceBySurround || out.pricesBySize;
   if (!hasPrice && catId !== 'type' && catId !== 'size') out.priceDiff = 0;
   return out;

@@ -361,29 +361,12 @@
     var w = Q.wallMode();
     if (w == null) return '';
     var html = '';
+    var acc = (w === '1' || w === '2');
 
-    // アクセント：ベースパネル chips
-    if (w === '1' || w === '2') {
-      var bases = [
-        { code: 'LE301', name: 'マットホワイト', name_zh: '哑光白', cls: 'ベーシック', price: 10000 },
-        { code: 'HN301', name: '鏡面ホワイト', name_zh: '镜面白', cls: 'ハイクラス', price: 70000 },
-        { code: 'HN986', name: 'クルムホワイト', name_zh: '库尔姆白', cls: 'ハイクラス', price: 70000 }
-      ];
-      var curBase = Q.wallBase();
-      html += '<div class="sub-row" style="margin-top:12px;"><span class="dim-sub-title">' +
-        t('ベースパネル / 基底面板：', 'ベースパネル：') + '</span>';
-      bases.forEach(function (b) {
-        var on = curBase === b.code;
-        var dis = Q.wallBaseDisabled(b.code);
-        html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '"' +
-          (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
-          '<input type="radio" name="wall_base" data-wall-base="' + esc(b.code) + '"' +
-          (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-          esc(b.name_zh) + ' <span class="ja">' + esc(b.name) + '</span> <b>' + esc(P.fmtDiff(b.price)) + '</b></label>';
-      });
-      html += '</div>';
+    // 跳色花纹块（先选）—— アクセント模式时显示
+    if (acc) {
+      html += '<div class="dim-group-title">' + t('跳色花纹（先选）/ アクセント柄（先に選択）', 'アクセント柄（先に選択）') + '</div>';
     }
-
     // 花纹 chips（ハイクラス / ベーシッククラス 分组）
     var patterns = Q.wallPatterns();
     var cur = Q.state.sub.wall_pattern;
@@ -412,6 +395,26 @@
     html += patChips(highList);
     html += '<div class="dim-group-title">' + t('花纹·ベーシッククラス / 基础柄（' + basicList.length + ' 種）', 'ベーシッククラス柄（' + basicList.length + ' 種）') + '</div>';
     html += patChips(basicList);
+
+    // 四面墙板色块（后选）—— アクセント模式时显示
+    if (acc) {
+      html += '<div class="dim-group-title">' + t('四面墙板色 / ベースパネル色', 'ベースパネル色') + '</div>';
+      var bases = Q.wallBases();
+      var curBase = Q.wallBase();
+      html += '<div class="sub-row"><span class="dim-sub-title">' +
+        t('四面墙板色（ベース）：', 'ベース：') + '</span>';
+      bases.forEach(function (b) {
+        var on = curBase === b.code;
+        var dis = Q.wallBaseDisabled(b.code);
+        html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '"' +
+          (dis ? ' title="' + esc(dis) + '"' : '') + '>' +
+          '<input type="radio" name="wall_base" data-wall-base="' + esc(b.code) + '"' +
+          (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+          esc(b.name_zh) + ' <span class="ja">' + esc(b.name_ja) + '</span> <b>' + esc(P.fmtDiff(b.priceDiff)) + '</b></label>';
+      });
+      html += '</div>';
+      html += '<p class="muted" style="margin-top:4px;">' + t('先选跳色花纹，再选四面墙板色；组合订购代码将按两者自动生成', '先にアクセント柄、次にベース色を選択してください。組合せ注文コードは両者から自動生成されます') + '</p>';
+    }
 
     if (cur) {
       var pat = Q.wallPattern(cur);

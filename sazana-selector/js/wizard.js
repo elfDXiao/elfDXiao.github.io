@@ -517,6 +517,8 @@
         else fourCodes.push(code);
       });
       var html = '';
+      html += '<p class="muted" style="margin:-4px 0 8px;">' +
+        t('先选跳色花纹，再选四面墙板色（跳色计划内含两段选择）', '先にアクセント柄、次に周辺パネル色を選択してください（アクセントプラン内で2段階選択）') + '</p>';
       // 跳色计划组（ACC + SHUHEN）
       if (accCodes.length || shuCodes.length) {
         html += '<div class="dim-group-title">' + t('跳色计划 / アクセントプラン', 'アクセントプラン') + '</div>';

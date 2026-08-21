@@ -1,4 +1,4 @@
-/**
+﻿/**
  * quote.js — LIXIL Renobio Fit（リノビオフィット）选型报价系统：维度配置 + 状态 + 计价引擎 + 组合约束
  *
  * 纯逻辑（无 DOM 依赖），供 wizard.js 调用；挂 window.RENOBIO.quote。
@@ -55,7 +55,7 @@
     // step 3
     { id: 'wall', step: 3, cat: 'wall', kind: 'radio', codes: 'ALL', titleJa: '壁パネル', titleZh: '壁面' },
     // step 4
-    { id: 'bathtub', step: 4, cat: 'bathtub', kind: 'radio', codes: 'ALL', titleJa: '浴槽（FRP カラー）', titleZh: '浴缸' },
+    { id: 'bathtub', step: 4, cat: 'bathtub', kind: 'radio', codes: 'ALL', titleJa: '浴槽カラー（FRP）', titleZh: '浴缸色' },
     { id: 'bathtub_drain', step: 4, cat: 'bathtub_drain', kind: 'radio', codes: 'ALL', titleJa: '浴槽排水栓', titleZh: '浴缸排水栓' },
     { id: 'bathtub_bar', step: 4, cat: 'bathtub_bar', kind: 'radio', codes: 'ALL', titleJa: '浴槽内握りバー', titleZh: '浴缸内扶手' },
     // step 5
@@ -157,8 +157,20 @@
     var w = state.sel.wall;
     return w == null ? null : String(w);
   }
-  /** 当前ベース（アクセント時；默认 LE301 ベーシック） */
-  function wallBase() { return state.sub.wall_base || 'LE301'; }
+  /** 壁パネルベース（四面墙板色）公共表（meta.wallBases，wizard 渲染/quote 缺省读取） */
+  function wallBases() {
+    return (DATA.meta && DATA.meta.wallBases) || [
+      { code: 'LE301', name_ja: 'マットホワイト', name_zh: '哑光白', cls: 'basic', priceDiff: 10000 }
+    ];
+  }
+  /** 当前ベース（アクセント時；默认 = 数据表 default 标记或第一个） */
+  function wallBase() {
+    if (state.sub.wall_base) return state.sub.wall_base;
+    var bs = wallBases();
+    var def = null;
+    for (var i = 0; i < bs.length; i++) { if (bs[i].default) { def = bs[i].code; break; } }
+    return def || (bs.length ? bs[0].code : 'LE301');
+  }
 
   /** 壁パネル贡献（wall 选项价 + 花纹差价） */
   function wallContribution() {
@@ -763,7 +775,7 @@
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
     typeCode: typeCode, sizeCode: sizeCode, typeGroup: typeGroup, basePrice: basePrice,
     doorPosCode: doorPosCode, sizeAltPrice: sizeAltPrice,
-    wallPatterns: wallPatterns, wallPattern: wallPattern, wallMode: wallMode, wallBase: wallBase,
+    wallPatterns: wallPatterns, wallPattern: wallPattern, wallBases: wallBases, wallMode: wallMode, wallBase: wallBase,
     wallContribution: wallContribution, wallPatternPartNo: wallPatternPartNo,
     wallPatternDisabled: wallPatternDisabled, wallBaseDisabled: wallBaseDisabled, wallPatternPrice: wallPatternPrice,
     productNo: productNo,

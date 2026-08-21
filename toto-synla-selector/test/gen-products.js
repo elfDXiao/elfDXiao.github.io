@@ -15,6 +15,16 @@ const DST = path.join(__dirname, '..', 'data', 'products.js');
 
 const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));
 
+// ---------- 壁柄色名中文映射（从 4SAME plan 的 EQA 子项继承到 FRONT/SIDE_ACCENT 的 EQC） ----------
+const WALL_COLOR_ZH = {};
+(function buildWallColorMap() {
+  const wallCat = d.categories.find(c => c.id === 'wall');
+  if (!wallCat) return;
+  const plan4 = wallCat.options.find(o => o.code === '4SAME');
+  if (!plan4 || !Array.isArray(plan4.subOptions)) return;
+  plan4.subOptions.forEach(s => { if (s.name_zh && s.name_ja && !WALL_COLOR_ZH[s.name_ja]) WALL_COLOR_ZH[s.name_ja] = s.name_zh; });
+})();
+
 // ---------- 尺寸组定义（手册サイズ2区分/3区分） ----------
 const SIZE_GROUPS = {
   S1: '1624/1620/1618',      // 大サイズ系
@@ -47,7 +57,14 @@ function convertOption(o, catId) {
   if (o.availabilityRaw) out.availabilityRaw = o.availabilityRaw;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
-  if (o.subOptions) out.subOptions = o.subOptions.map(s => Object.assign({}, s));
+  if (o.subOptions) {
+    out.subOptions = o.subOptions.map(s => {
+      const copy = Object.assign({}, s);
+      // 壁柄色名中文继承：缺 name_zh 时按 name_ja（含镜面/哑光后缀）从 4SAME 映射补齐
+      if (!copy.name_zh && copy.name_ja && WALL_COLOR_ZH[copy.name_ja]) copy.name_zh = WALL_COLOR_ZH[copy.name_ja];
+      return copy;
+    });
+  }
   // 手册 ±0 项（无任何价格字段且不是纯展示）→ priceDiff:0；price===null 的 unknown 项除外
   const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize;
   if (!hasPrice && catId !== 'type' && !out.subOptions && o.price !== null) {

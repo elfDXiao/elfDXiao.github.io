@@ -367,6 +367,68 @@
   }
 
   function radioHtml(d) {
+    // 壁パネル（wall）：AC（跳色）组置前、W（四面同色）组在后，各带双语组标题 + 引导
+    if (d.id === 'wall') {
+      var codesAll = Q.codesOf(d);
+      var wCodes = [], acCodes = [];
+      codesAll.forEach(function (code) {
+        if (String(code).indexOf('AC') === 0) acCodes.push(code);
+        else wCodes.push(code);
+      });
+      var html = '<p class="muted" style="margin:-4px 0 8px;">' +
+        t('选择跳色组合后，颜色由该组合确定（如 尊享Ⅱ×高配 = 跳色侧尊享Ⅱ＋四面侧高配）', 'アクセント組合せを選ぶと、色はその組合せで確定します（例 プレミアムⅡ×ハイ = アクセント側プレミアムⅡ＋周辺側ハイ）') + '</p>';
+      if (acCodes.length) {
+        html += '<div class="dim-group-title">' + t('跳色 / アクセント張り', 'アクセント張り') + '</div>';
+        html += '<div class="opt-grid">';
+        acCodes.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+      }
+      if (wCodes.length) {
+        html += '<div class="dim-group-title">' + t('四面同色 / 全面張り', '全面張り') + '</div>';
+        html += '<div class="opt-grid">';
+        wCodes.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+      }
+      var chips = pseudoChips(d);
+      if (chips) html += '<div class="sub-row">' + chips + '</div>';
+      return html;
+    }
+    // 浴缸（bt_tub）：BT_SHAPE 置顶 + 材质 3 组（パールクォーツ/ルフレトーン/FRP）
+    if (d.id === 'bt_tub') {
+      var all = Q.codesOf(d);
+      var shapeCodes = [], pqCodes = [], ruCodes = [], frpCodes = [];
+      all.forEach(function (code) {
+        if (code === 'BT_SHAPE') shapeCodes.push(code);
+        else if (code === 'T6' || code === 'T7' || code === 'T8') pqCodes.push(code);
+        else if (code === 'TR' || code === 'TT' || code === 'TS' || code === 'TW' || code === 'TU' || code === 'TV') ruCodes.push(code);
+        else frpCodes.push(code);
+      });
+      var html2 = '';
+      function grp(title, list) {
+        var h = '<div class="dim-group-title">' + t(title[0], title[1]) + '</div><div class="opt-grid">';
+        list.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          h += optionLabel(d, code, o);
+        });
+        return h + '</div>';
+      }
+      if (shapeCodes.length) html2 += grp(['浴缸形状（虚拟）/ 浴槽形状', '浴槽形状'], shapeCodes);
+      html2 += grp(['浴缸・パールクォーツ（珍珠石英）/ パールクォーツ', 'パールクォーツ'], pqCodes);
+      html2 += grp(['浴缸・ルフレトーン（琉夫雷调）/ ルフレトーン', 'ルフレトーン'], ruCodes);
+      html2 += grp(['浴缸・FRP / FRP', 'FRP'], frpCodes);
+      var chips2 = pseudoChips(d);
+      if (chips2) html2 += '<div class="sub-row">' + chips2 + '</div>';
+      return html2;
+    }
     var html = '<div class="opt-grid">';
     var codes = Q.codesOf(d);
     codes.forEach(function (code) {
