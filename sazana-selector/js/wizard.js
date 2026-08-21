@@ -370,7 +370,7 @@
     if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') {
       var o = Q.opt('wall', wallCode);
       if (o) {
-        html += '<p class="muted" style="margin-top:10px;">' + t('壁柄：' + (o.name_ja || wallCode), '壁柄：' + (o.name_ja || wallCode)) + ' ／ 品番 ' + wallCode + '</p>';
+        html += '<p class="muted" style="margin-top:10px;">' + t('壁柄：' + (o.name_zh || o.name_ja || wallCode), '壁柄：' + (o.name_ja || wallCode)) + ' ／ 品番 ' + wallCode + '</p>';
       }
       return html;
     }
@@ -380,36 +380,39 @@
       var accGrade = Q.WALL_ACC_GRADE[wallCode];
       var accList = Q.sazanaWallPatterns().filter(function (p) { return p.class === accGrade; });
       // アクセント柄 chips
-      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('アクセントパネル柄：', 'アクセントパネル：') + '</span>';
+      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('アクセントパネル柄 / 跳色面板花纹：', 'アクセントパネル柄：') + '</span>';
       accList.forEach(function (p) {
         var on = cur === p.code_front;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
           '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code_front) + '"' + (on ? ' checked' : '') + '>' +
-          esc(p.name_ja || p.code_front) + (p.finish ? '（' + esc(p.finish) + '）' : '') +
+          esc(p.name_zh || p.name_ja || p.code_front) + ' <span class="ja">' + esc(p.name_ja || '') + '</span>' +
+          (p.finish ? '（' + esc(p.finish) + '）' : '') +
           (p.lightingLimited ? ' ⚠照明限定' : '') + '</label>';
       });
       html += '</div>';
       // 周辺グレード chips
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード：', '周辺グレード：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺グレード / 周边等级：', '周辺グレード：') + '</span>';
       ['周辺ハイグレードⅡ', '周辺ハイグレードⅠ', '周辺ベーシックグレード'].forEach(function (g2) {
         var o2 = Q.opt('wall', wallCode);
         var price = (o2 && o2.priceBySurround && o2.priceBySurround[g2] != null) ? P.fmtDiff(o2.priceBySurround[g2]) : '—';
         var on2 = curSg === g2;
+        var gZh = { '周辺ハイグレードⅡ': '高级Ⅱ', '周辺ハイグレードⅠ': '高级Ⅰ', '周辺ベーシックグレード': '基础' }[g2] || g2;
+        var gJa = g2.replace('周辺', '');
         html += '<label class="sub-chip' + (on2 ? ' on' : '') + '">' +
           '<input type="radio" name="wall_surround" data-wall-surround="' + esc(g2) + '"' + (on2 ? ' checked' : '') + '>' +
-          esc(g2.replace('周辺', '')) + ' <b>' + esc(price) + '</b></label>';
+          esc(gZh) + ' <span class="ja">' + esc(gJa) + '</span> <b>' + esc(price) + '</b></label>';
       });
       html += '</div>';
       // 周辺柄 chips（按周辺グレード）
       if (curSg) {
         var sgKey = curSg.replace('周辺', '');
         var surList = Q.sazanaSurroundPatterns().filter(function (p) { return p.class === sgKey; });
-        html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺パネル柄：', '周辺パネル柄：') + '</span>';
+        html += '<div class="sub-row"><span class="dim-sub-title">' + t('周辺パネル柄 / 周边面板花纹：', '周辺パネル柄：') + '</span>';
         surList.forEach(function (p) {
           var on3 = curSp === p.code;
           html += '<label class="sub-chip' + (on3 ? ' on' : '') + '">' +
             '<input type="radio" name="wall_surround_pattern" data-wall-surround-pattern="' + esc(p.code) + '"' + (on3 ? ' checked' : '') + '>' +
-            esc(p.name_ja || p.code) + '</label>';
+            esc(p.name_zh || p.name_ja || p.code) + ' <span class="ja">' + esc(p.name_ja || '') + '</span></label>';
         });
         html += '</div>';
       }
@@ -427,12 +430,12 @@
     if (Q.WALL_SHUHEN_GRADE[wallCode]) {
       var shGrade = Q.WALL_SHUHEN_GRADE[wallCode].replace('周辺', '');
       var shList = Q.sazanaSurroundPatterns().filter(function (p) { return p.class === shGrade; });
-      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('周辺パネル柄：', '周辺パネル柄：') + '</span>';
+      html += '<div class="sub-row" style="margin-top:10px;"><span class="dim-sub-title">' + t('周辺パネル柄 / 周边面板花纹：', '周辺パネル柄：') + '</span>';
       shList.forEach(function (p) {
         var on = cur === p.code;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
           '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + '>' +
-          esc(p.name_ja || p.code) + '</label>';
+          esc(p.name_zh || p.name_ja || p.code) + ' <span class="ja">' + esc(p.name_ja || '') + '</span></label>';
       });
       html += '</div>';
       return html;
@@ -446,7 +449,7 @@
         var on = cur === p.code;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
           '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + '>' +
-          esc(p.name_ja || p.code) + ' <b>' + esc(p.code) + '</b></label>';
+          esc(p.name_zh || p.name_ja || p.code) + ' <span class="ja">' + esc(p.name_ja || '') + '</span> <b>' + esc(p.code) + '</b></label>';
       });
       html += '</div>';
       if (cur) html += '<p class="muted" style="margin-top:6px;">' + t('品番：' + cur, '品番：' + cur) + '</p>';

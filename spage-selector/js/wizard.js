@@ -371,7 +371,7 @@
       if (p.longLeadTime) mark += ' 納期+';
       html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '">' +
         '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-        esc(p.code + ' ' + (p.name_ja || '')) + (p.finish ? '（' + esc(p.finish) + '）' : '') + mark +
+        esc(p.name_zh || p.name_ja || p.code) + ' <span class="ja">' + esc(p.code + ' ' + (p.name_ja || '')) + '</span>' + (p.finish ? '（' + esc(p.finish) + '）' : '') + mark +
         ' <b>' + esc(price) + '</b></label>';
     });
     html += '</div>';
