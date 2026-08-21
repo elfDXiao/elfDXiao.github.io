@@ -108,8 +108,8 @@ categories.push({
   })
 });
 
-// 其余 22 个分类（data 原样转换）
-const SKIP = ['type'];
+// 其余分类（data 原样转换；size 已由 d.sizes 重建，跳过原 size 分类避免重复）
+const SKIP = ['type', 'size'];
 d.categories.forEach(c => {
   if (SKIP.indexOf(c.id) >= 0) return;
   categories.push({
