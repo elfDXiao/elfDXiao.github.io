@@ -165,5 +165,41 @@
       window.SAZANA.wizard.init(window.SAZANA_DATA);
     });
   </script>
+
+<!-- 选型系统访问密码锁（密码 elfDXiao） -->
+<div id="dsh-lock" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(33,31,27,.97);display:flex;align-items:center;justify-content:center;">
+  <div style="text-align:center;max-width:360px;padding:0 20px;">
+    <div style="font-family:serif;font-size:24px;letter-spacing:.3em;color:#f6f4ef;margin-bottom:6px;">elf_D老肖的世界</div>
+    <div style="font-size:12px;letter-spacing:.35em;color:#d8d2c6;margin-bottom:26px;">选型系统 · 访问验证</div>
+    <div style="font-size:13px;color:#d8d2c6;margin-bottom:12px;">请输入访问密码</div>
+    <input id="dsh-pass" type="password" style="width:220px;padding:11px 14px;font-size:16px;letter-spacing:.25em;text-align:center;color:#f6f4ef;background:transparent;border:1px solid #a65b33;border-radius:4px;outline:none;" autocomplete="off">
+    <button id="dsh-btn" style="display:block;margin:16px auto 0;padding:10px 40px;background:#a65b33;color:#f6f4ef;border:0;border-radius:4px;cursor:pointer;font-size:14px;letter-spacing:.3em;">进入</button>
+    <p id="dsh-err" style="color:#e0a08a;font-size:12px;min-height:18px;margin-top:12px;"></p>
+  </div>
+</div>
+<script>
+(function () {
+  var KEY = 'dsh_access_v1', DAYS = 30, PASS = 'elfDXiao';
+  try {
+    var t = parseInt(localStorage.getItem(KEY), 10);
+    if (t && Date.now() - t < DAYS * 86400000) return;
+  } catch (e) {}
+  var lock = document.getElementById('dsh-lock');
+  if (!lock) return;
+  var pass = document.getElementById('dsh-pass'), btn = document.getElementById('dsh-btn'), err = document.getElementById('dsh-err');
+  function unlock() {
+    if (pass.value === PASS) {
+      try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+      lock.parentNode.removeChild(lock);
+    } else {
+      err.textContent = '密码错误，请重试';
+      pass.value = ''; pass.focus();
+    }
+  }
+  btn.onclick = unlock;
+  pass.onkeydown = function (e) { if (e.key === 'Enter') unlock(); };
+  pass.focus();
+})();
+</script>
 </body>
 </html>
