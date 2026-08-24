@@ -160,13 +160,13 @@ window.initMapExplorer = function (config) {
           '<div class="price">' + escapeHtml(c.price) + '<small>' + (c.pano ? '点击查看 360° 全景' : '点击查看详情') + '</small></div>' +
         '</div>';
       card.addEventListener('click', function () {
-        if (config.onOpenCase) config.onOpenCase(c, i, pName, cName);
+        if (c.pano && config.onOpenCase) config.onOpenCase(c, i, pName, cName);
         else openLightbox(c, i);
       });
       card.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          if (config.onOpenCase) config.onOpenCase(c, i, pName, cName);
+          if (c.pano && config.onOpenCase) config.onOpenCase(c, i, pName, cName);
           else openLightbox(c, i);
         }
       });
