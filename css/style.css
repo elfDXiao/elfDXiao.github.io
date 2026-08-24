@@ -830,6 +830,15 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   padding: 5px 12px;
   z-index: 2;
 }
+.pano-badge-inline {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: .1em;
+  background: var(--accent);
+  color: #fff;
+  padding: 1px 8px;
+  vertical-align: 1px;
+}
 .case-card-pano .case-thumb::after {
   content: "";
   position: absolute; inset: 0;

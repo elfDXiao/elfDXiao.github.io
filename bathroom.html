@@ -57,7 +57,7 @@
         <div class="sec-head reveal">
           <span class="sec-label">Explore</span>
           <h2 class="sec-title">选择省份与城市</h2>
-          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。</p>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。带 <b class="pano-badge-inline">360°</b> 角标的案例可打开全景实拍。</p>
         </div>
         <div class="explorer-wrap reveal">
           <div class="explorer-stage">
@@ -134,12 +134,30 @@
   <script src="js/china-map-data.js"></script>
   <script src="js/city-data.js"></script>
   <script src="js/case-data.js"></script>
+  <script src="js/case360-data.js"></script>
   <script src="js/ph.js"></script>
   <script src="js/map-explorer.js"></script>
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/pano-viewer.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
+      // 合并 360° 全景案例到主案例库：照片案例 + 360° 案例统一在地图上浏览
+      var merged = JSON.parse(JSON.stringify(window.CASE_DATA.bathroom));
+      (function merge360(dst, src) {
+        Object.keys(src.provinces || {}).forEach(function (pa) {
+          var sp = src.provinces[pa];
+          var dp = dst.provinces[pa] || (dst.provinces[pa] = { name: sp.name, cities: {} });
+          Object.keys(sp.cities || {}).forEach(function (ca) {
+            var sc = sp.cities[ca];
+            var dc = dp.cities[ca] || (dp.cities[ca] = { name: sc.name, cases: [] });
+            dc.cases = dc.cases.concat(sc.cases || []);
+          });
+        });
+      })(merged, window.CASE360_DATA);
+
       window.initMapExplorer({
         type: 'bathroom',
+        dataSource: { bathroom: merged },
         mapId: 'mapBathroom',
         hintId: 'hintBathroom',
         crumbId: 'crumbBathroom',
@@ -155,7 +173,22 @@
         lbBodyId: 'lbBodyBathroom',
         lbPrevId: 'lbPrevBathroom',
         lbNextId: 'lbNextBathroom',
-        lbCloseId: 'lbCloseBathroom'
+        lbCloseId: 'lbCloseBathroom',
+        onOpenCase: function (c, i, provName, cityName) {
+          window.PanoViewer.open({
+            title: c.title,
+            date: c.date,
+            province: provName || '',
+            city: cityName || '',
+            brand: c.brand,
+            series: c.series,
+            price: c.price,
+            priceNote: c.priceNote,
+            desc: c.desc,
+            tags: c.tags,
+            image: c.image
+          });
+        }
       });
     });
   </script>
