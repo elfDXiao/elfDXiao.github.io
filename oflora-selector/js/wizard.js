@@ -106,6 +106,15 @@
         return;
       }
 
+      // 壁柄周囲パネル柄（跳色模式第二段）
+      if (tgt.hasAttribute('data-wall-surround')) {
+        var scode = tgt.getAttribute('data-wall-surround');
+        if (scode) Q.state.sel.wall_surround = scode;
+        else delete Q.state.sel.wall_surround;
+        renderStep(); renderSummary();
+        return;
+      }
+
       // multi 维度（复选框）
       if (tgt.name && tgt.name.indexOf('multi_') === 0) {
         var mid = tgt.name.replace('multi_', '');
@@ -372,30 +381,88 @@
   }
 
   function radioHtml(d) {
-    // 壁柄（wall_pattern）：B グレード / D グレード 分组
+    // 壁アクセント位置：三模式引导文案（A 四面同花 / B 跳色器具面侧=正面 / C 跳色浴缸侧=侧面）
+    if (d.id === 'wall_accent') {
+      var html = '<p class="muted" style="margin:-4px 0 8px;">' +
+        t('先选墙面模式，再选花纹（跳色：先选跳色色，再选四面墙板色）', '先にモード、次に柄を選択（アクセント：先にアクセント色、次に周囲パネル色）') + '</p>';
+      html += '<div class="opt-grid">';
+      Q.codesOf(d).forEach(function (code) {
+        var o = Q.opt(d.id, code);
+        if (!o) return;
+        html += optionLabel(d, code, o);
+      });
+      html += '</div>';
+      var chips0 = pseudoChips(d);
+      if (chips0) html += '<div class="sub-row">' + chips0 + '</div>';
+      return html;
+    }
+    // 壁柄（wall_pattern）：按壁アクセント位置两段式——A 四面同柄单段；B/C 跳色先选跳色面板柄再选周囲面板柄
     if (d.id === 'wall_pattern') {
+      var mode = Q.state.sel.wall_accent || 'B';
       var codesAll = Q.codesOf(d);
       var bCodes = [], dCodes = [];
       codesAll.forEach(function (code) {
         if (/^D[A-D]$/.test(String(code))) dCodes.push(code);
         else bCodes.push(code);
       });
-      var html = '<div class="dim-group-title">' + t('花纹·B グレード（' + bCodes.length + ' 柄）', 'Bグレード柄（' + bCodes.length + ' 種）') + '</div>';
-      html += '<div class="opt-grid">';
-      bCodes.forEach(function (code) {
-        var o = Q.opt(d.id, code);
-        if (!o) return;
-        html += optionLabel(d, code, o);
-      });
-      html += '</div>';
-      html += '<div class="dim-group-title">' + t('花纹·D グレード（' + dCodes.length + ' 柄）', 'Dグレード柄（' + dCodes.length + ' 種）') + '</div>';
-      html += '<div class="opt-grid">';
-      dCodes.forEach(function (code) {
-        var o = Q.opt(d.id, code);
-        if (!o) return;
-        html += optionLabel(d, code, o);
-      });
-      html += '</div>';
+      var html = '';
+      if (mode === 'A') {
+        // 四面同柄：单段（B 级 + D 级 DC/DD；DA/DB 仅跳色禁用）
+        html += '<p class="muted" style="margin:-4px 0 8px;">' +
+          t('四面同花：直接选择 4 面同一花纹（B 级 +¥79,200／D 级 −¥29,150）', '全面同柄：4面同一の柄を選択（Bグレード +¥79,200／Dグレード −¥29,150）') + '</p>';
+        html += '<div class="dim-group-title">' + t('花纹·B グレード（' + bCodes.length + ' 柄）', 'Bグレード柄（' + bCodes.length + ' 種）') + '</div>';
+        html += '<div class="opt-grid">';
+        bCodes.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+        var dOk = dCodes.filter(function (code) { return code === 'DC' || code === 'DD'; });
+        if (dOk.length) {
+          html += '<div class="dim-group-title">' + t('花纹·D グレード（' + dOk.length + ' 柄）', 'Dグレード柄（' + dOk.length + ' 種）') + '</div>';
+          html += '<div class="opt-grid">';
+          dOk.forEach(function (code) {
+            var o = Q.opt(d.id, code);
+            if (!o) return;
+            html += optionLabel(d, code, o);
+          });
+          html += '</div>';
+        }
+      } else {
+        // 跳色（B 正面/C 側面）：先选跳色面板柄（アクセント柄）→ 再选周囲面板柄
+        html += '<p class="muted" style="margin:-4px 0 8px;">' +
+          t('先选跳色花纹，再选四面墙板色（跳色面板 B 级 ±0／D 级 −¥29,150）', '先にアクセント柄、次に周囲パネル色を選択（アクセント Bグレード ±0／Dグレード −¥29,150）') + '</p>';
+        html += '<div class="dim-group-title">' + t('跳色花纹（先选）·B グレード（' + bCodes.length + ' 柄）', 'アクセント柄（先に選択）·Bグレード（' + bCodes.length + ' 種）') + '</div>';
+        html += '<div class="opt-grid">';
+        bCodes.forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+        html += '<div class="dim-group-title">' + t('跳色花纹（先选）·D グレード（アクセント専用）', 'アクセント柄（先に選択）·Dグレード（アクセント専用）') + '</div>';
+        html += '<div class="opt-grid">';
+        dCodes.forEach(function (code) {
+          if (code !== 'DA' && code !== 'DB') return;
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          html += optionLabel(d, code, o);
+        });
+        html += '</div>';
+        // 周囲面板柄（四面墙板色，D 级 DC/DD）
+        html += '<div class="dim-group-title">' + t('四面墙板色 / 周囲パネル色', '周囲パネル色') + '</div>';
+        html += '<div class="sub-row" style="margin-top:4px;">';
+        ['DC', 'DD'].forEach(function (code) {
+          var o = Q.opt(d.id, code);
+          if (!o) return;
+          var on = Q.state.sel.wall_surround === code;
+          html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+            '<input type="radio" name="wall_surround" data-wall-surround="' + esc(code) + '"' + (on ? ' checked' : '') + '>' +
+            esc(o.name_zh || o.name_ja || code) + ' <span class="ja">' + esc(o.name_ja || '') + '</span></label>';
+        });
+        html += '</div>';
+      }
       var chips = pseudoChips(d);
       if (chips) html += '<div class="sub-row">' + chips + '</div>';
       return html;

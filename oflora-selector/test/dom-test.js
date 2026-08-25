@@ -58,15 +58,20 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,273,250') >= 0; }, 2000);
   assert('切回 BASE 后合计 = 1,273,250', doc.querySelector('#sumJPY').textContent.indexOf('1,273,250') >= 0);
 
-  console.log('== 壁柄分组（step 7） ==');
+  console.log('== 壁柄两段式（step 7，默认跳色模式） ==');
   doc.querySelector('#wizStepper .wstep[data-step="7"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall_pattern"]').length === 28; }, 2000);
-  assert('壁柄 28 项（B 24 + D 4）', doc.querySelectorAll('#wizBody input[name="dim_wall_pattern"]').length === 28);
-  assert('壁柄 2 组分组（B/D）', doc.querySelectorAll('#wizBody .opt-block[data-dim="wall_pattern"] .dim-group-title').length === 2, doc.querySelectorAll('#wizBody .opt-block[data-dim="wall_pattern"] .dim-group-title').length);
-  // 选 D 柄 DC → -29,150 → 合计 1,244,100
-  doc.querySelector('#wizBody input[name="dim_wall_pattern"][data-code="DC"]').click();
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall_pattern"]').length === 26; }, 2000);
+  assert('跳色模式壁柄 26 项（B 24 + DA/DB 2）', doc.querySelectorAll('#wizBody input[name="dim_wall_pattern"]').length === 26);
+  assert('周囲面板柄 chips 2（DC/DD）', doc.querySelectorAll('#wizBody input[name="wall_surround"]').length === 2, doc.querySelectorAll('#wizBody input[name="wall_surround"]').length);
+  assert('两段式分组标题 ≥ 3（跳色柄/周囲）', doc.querySelectorAll('#wizBody .opt-block[data-dim="wall_pattern"] .dim-group-title').length >= 3, doc.querySelectorAll('#wizBody .opt-block[data-dim="wall_pattern"] .dim-group-title').length);
+  // 选跳色柄 DA（D 级アクセント）→ -29,150 → 合计 1,244,100
+  doc.querySelector('#wizBody input[name="dim_wall_pattern"][data-code="DA"]').click();
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,244,100') >= 0; }, 2000);
-  assert('选 DC 后合计 = 1,244,100（-29,150）', doc.querySelector('#sumJPY').textContent.indexOf('1,244,100') >= 0, doc.querySelector('#sumJPY').textContent);
+  assert('选跳色柄 DA 后合计 = 1,244,100（-29,150）', doc.querySelector('#sumJPY').textContent.indexOf('1,244,100') >= 0, doc.querySelector('#sumJPY').textContent);
+  // 选周囲 DC（无差价）
+  doc.querySelector('#wizBody input[name="wall_surround"][data-wall-surround="DC"]').click();
+  await waitFor(win, function () { return doc.querySelector('#wizBody').textContent.indexOf('周囲') >= 0; }, 2000);
+  assert('选周囲 DC 后合计不变 1,244,100', doc.querySelector('#sumJPY').textContent.indexOf('1,244,100') >= 0, doc.querySelector('#sumJPY').textContent);
 
   console.log('== 浴槽联动（step 5） ==');
   doc.querySelector('#wizStepper .wstep[data-step="5"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
