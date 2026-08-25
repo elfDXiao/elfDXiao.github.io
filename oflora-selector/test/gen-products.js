@@ -19,6 +19,8 @@ function convertOption(o, catId) {
   if (o.priceBySize) out.pricesBySize = o.priceBySize;
   if (o.priceByType) out.priceByType = o.priceByType;         // Oflora 无タイプ，但保留（兼容）
   if (o.priceByFaucetGroup) out.priceByFaucetGroup = o.priceByFaucetGroup;   // back_piping 裏配管
+  if (o.priceByGrade) out.priceByGrade = o.priceByGrade;                     // wall_accent 壁アクセント位置×柄グレード组合价
+  if (o.grade) out.grade = o.grade;                                          // wall_pattern 柄グレード（B/D）
   if (o.partNumber) out.partNumber = o.partNumber;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;

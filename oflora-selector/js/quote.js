@@ -211,14 +211,32 @@
     return 'スゴピカ';
   }
 
+  /** 柄グレード：D[A-D] = D 级，其余 B 级 */
+  function wallGradeOfPattern(code) {
+    return /^D[A-D]$/.test(String(code)) ? 'D' : 'B';
+  }
+  /** 墙面价格（壁アクセント位置 × 柄グレード 组合矩阵；周囲柄无差价；默认模式 B 正面、未选柄按 B 级 0 价） */
+  function wallContribution() {
+    var mode = state.sel.wall_accent || 'B';
+    var pc = state.sel.wall_pattern;
+    if (!pc) return 0;   // 未选柄：默认 B 级（0 价），不报 unknown
+    var wa = opt('wall_accent', mode);
+    if (!wa || !wa.priceByGrade) return 0;
+    var grade = wallGradeOfPattern(pc);
+    var v = wa.priceByGrade[grade];
+    return typeof v === 'number' ? P.toAmount(v) : 0;
+  }
+
   function contributionFor(dimId) {
     var d = dim(dimId);
     if (!d) return null;
     switch (d.kind) {
       case 'radio': {
+        if (dimId === 'wall_accent') return wallContribution();   // 墙价=模式×柄グレード矩阵（默认 B 正面，未选也按柄计价）
         var c = state.sel[dimId];
         if (c == null) return null;
         if (dimId === 'photo_set') return null;   // 照片套餐为参考，不计价
+        if (dimId === 'wall_pattern') return 0;   // 柄本身无差价（矩阵已含グレード价），避免重复与 unknown 警告
         return radioContribution(dimId, c);
       }
       case 'multi': {
@@ -244,6 +262,13 @@
     switch (d.kind) {
       case 'radio': {
         var c = state.sel[dimId];
+        // 壁アクセント位置未选：按默认 B 正面（标准）描述与计价
+        if (dimId === 'wall_accent' && c == null) {
+          var oB = opt('wall_accent', 'B');
+          if (oB) { out.nameZh = oB.name_zh || 'B'; out.nameJa = oB.name_ja || 'B'; out.code = 'B'; }
+          out.diff = contributionFor('wall_accent');
+          return out;
+        }
         if (c == null) return out;
         var vb = virtualBasicOf(d);
         if (vb && vb.code === c) {
@@ -256,6 +281,16 @@
         out.nameJa = o.name_ja || '';
         out.code = o.code || '';
         out.model = o.partNumber || o.selectMark || '';
+        // 壁柄：跳色模式（B/C）追加周囲柄名
+        if (dimId === 'wall_pattern' && state.sel.wall_accent !== 'A' && state.sel.wall_surround) {
+          var sg = state.sel.wall_surround;
+          var so = opt('wall_pattern', sg);
+          if (so) {
+            out.nameZh += '・周囲' + (so.name_zh || sg);
+            out.nameJa += '・周囲' + (so.name_ja || sg);
+            out.extra = (out.extra ? out.extra + '；' : '') + '跳色（' + (state.sel.wall_accent === 'C' ? '側面' : '正面') + '）';
+          }
+        }
         if (o.note && /★|受注終了/.test(o.note)) {
           out.extra = (out.extra ? out.extra + '；' : '') + '⚠受注終了予定（2026年10月末）';
         }
@@ -488,6 +523,8 @@
 
   /** 选中某维度选项后的自动修复 */
   function autoFix(dimId, code) {
+    // 壁アクセント位置切换：A 全面同柄时清周囲柄（无周囲）
+    if (dimId === 'wall_accent' && code === 'A') delete state.sel.wall_surround;
     // 浴槽形状切换：不適配材质回退
     if (dimId === 'bathtub_shape' && code === 'B4') {
       var m = state.sel.bathtub_material;
