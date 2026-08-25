@@ -339,6 +339,17 @@
 
   function priceNum(d, code, o) {
     if (Q.isVirtualBasic(code)) return 0;
+    // 壁柄：按当前模式×柄グレード显示参考差价（B 级 0/A 模式 +79,200；D 级 −29,150）
+    if (d.id === 'wall_pattern') {
+      var mode = Q.state.sel.wall_accent || 'B';
+      var wa = Q.opt('wall_accent', mode);
+      if (wa && wa.priceByGrade) {
+        var g = /^D[A-D]$/.test(String(code)) ? 'D' : 'B';
+        var v = wa.priceByGrade[g];
+        return typeof v === 'number' ? v : null;
+      }
+      return null;
+    }
     var v = P.priceFor(o, Q.planCode(), Q.sizeCode());
     return (typeof v === 'number') ? v : null;
   }
@@ -349,6 +360,11 @@
     var disCls = dis ? ' disabled' : '';
     var s = P.optionPriceSummary(o, Q.planCode(), Q.sizeCode());
     var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
+    // 壁柄：按当前模式×柄グレード显示参考差价（替换 optionPriceSummary 的 ￥0）
+    if (d.id === 'wall_pattern') {
+      var pn = priceNum(d, code, o);
+      price = (pn == null) ? '—' : P.fmtDiff(pn);
+    }
     var note = '';
     if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
     if (o.note && /★|受注終了/.test(o.note)) note += '<span class="opt-dis" style="color:#b03a2e;">⚠受注終了</span>';
@@ -381,15 +397,17 @@
   }
 
   function radioHtml(d) {
-    // 壁アクセント位置：三模式引导文案（A 四面同花 / B 跳色器具面侧=正面 / C 跳色浴缸侧=侧面）
+    // 壁アクセント位置：三模式 chips（A 四面同花 / B 跳色器具面侧=正面 / C 跳色浴缸侧=侧面）
     if (d.id === 'wall_accent') {
+      var curMode = Q.state.sel.wall_accent || 'B';
       var html = '<p class="muted" style="margin:-4px 0 8px;">' +
         t('先选墙面模式，再选花纹（跳色：先选跳色色，再选四面墙板色）', '先にモード、次に柄を選択（アクセント：先にアクセント色、次に周囲パネル色）') + '</p>';
-      html += '<div class="opt-grid">';
-      Q.codesOf(d).forEach(function (code) {
-        var o = Q.opt(d.id, code);
-        if (!o) return;
-        html += optionLabel(d, code, o);
+      html += '<div class="sub-row">';
+      [['A', '四面同花', '全面同柄'], ['B', '跳色器具面侧', '正面アクセント'], ['C', '跳色浴缸侧', '側面アクセント']].forEach(function (m) {
+        var on = curMode === m[0];
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="dim_wall_accent" data-code="' + m[0] + '"' + (on ? ' checked' : '') + '>' +
+          esc(m[1]) + ' <span class="ja">' + esc(m[2]) + '</span></label>';
       });
       html += '</div>';
       var chips0 = pseudoChips(d);
