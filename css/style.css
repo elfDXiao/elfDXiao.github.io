@@ -12,8 +12,8 @@
   --line: #d8d2c6;
   --accent: #a65b33;
   --accent-soft: #e4d3c6;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
-  --sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", "Microsoft YaHei", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Microsoft YaHei UI", "Noto Sans SC", "Segoe UI", system-ui, sans-serif;
   --nav-h: 68px;
   --maxw: 1180px;
   --gutter: clamp(20px, 5vw, 40px);
