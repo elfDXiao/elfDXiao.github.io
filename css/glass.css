@@ -155,8 +155,9 @@ body {
   background: rgba(255, 255, 255, .80);
 }
 
-/* ---------- 5. 地图：有案例数据的省份 → 浅咖啡色标注 ---------- */
-.prov-path.has-data { fill: #c2a17d; }
+/* ---------- 5. 地图：无案例省份灰白底；有案例省份 → 浅咖啡色标注 ---------- */
+.prov-path { fill: #f1eee7; stroke: #e2ded5; }
+.prov-path.has-data { fill: #c2a17d; stroke: #f1eee7; }
 .prov-path.has-data:hover { fill: #a9845e; }
 .prov-path.has-data.active,
 .prov-path.has-data.active:hover { fill: var(--accent); }
