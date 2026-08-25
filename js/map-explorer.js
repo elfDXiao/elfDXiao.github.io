@@ -38,7 +38,8 @@ window.initMapExplorer = function (config) {
     g.setAttribute('class', 'province');
     var path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', p.d);
-    path.setAttribute('class', 'prov-path');
+    // 有案例数据的省份：添加 has-data 类（CSS 中以浅咖啡色标注，见 glass.css）
+    path.setAttribute('class', ds.provinces[p.adcode] ? 'prov-path has-data' : 'prov-path');
     path.setAttribute('data-name', p.name);
     g.appendChild(path);
     if (p.cx !== null && p.cy !== null) {
