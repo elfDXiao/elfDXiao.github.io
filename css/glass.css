@@ -1,0 +1,175 @@
+/* =========================================================
+   全站 · iOS 毛玻璃风格（Glassmorphism）
+   被主站全部页面 + 各选型系统页面引入
+   依赖各页 style.css 的变量（--paper / --ink / --accent ...）
+   移除本文件引入即可 100% 还原原风格
+   ========================================================= */
+
+/* ---------- 1. 页面背景：米色基调 + iOS 风格柔和彩色光斑 ---------- */
+body {
+  background:
+    radial-gradient(1100px 700px at 82% -8%,  rgba(166, 91,  51, .20), transparent 62%),
+    radial-gradient(760px 540px at 8% 18%,    rgba(122, 162, 247, .20), transparent 60%),
+    radial-gradient(900px 620px at 92% 42%,   rgba(214, 133, 180, .16), transparent 62%),
+    radial-gradient(820px 640px at 12% 82%,   rgba(126, 201, 186, .18), transparent 62%),
+    linear-gradient(178deg, #f7f5ef 0%, #efece4 100%);
+  background-attachment: fixed;
+}
+
+/* ---------- 2. 顶部导航：毛玻璃 ---------- */
+.site-header {
+  background: rgba(247, 245, 239, .52);
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  border-bottom: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: 0 1px 0 rgba(33, 31, 27, .03);
+}
+.site-header.scrolled,
+.site-header.on-page {
+  background: rgba(247, 245, 239, .72);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border-bottom-color: rgba(33, 31, 27, .08);
+  box-shadow: 0 6px 24px rgba(33, 31, 27, .06);
+}
+
+/* 移动端下拉菜单：毛玻璃面板 */
+@media (max-width: 680px) {
+  .nav-links {
+    background: rgba(247, 245, 239, .82);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border-bottom: 1px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 24px 48px rgba(33, 31, 27, .14);
+  }
+}
+
+/* ---------- 3. 首屏/内页 hero：让背景光斑透出来 ---------- */
+.hero {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .30) 0%, rgba(255, 255, 255, 0) 72%);
+}
+.page-hero {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .30) 0%, rgba(255, 255, 255, 0) 78%);
+}
+
+/* 首屏按钮：iOS 风格圆角 + 玻璃 */
+.hero-actions .btn {
+  border-radius: 14px;
+}
+.hero-actions .btn-solid {
+  box-shadow: 0 8px 20px rgba(166, 91, 51, .30);
+}
+.hero-actions .btn-line {
+  background: rgba(255, 255, 255, .42);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, .68);
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgba(33, 31, 27, .08), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+.hero-actions .btn-line:hover {
+  background: rgba(33, 31, 27, .88);
+  border-color: rgba(33, 31, 27, .88);
+  color: var(--paper);
+}
+
+/* ---------- 4. 通用毛玻璃面板（全站卡片） ---------- */
+.index-item,
+.step,
+.statement blockquote,
+.product-card,
+.case-card,
+.sys-card,
+.select-card,
+.form-card,
+.aside-card,
+.map-box,
+.sel-box,
+.wizard-progress,
+.wizard-steps,
+.pano-field,
+.entry-360,
+.cta-box,
+.opt-block,
+.rate-box,
+.sum-box,
+.dl-box {
+  background: rgba(255, 255, 255, .46);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, .62);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(33, 31, 27, .07), inset 0 1px 0 rgba(255, 255, 255, .65);
+}
+
+/* 玻璃面板 hover：更亮 + 上浮 */
+.index-item:hover,
+.step:hover,
+.statement blockquote:hover,
+.product-card:hover,
+.case-card:hover,
+.sys-card:hover,
+.select-card:hover,
+.form-card:hover,
+.aside-card:hover,
+.map-box:hover,
+.sel-box:hover,
+.wizard-progress:hover,
+.wizard-steps:hover,
+.pano-field:hover,
+.entry-360:hover,
+.cta-box:hover,
+.opt-block:hover,
+.rate-box:hover,
+.sum-box:hover,
+.dl-box:hover {
+  background: rgba(255, 255, 255, .62);
+  border-color: rgba(255, 255, 255, .88);
+  box-shadow: 0 18px 44px rgba(33, 31, 27, .13), inset 0 1px 0 rgba(255, 255, 255, .78);
+}
+
+/* 首页六大板块：横条列表 → 玻璃卡片网格 */
+.index-list {
+  display: grid;
+  gap: 18px;
+  border-top: 0;
+}
+.index-item {
+  display: grid;
+  grid-template-columns: 90px 1.1fr 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 26px 28px;
+  transition: transform .3s ease, box-shadow .3s ease, background .3s ease;
+}
+.index-item:hover {
+  transform: translateY(-4px);
+  padding-left: 28px;
+}
+
+/* 表单输入框：半透明玻璃（保持可读） */
+.field input,
+.field select,
+.field textarea,
+.lib-search input {
+  background: rgba(255, 255, 255, .80);
+}
+
+/* ---------- 5. 地图：有案例数据的省份 → 浅咖啡色标注 ---------- */
+.prov-path.has-data { fill: #c2a17d; }
+.prov-path.has-data:hover { fill: #a9845e; }
+.prov-path.has-data.active,
+.prov-path.has-data.active:hover { fill: var(--accent); }
+
+/* ---------- 6. 兼容：不支持 backdrop-filter 时保持可读 ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header, .site-header.scrolled, .site-header.on-page {
+    background: rgba(247, 245, 239, .96);
+  }
+  .index-item, .step, .statement blockquote,
+  .product-card, .case-card, .sys-card, .select-card, .form-card, .aside-card,
+  .map-box, .sel-box, .wizard-progress, .wizard-steps, .pano-field,
+  .entry-360, .cta-box, .opt-block, .rate-box, .sum-box, .dl-box {
+    background: rgba(255, 255, 255, .84);
+  }
+}
