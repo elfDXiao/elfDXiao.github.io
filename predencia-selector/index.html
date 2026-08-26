@@ -152,6 +152,42 @@
     </div>
   </footer>
 
+  <!-- 施工中提示（进入即弹出，点击「知道了」关闭） -->
+  <div id="underConstruction" class="uc-wrap" aria-hidden="true">
+    <div class="uc-card" role="dialog" aria-modal="true" aria-labelledby="ucTitle">
+      <div class="uc-icon">🚧</div>
+      <h3 class="uc-title" id="ucTitle">系统正在施工中<span class="ja">システム施工中</span></h3>
+      <p class="uc-text">本系统正在施工完善中，当前价格与配置仅供参考，最终以官方正式报价为准。</p>
+      <p class="uc-text ja">本システムは施工中です。表示中の価格・構成は参考用であり、最終的には公式の正式見積書をご確認ください。</p>
+      <button type="button" class="uc-btn" data-close>知道了 / 了解</button>
+    </div>
+  </div>
+  <style>
+    .uc-wrap{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(33,31,27,.55);padding:20px;}
+    .uc-wrap.show{display:flex;}
+    .uc-card{background:#f6f4ef;color:#211f1b;max-width:440px;width:100%;border-radius:14px;padding:30px 32px 26px;text-align:center;box-shadow:0 18px 50px rgba(33,31,27,.35);border:1px solid #d8d2c6;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",system-ui,sans-serif;}
+    .uc-icon{font-size:40px;line-height:1;margin-bottom:10px;}
+    .uc-title{font-family:Georgia,"Songti SC","SimSun",serif;font-size:22px;letter-spacing:.06em;margin:0 0 12px;color:#211f1b;}
+    .uc-title .ja{display:block;font-size:13px;color:#8a8478;margin-top:4px;letter-spacing:.1em;}
+    .uc-text{margin:6px 0 0;font-size:14px;line-height:1.7;color:#211f1b;}
+    .uc-text.ja{font-size:12px;color:#8a8478;}
+    .uc-btn{margin-top:18px;padding:10px 34px;border:none;border-radius:999px;background:#a65b33;color:#f6f4ef;font-size:14px;letter-spacing:.14em;cursor:pointer;font-family:inherit;}
+    .uc-btn:hover{background:#8f4a27;}
+  </style>
+  <script>
+    (function () {
+      var wrap = document.getElementById('underConstruction');
+      if (!wrap) return;
+      function show() { wrap.classList.add('show'); wrap.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+      function hide() { wrap.classList.remove('show'); wrap.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+      var btn = wrap.querySelector('[data-close]');
+      if (btn) btn.addEventListener('click', hide);
+      wrap.addEventListener('click', function (e) { if (e.target === wrap) hide(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) hide(); });
+      show();
+    })();
+  </script>
+
   <!-- 数据（顺序：数据 → 工具 → 引擎 → UI） -->
   <script src="data/products.js"></script>
   <script src="js/price.js"></script>
