@@ -174,3 +174,28 @@ body {
     background: rgba(255, 255, 255, .84);
   }
 }
+
+/* ---------- 7. 打印保护：仅 survey.html（body.survey-page）输出需求表文档 ----------
+   毛玻璃 body 的 fixed 渐变背景可能与打印渲染冲突，
+   此处以 !important 强制纯白背景并只显示 #surveyDoc，确保导出 PDF 正常。
+   仅作用于 survey 页，不影响各选型系统自己的报价单打印规则。 */
+@media print {
+  html, body.survey-page {
+    background: #fff !important;
+    background-attachment: scroll !important;
+  }
+  body.survey-page * { visibility: hidden !important; }
+  body.survey-page #surveyDoc,
+  body.survey-page #surveyDoc * { visibility: visible !important; }
+  body.survey-page #surveyDoc {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  body.survey-page .no-print { display: none !important; }
+}
