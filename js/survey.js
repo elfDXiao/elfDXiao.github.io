@@ -376,6 +376,13 @@
   document.getElementById('btnExportPdf').addEventListener('click', function () {
     resultTip.textContent = '';
     resultTip.className = 'result-tip no-print';
+    // 微信内置浏览器不支持 window.print()，需引导到系统浏览器
+    if (/MicroMessenger/i.test(navigator.userAgent || '')) {
+      resultTip.textContent = '微信内暂不支持直接打印：请点击右上角「···」→「在浏览器中打开」后，再点「导出 PDF」保存；也可以先点「复制文本」。';
+      resultTip.className = 'result-tip no-print err';
+      return;
+    }
+    // 给浏览器一点时间刷新提示后弹出打印窗口（目标选「另存为 PDF」）
     setTimeout(function () { window.print(); }, 50);
   });
   var btnCopy = document.getElementById('btnCopy');
