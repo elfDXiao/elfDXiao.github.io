@@ -2,7 +2,7 @@
    客户需求调查 · 交互逻辑
    - 分步问卷向导（进度导航 / 自动保存到本机）
    - 生成需求表预览（不含任何个人信息）
-   - 导出 PDF（调用浏览器打印，可另存为 PDF）
+   - 导出 PDF（html2pdf.js 直接生成 PDF 文件下载，无需调出打印机）
    ========================================================= */
 (function () {
   'use strict';
@@ -27,6 +27,7 @@
   var current = 0;
   var answeredCount = 0;
   var totalFields = 0;
+  var docNo = '';
 
   DATA.sections.forEach(function (s) { totalFields += s.fields.length; });
 
@@ -304,10 +305,11 @@
 
   function showResult() {
     var built = buildDocHTML();
+    docNo = built.no;
     docEl.innerHTML = built.html;
     wizardView.hidden = true;
     resultView.hidden = false;
-    resultTip.textContent = '请先预览，确认无误后点击「导出 PDF」；在打印窗口把目标打印机选为「另存为 PDF」即可保存。';
+    resultTip.textContent = '请先预览，确认无误后点击「导出 PDF」，将直接生成 PDF 文件下载，无需打印。';
     resultTip.className = 'result-tip no-print ok';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -374,16 +376,34 @@
     location.reload();
   });
   document.getElementById('btnExportPdf').addEventListener('click', function () {
-    resultTip.textContent = '';
-    resultTip.className = 'result-tip no-print';
-    // 微信内置浏览器不支持 window.print()，需引导到系统浏览器
-    if (/MicroMessenger/i.test(navigator.userAgent || '')) {
-      resultTip.textContent = '微信内暂不支持直接打印：请点击右上角「···」→「在浏览器中打开」后，再点「导出 PDF」保存；也可以先点「复制文本」。';
+    if (typeof window.html2pdf !== 'function') {
+      resultTip.textContent = 'PDF 生成组件加载失败，请刷新页面重试，或先使用「复制文本」。';
       resultTip.className = 'result-tip no-print err';
       return;
     }
-    // 给浏览器一点时间刷新提示后弹出打印窗口（目标选「另存为 PDF」）
-    setTimeout(function () { window.print(); }, 50);
+    resultTip.textContent = '正在生成 PDF，请稍候…';
+    resultTip.className = 'result-tip no-print ok';
+    // 微信内置浏览器对文件下载支持有限，给个引导提示（仍会尝试直接下载）
+    if (/MicroMessenger/i.test(navigator.userAgent || '')) {
+      resultTip.textContent = '正在生成 PDF；如未自动下载，请点右上角「···」→「在浏览器中打开」后重试。';
+    }
+    var pdfOpt = {
+      margin: [12, 10, 14, 10],
+      filename: '客户需求表-' + String(docNo || '').replace('#', '') + '.pdf',
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    window.html2pdf().set(pdfOpt).from(docEl).save()
+      .then(function () {
+        resultTip.textContent = 'PDF 已生成下载，请查收（下载目录或浏览器下载栏）。';
+        resultTip.className = 'result-tip no-print ok';
+      })
+      .catch(function () {
+        resultTip.textContent = 'PDF 生成失败，请刷新重试，或先使用「复制文本」。';
+        resultTip.className = 'result-tip no-print err';
+      });
   });
   var btnCopy = document.getElementById('btnCopy');
   if (btnCopy) btnCopy.addEventListener('click', copyText);
