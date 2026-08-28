@@ -147,13 +147,13 @@ window.initMapExplorer = function (config) {
       card.className = 'case-card' + (c.pano ? ' case-card-pano' : '');
       card.setAttribute('role', 'button');
       card.tabIndex = 0;
-      var thumb = c.thumb || window.PH.image(1, ds.hue, ds.label);
+      var thumb = c.thumb || (Array.isArray(c.images) ? c.images[0] : window.PH.image(1, ds.hue, ds.label));
       var meta = c.meta || (c.pano ? (c.brand || '') + ' · ' + (c.series || '') : '');
       card.innerHTML =
         '<div class="case-thumb">' +
           '<img src="' + escapeAttr(thumb) + '" alt="' + escapeAttr(c.title) + '">' +
           (c.pano ? '<span class="case-pano">360° 全景</span>' : '') +
-          (c.images ? '<span class="img-count">' + c.images + ' 张</span>' : '') +
+          (c.images ? '<span class="img-count">' + imgCount(c) + ' 张</span>' : '') +
         '</div>' +
         '<div class="case-body">' +
           '<div class="meta">' + escapeHtml(meta) + '</div>' +
@@ -213,9 +213,17 @@ window.initMapExplorer = function (config) {
   var lbBody = document.getElementById(config.lbBodyId);
   var current = null, currentIdx = 0;
 
+  // images 兼容两种形态：数字=占位图数量；数组=真实图片路径列表
+  function imgCount(c) {
+    return Array.isArray(c.images) ? c.images.length : (c.images || 1);
+  }
+  function imgSrc(c, idx) {
+    return Array.isArray(c.images) ? c.images[idx] : window.PH.image(idx + 1, ds.hue, ds.label);
+  }
+
   function openLightbox(c, startIdx) {
     current = c;
-    currentIdx = Math.max(0, Math.min(startIdx || 0, c.images - 1));
+    currentIdx = Math.max(0, Math.min(startIdx || 0, imgCount(c) - 1));
     if (!lb) return;
     lb.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -223,8 +231,8 @@ window.initMapExplorer = function (config) {
   }
   function renderLb() {
     if (!current) return;
-    var n = current.images || 1;
-    lbMedia.innerHTML = '<img src="' + window.PH.image(currentIdx + 1, ds.hue, ds.label) + '" alt="' + escapeAttr(current.title) + '">';
+    var n = imgCount(current);
+    lbMedia.innerHTML = '<img src="' + escapeAttr(imgSrc(current, currentIdx)) + '" alt="' + escapeAttr(current.title) + '">';
     if (lbCount) lbCount.textContent = (currentIdx + 1) + ' / ' + n;
     if (lbBody) {
       lbBody.innerHTML =
@@ -238,7 +246,7 @@ window.initMapExplorer = function (config) {
   }
   function lbNav(dir) {
     if (!current) return;
-    var n = current.images || 1;
+    var n = imgCount(current);
     currentIdx = (currentIdx + dir + n) % n;
     renderLb();
   }
