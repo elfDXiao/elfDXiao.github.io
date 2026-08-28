@@ -107,7 +107,7 @@
 
   <script src="js/china-map-data.js"></script>
   <script src="js/city-data.js"></script>
-  <script src="js/case360-data.js"></script>
+  <script src="js/case-gallery-data.js"></script>
   <script src="js/ph.js"></script>
   <script src="js/map-explorer.js"></script>
   <script src="js/lib/three.min.js"></script>
@@ -116,7 +116,7 @@
     window.addEventListener('DOMContentLoaded', function () {
       window.initMapExplorer({
         type: 'bathroom360',
-        dataSource: { bathroom360: window.CASE360_DATA },
+        dataSource: { bathroom360: window.CASE_GALLERY.bathroom },
         mapId: 'map360',
         hintId: 'hint360',
         crumbId: 'crumb360',
@@ -135,10 +135,12 @@
             brand: c.brand,
             series: c.series,
             price: c.price,
+            priceLabel: '含安装人民币价格',
             priceNote: c.priceNote,
             desc: c.desc,
             tags: c.tags,
-            image: c.image
+            image: c.image,
+            photos: Array.isArray(c.images) ? c.images : null
           });
         }
       });
@@ -146,10 +148,10 @@
       // 深链：bathroom360.html?pano=<id> 直接打开指定案例
       var q = new URLSearchParams(window.location.search);
       var pid = q.get('pano');
-      if (pid && window.CASE360_DATA) {
+      if (pid && window.CASE_GALLERY) {
         var found = null, fProv = '', fCity = '';
-        Object.keys(window.CASE360_DATA.provinces).forEach(function (pa) {
-          var p = window.CASE360_DATA.provinces[pa];
+        Object.keys(window.CASE_GALLERY.bathroom.provinces).forEach(function (pa) {
+          var p = window.CASE_GALLERY.bathroom.provinces[pa];
           Object.keys(p.cities).forEach(function (ca) {
             var city = p.cities[ca];
             city.cases.forEach(function (caseItem) {
@@ -162,8 +164,9 @@
             title: found.title, date: found.date,
             province: fProv, city: fCity,
             brand: found.brand, series: found.series,
-            price: found.price, priceNote: found.priceNote,
-            desc: found.desc, tags: found.tags, image: found.image
+            price: found.price, priceLabel: '含安装人民币价格', priceNote: found.priceNote,
+            desc: found.desc, tags: found.tags, image: found.image,
+            photos: Array.isArray(found.images) ? found.images : null
           });
         }
       }

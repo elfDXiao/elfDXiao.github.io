@@ -34,7 +34,7 @@
       <div class="container">
         <p class="breadcrumb">Section 02 · Custom Furniture</p>
         <h1 class="sec-title">全屋定制展示</h1>
-        <p class="sec-sub">以日式收纳思维与北欧美学定制每一寸空间。点击地图选择省份与城市，浏览当地全屋定制的落地案例、实景图片与价格说明。</p>
+        <p class="sec-sub">以日式收纳思维与北欧美学定制每一寸空间。点击地图选择省份与城市，浏览当地全屋定制的落地案例——<em>360° 全景</em>与多张实景照片，并查看价格说明。</p>
       </div>
     </section>
 
@@ -44,7 +44,7 @@
         <div class="sec-head reveal">
           <span class="sec-label">Explore</span>
           <h2 class="sec-title">选择省份与城市</h2>
-          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。</p>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的落地案例与价格说明。带 <b class="pano-badge-inline">360°</b> 角标的案例可打开全景实拍，其余案例可翻页浏览多张现场照片。</p>
         </div>
         <div class="explorer-wrap reveal">
           <div class="explorer-stage">
@@ -68,6 +68,7 @@
     <section class="section bg-alt" id="caseSectionFurniture" style="display:none;">
       <div class="container">
         <div class="case-section-title"><h2 id="caseTitleFurniture"></h2></div>
+        <p class="case-tip">点击任意案例卡片查看详情：360° 全景可拖动环顾，普通案例可翻页浏览多张现场照片。</p>
         <div class="case-grid" id="caseGridFurniture"></div>
         <p class="case-empty" id="caseEmptyFurniture" style="display:none;"></p>
       </div>
@@ -121,12 +122,30 @@
   <script src="js/china-map-data.js"></script>
   <script src="js/city-data.js"></script>
   <script src="js/case-data.js"></script>
+  <script src="js/case-gallery-data.js"></script>
   <script src="js/ph.js"></script>
   <script src="js/map-explorer.js"></script>
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/pano-viewer.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
+      // 合并 360°/照片图库案例到主案例库
+      var merged = JSON.parse(JSON.stringify(window.CASE_DATA.furniture));
+      (function mergeGallery(dst, src) {
+        Object.keys(src.provinces || {}).forEach(function (pa) {
+          var sp = src.provinces[pa];
+          var dp = dst.provinces[pa] || (dst.provinces[pa] = { name: sp.name, cities: {} });
+          Object.keys(sp.cities || {}).forEach(function (ca) {
+            var sc = sp.cities[ca];
+            var dc = dp.cities[ca] || (dp.cities[ca] = { name: sc.name, cases: [] });
+            dc.cases = dc.cases.concat(sc.cases || []);
+          });
+        });
+      })(merged, window.CASE_GALLERY.furniture);
+
       window.initMapExplorer({
         type: 'furniture',
+        dataSource: { furniture: merged },
         mapId: 'mapFurniture',
         hintId: 'hintFurniture',
         crumbId: 'crumbFurniture',
@@ -142,7 +161,23 @@
         lbBodyId: 'lbBodyFurniture',
         lbPrevId: 'lbPrevFurniture',
         lbNextId: 'lbNextFurniture',
-        lbCloseId: 'lbCloseFurniture'
+        lbCloseId: 'lbCloseFurniture',
+        onOpenCase: function (c, i, provName, cityName) {
+          // 全屋定制：只显示价格，不显示品牌/系列
+          window.PanoViewer.open({
+            title: c.title,
+            date: c.date,
+            province: provName || '',
+            city: cityName || '',
+            price: c.price,
+            priceLabel: '价格',
+            priceNote: c.priceNote,
+            desc: c.desc,
+            tags: c.tags,
+            image: c.image,
+            photos: Array.isArray(c.images) ? c.images : null
+          });
+        }
       });
     });
   </script>

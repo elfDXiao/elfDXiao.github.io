@@ -886,6 +886,44 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   flex: none;
 }
 .pano-stage canvas { display: block; }
+/* 照片浏览模式 */
+.pano-photos {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #141210;
+  z-index: 1;
+}
+.pano-photos img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+.pano-photo-nav {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 64px;
+  color: #fff;
+  font-size: 26px;
+  opacity: .7;
+  background: none;
+  transition: opacity .2s, background .2s;
+}
+.pano-photo-nav:hover { opacity: 1; background: rgba(255,255,255,.06); }
+.pano-prev { left: 0; }
+.pano-next { right: 0; }
+.pano-photo-count {
+  position: absolute;
+  left: 14px; bottom: 12px;
+  font-size: 11px;
+  letter-spacing: .2em;
+  color: rgba(255,255,255,.8);
+  background: rgba(0,0,0,.35);
+  padding: 4px 10px;
+}
 .pano-spinner {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
