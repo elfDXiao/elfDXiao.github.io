@@ -121,16 +121,16 @@
   <script src="js/china-map-data.js"></script>
   <script src="js/city-data.js"></script>
   <script src="js/case-data.js"></script>
-  <script src="js/case360-data.js"></script>
+  <script src="js/case-gallery-data.js"></script>
   <script src="js/ph.js"></script>
   <script src="js/map-explorer.js"></script>
   <script src="js/lib/three.min.js"></script>
   <script src="js/pano-viewer.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', function () {
-      // 合并 360° 全景案例到主案例库：照片案例 + 360° 案例统一在地图上浏览
+      // 合并 360°/照片图库案例到主案例库：照片案例 + 图库案例统一在地图上浏览
       var merged = JSON.parse(JSON.stringify(window.CASE_DATA.bathroom));
-      (function merge360(dst, src) {
+      (function mergeGallery(dst, src) {
         Object.keys(src.provinces || {}).forEach(function (pa) {
           var sp = src.provinces[pa];
           var dp = dst.provinces[pa] || (dst.provinces[pa] = { name: sp.name, cities: {} });
@@ -140,7 +140,7 @@
             dc.cases = dc.cases.concat(sc.cases || []);
           });
         });
-      })(merged, window.CASE360_DATA);
+      })(merged, window.CASE_GALLERY.bathroom);
 
       window.initMapExplorer({
         type: 'bathroom',
@@ -170,10 +170,12 @@
             brand: c.brand,
             series: c.series,
             price: c.price,
+            priceLabel: '含安装人民币价格',
             priceNote: c.priceNote,
             desc: c.desc,
             tags: c.tags,
-            image: c.image
+            image: c.image,
+            photos: Array.isArray(c.images) ? c.images : null
           });
         }
       });

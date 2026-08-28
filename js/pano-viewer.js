@@ -1,15 +1,17 @@
 /* =========================================================
-   360° 全景查看器（等距柱状投影 / equirectangular）
+   案例查看器（360° 全景 + 多张普通照片）
    基于 Three.js（js/lib/three.min.js），无其他依赖。
    用法：window.PanoViewer.open({
             title, date,
             province, city,        // 安装省份 / 安装城市
-            brand, series,         // 浴室品牌 / 浴室系列
-            price, priceNote,      // 含安装人民币价格 / 说明
-            desc, tags,            // 说明 / 标签
-            image                  // 360 全景图路径
+            brand, series,         // 品牌 / 系列（可选；全屋定制不传）
+            price, priceLabel,     // 价格 / 价格标签（缺省「含安装人民币价格」）
+            priceNote, desc, tags, // 说明信息（可选）
+            image,                 // 360° 等距柱状投影图（可选）
+            photos                 // 普通照片数组（可选，可多张）
           })
-   交互：拖拽 = 第一人称环顾；滚轮/双指 = 缩放；按钮 = 自动旋转/重置/全屏
+   交互：拖拽 = 第一人称环顾；滚轮/双指 = 缩放；「照片」按钮切换普通照片浏览；
+         按钮 = 自动旋转/重置/全屏；Esc/✕ = 关闭
    ========================================================= */
 window.PanoViewer = (function () {
   'use strict';
@@ -26,6 +28,7 @@ window.PanoViewer = (function () {
   var autoRotate = true, idleT = 0;
   var dragging = false, pointers = {}, pinchDist = 0, pinchFov = 75;
   var opened = false, disposed = true, loaded = false, interacted = false;
+  var photoMode = false, photos = [], photoIdx = 0, has360 = false;
 
   // ---------- DOM ----------
   function build() {
@@ -33,15 +36,23 @@ window.PanoViewer = (function () {
     root.className = 'pano-modal';
     root.setAttribute('role', 'dialog');
     root.setAttribute('aria-modal', 'true');
-    root.setAttribute('aria-label', '360 度全景查看');
+    root.setAttribute('aria-label', '案例查看');
     root.innerHTML =
       '<div class="pano-backdrop"></div>' +
       '<div class="pano-card">' +
         '<div class="pano-stage" id="panoStage">' +
-          '<div class="pano-spinner"><span></span><i>全景图加载中…</i></div>' +
+          '<div class="pano-spinner"><span></span><i>图片加载中…</i></div>' +
           '<div class="pano-error" style="display:none"></div>' +
           '<div class="pano-hint">按住拖拽旋转视角 · 滚轮 / 双指缩放</div>' +
+          '<div class="pano-photos" style="display:none">' +
+            '<img alt="案例照片">' +
+            '<button type="button" class="pano-photo-nav pano-prev" aria-label="上一张">‹</button>' +
+            '<button type="button" class="pano-photo-nav pano-next" aria-label="下一张">›</button>' +
+            '<span class="pano-photo-count"></span>' +
+          '</div>' +
           '<div class="pano-toolbar">' +
+            '<button type="button" class="pano-btn" data-act="photos" title="查看现场照片">照片</button>' +
+            '<button type="button" class="pano-btn" data-act="pano360" style="display:none" title="查看 360° 全景">360° 全景</button>' +
             '<button type="button" class="pano-btn" data-act="rotate" title="自动旋转">自动旋转</button>' +
             '<button type="button" class="pano-btn" data-act="reset" title="重置视角">重置</button>' +
             '<button type="button" class="pano-btn" data-act="fullscreen" title="全屏">全屏</button>' +
@@ -59,10 +70,18 @@ window.PanoViewer = (function () {
     errEl = root.querySelector('.pano-error');
 
     root.querySelector('.pano-backdrop').addEventListener('click', close);
-    root.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') close();
+      if (photoMode && e.key === 'ArrowLeft') { e.preventDefault(); photoNav(-1); }
+      if (photoMode && e.key === 'ArrowRight') { e.preventDefault(); photoNav(1); }
+    });
     Array.prototype.forEach.call(root.querySelectorAll('.pano-btn'), function (b) {
       b.addEventListener('click', function (e) { e.stopPropagation(); onAction(b.getAttribute('data-act')); });
     });
+    var pp = root.querySelector('.pano-prev');
+    var pn = root.querySelector('.pano-next');
+    if (pp) pp.addEventListener('click', function (e) { e.stopPropagation(); photoNav(-1); });
+    if (pn) pn.addEventListener('click', function (e) { e.stopPropagation(); photoNav(1); });
     document.addEventListener('fullscreenchange', function () {
       var btn = root.querySelector('[data-act="fullscreen"]');
       if (btn) btn.textContent = document.fullscreenElement ? '退出全屏' : '全屏';
@@ -72,7 +91,9 @@ window.PanoViewer = (function () {
   function onAction(act) {
     if (act === 'close') { close(); return; }
     if (!opened || disposed) return;
-    if (act === 'rotate') {
+    if (act === 'photos') { enterPhotos(); }
+    else if (act === 'pano360') { enterPano(); }
+    else if (act === 'rotate') {
       autoRotate = !autoRotate;
       syncRotateBtn();
       idleT = 0;
@@ -86,20 +107,63 @@ window.PanoViewer = (function () {
     }
   }
 
+  // ---------- 照片模式（普通多图浏览） ----------
+  function enterPhotos() {
+    if (!photos.length) return;
+    photoMode = true;
+    if (renderer && renderer.domElement) renderer.domElement.style.display = 'none';
+    var ph = root.querySelector('.pano-photos');
+    if (ph) ph.style.display = '';
+    hideSpinner();
+    renderPhoto();
+    syncToolbar();
+    if (hint) hint.style.opacity = '0';
+  }
+  function enterPano() {
+    if (!has360) return;
+    photoMode = false;
+    if (renderer && renderer.domElement) renderer.domElement.style.display = '';
+    var ph = root.querySelector('.pano-photos');
+    if (ph) ph.style.display = 'none';
+    syncToolbar();
+  }
+  function renderPhoto() {
+    var img = root.querySelector('.pano-photos img');
+    var count = root.querySelector('.pano-photo-count');
+    if (!img || !photos.length) return;
+    photoIdx = Math.max(0, Math.min(photoIdx, photos.length - 1));
+    img.src = photos[photoIdx];
+    img.alt = '案例照片 ' + (photoIdx + 1);
+    if (count) count.textContent = (photoIdx + 1) + ' / ' + photos.length;
+  }
+  function photoNav(dir) {
+    if (!photos.length) return;
+    photoIdx = (photoIdx + dir + photos.length) % photos.length;
+    renderPhoto();
+  }
+  function syncToolbar() {
+    var pBtn = root.querySelector('[data-act="photos"]');
+    var p360Btn = root.querySelector('[data-act="pano360"]');
+    var extra = ['rotate', 'reset', 'fullscreen'].map(function (a) { return root.querySelector('[data-act="' + a + '"]'); });
+    if (pBtn) pBtn.style.display = (photoMode || !photos.length) ? 'none' : '';
+    if (p360Btn) p360Btn.style.display = (photoMode && has360) ? '' : 'none';
+    extra.forEach(function (b) { if (b) b.style.display = photoMode ? 'none' : ''; });
+  }
+
   // ---------- 信息面板 ----------
   function renderInfo(cfg) {
     var tags = (cfg.tags || []).map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
+    var fields =
+      '<div class="pano-field"><span>安装省份</span><b>' + esc(cfg.province || '—') + '</b></div>' +
+      '<div class="pano-field"><span>安装城市</span><b>' + esc(cfg.city || '—') + '</b></div>';
+    if (cfg.brand) fields += '<div class="pano-field"><span>品牌</span><b>' + esc(cfg.brand) + '</b></div>';
+    if (cfg.series) fields += '<div class="pano-field"><span>系列</span><b>' + esc(cfg.series) + '</b></div>';
+    if (cfg.price) fields += '<div class="pano-field pano-price"><span>' + esc(cfg.priceLabel || '含安装人民币价格') + '</span><b>' + esc(cfg.price) + '</b></div>';
     infoEl.innerHTML =
       '<div class="pano-title">' + esc(cfg.title || '') +
-        (cfg.date ? '<span class="pano-date">' + esc(cfg.date) + ' 年安装</span>' : '') +
+        (cfg.date ? '<span class="pano-date">' + esc(cfg.date) + ' 年</span>' : '') +
       '</div>' +
-      '<div class="pano-fields">' +
-        '<div class="pano-field"><span>安装省份</span><b>' + esc(cfg.province || '—') + '</b></div>' +
-        '<div class="pano-field"><span>安装城市</span><b>' + esc(cfg.city || '—') + '</b></div>' +
-        '<div class="pano-field"><span>浴室品牌</span><b>' + esc(cfg.brand || '—') + '</b></div>' +
-        '<div class="pano-field"><span>浴室系列</span><b>' + esc(cfg.series || '—') + '</b></div>' +
-        '<div class="pano-field pano-price"><span>含安装人民币价格</span><b>' + esc(cfg.price || '—') + '</b></div>' +
-      '</div>' +
+      '<div class="pano-fields">' + fields + '</div>' +
       (cfg.priceNote ? '<div class="pano-price-note">' + esc(cfg.priceNote) + '</div>' : '') +
       (cfg.desc ? '<p class="pano-desc">' + esc(cfg.desc) + '</p>' : '') +
       (tags ? '<div class="pano-tags">' + tags + '</div>' : '');
@@ -302,6 +366,10 @@ window.PanoViewer = (function () {
     if (!root) build();
     if (opened && !disposed) close();
     cfg = cfg || {};
+    photos = (cfg.photos && cfg.photos.length) ? cfg.photos.slice() : [];
+    photoIdx = 0;
+    has360 = !!cfg.image;
+    photoMode = false;
     opened = true;
     disposed = false;
     loaded = false;
@@ -312,20 +380,35 @@ window.PanoViewer = (function () {
     fov = 75; targetFov = 75;
     lastT = 0;
     hideErr();
-    showSpinner();
-    if (hint) hint.style.opacity = '1';
     renderInfo(cfg);
     root.classList.add('open');
     document.body.style.overflow = 'hidden';
     var btn = root.querySelector('[data-act="rotate"]');
     if (btn) { btn.textContent = '自动旋转'; btn.classList.remove('is-off'); }
-    startThree(cfg);
+    var pBtn = root.querySelector('[data-act="photos"]');
+    if (pBtn) pBtn.textContent = '照片 ' + photos.length;
+    var ph = root.querySelector('.pano-photos');
+    if (ph) ph.style.display = 'none';
+    syncToolbar();
+    if (cfg.image) {
+      showSpinner();
+      if (hint) hint.style.opacity = '1';
+      startThree(cfg);
+    } else if (photos.length) {
+      hideSpinner();
+      enterPhotos();
+    } else {
+      hideSpinner();
+      showErr('该案例暂无图片。');
+    }
     if (stage) stage.focus();
   }
 
   function close() {
     if (!opened) return;
     opened = false;
+    photoMode = false;
+    photos = [];
     disposeThree();
     if (root) root.classList.remove('open');
     document.body.style.overflow = '';
