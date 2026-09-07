@@ -18,23 +18,23 @@
   var DATA = null;
   var P = null;
 
-  /* ---------------- 步骤元数据（15 步：0-14） ---------------- */
+  /* ---------------- 步骤元数据（15 步：0-14）noteZh=中文说明 / note=日文说明 ---------------- */
   var STEPS = [
-    { n: 0, title: 'サイズ・タイプ', titleZh: '尺寸与型号', note: '选择尺寸（10 種）与型号（P/T/S/N/F），決定本体価格（タイプ×サイズ矩阵）。F タイプ仅 1620/1616/1618、N タイプ无 1220。' },
-    { n: 1, title: '架台・配管・ドア位置', titleZh: '架台·配管·门位置', note: '架台（F/S/R/H＋吊架台/断熱防水パン）、給水給湯配管、ドア位置（A/B/C/D＋移動）。' },
-    { n: 2, title: '壁柄', titleZh: '壁面花纹', note: '4面同色（P/T）／アクセントプラン（S/N/F）＋グレード（プレミアム/HⅡ/HⅠ/ベーシック）。' },
-    { n: 3, title: '浴槽', titleZh: '浴缸', note: '浴槽形状（ゆるリラ/ラウンド/クレイドル等）×材質×色、インテリア・バー、ハンドグリップ、ふろふた。' },
-    { n: 4, title: '床・天井', titleZh: '地板·天花板', note: 'ほっカラリ床（ラグ/タイル/単色）・カラリ床（N 基本）、平天井/勾配天井×壁高。' },
-    { n: 5, title: 'カウンター', titleZh: '台面', note: '人工大理石（P 基本）／単色（T/S/N）／なし／スマート／ベンチ（F）。' },
-    { n: 6, title: '便利アイテム', titleZh: '便利功能件', note: '床ワイパー洗浄、浴室クリアキープ、おそうじ浴槽、自動排水栓、まるごときれい、つながる快適セット。' },
-    { n: 7, title: '照明', titleZh: '照明', note: 'シーリング/半球形/キューブ/丸形/ダウンライト/フラット形＋調光システム。' },
-    { n: 8, title: '換気・暖房', titleZh: '换气·暖房', note: '換気扇/三乾王/温水式/ミスト＋ランドリーパイプ＋洗面所暖房機・あたたか快適セット。' },
-    { n: 9, title: '水栓・シャワー', titleZh: '水龙头·花洒', note: '洗い場水栓（タイプ別基本/寒冷地）、オーバーヘッド、シャワーヘッド、バス水栓、スライドバー、タオル掛け。' },
-    { n: 10, title: '鏡', titleZh: '镜子', note: 'フレーム付縦長（P/T）/縦長（S/N）/ワイド/楕円/四角/なし＋くもり止め。' },
-    { n: 11, title: '収納棚', titleZh: '收纳架', note: 'セパレート収納棚（W270/W260/W185/W175）、ワイヤー、収納バー、フリーポケット、なし。' },
-    { n: 12, title: 'ドア', titleZh: '门', note: '折戸（基本）/開き戸/引戸/FIX窓×カラー×高さ＋ドア外タオル掛け。' },
-    { n: 13, title: '窓・追いだき', titleZh: '窗·追焚', note: '引き違い窓/フリーサイズ窓枠＋追いだき加工（循環アダプター）。' },
-    { n: 14, title: '快適オプション', titleZh: '舒适选项', note: 'マルチリモコン/ノコリ〜ユECO/断熱材パック/浴室テレビ/浴室オーディオ/窓/福祉機器/単品。' }
+    { n: 0, title: 'サイズ・タイプ', titleZh: '尺寸与型号', noteZh: '选择尺寸（10 种）与型号（P/T/S/N/F），决定本体价格（型号×尺寸矩阵）。F 型仅 1620/1616/1618，N 型无 1220。', note: 'サイズ（10種）とタイプ（P/T/S/N/F）を選択、本体価格を決定（タイプ×サイズマトリクス）。Fタイプは1620/1616/1618のみ、Nタイプは1220なし。' },
+    { n: 1, title: '架台・配管・ドア位置', titleZh: '架台·配管·门位置', noteZh: '架台（吊架台/平床 F/S/R/H/隔热防水底盘/气密胶带）、给水给汤配管、门位置（A/B/C/D＋移动）。', note: '架台（吊架台/フラット床F/S/R/H・断熱防水パン・気密テープ）、給水給湯配管、ドア位置（A/B/C/D＋移動）。' },
+    { n: 2, title: '壁柄', titleZh: '壁面花纹', noteZh: '四面同色（仅 P/T 型可选）或跳色（accent）：P/T/S/N/F 均可选跳色，S/N/F 仅跳色＋等级（Premium/HⅡ/HⅠ/Basic）。', note: '4面同色（P/Tのみ）またはアクセントプラン（S/N/Fはアクセントのみ）＋グレード（プレミアム/HⅡ/HⅠ/ベーシック）。' },
+    { n: 3, title: '浴槽', titleZh: '浴缸', noteZh: '浴缸形状（Yururira/Round/Cradle 等）×材质×颜色、内饰扶手杆、浴缸内扶手、浴缸盖。', note: '浴槽形状（ゆるリラ/ラウンド/クレイドル等）×材質×色、インテリア・バー、ハンドグリップ、ふろふた。' },
+    { n: 4, title: '床・天井', titleZh: '地板·天花板', noteZh: 'Hokkarari 地板（地毯纹/瓷砖纹/纯色）·Karari 地板（N 基本），平天花板/斜天花板×壁高。', note: 'ほっカラリ床（ラグ/タイル/単色）・カラリ床（N基本）、平天井/勾配天井×壁高。' },
+    { n: 5, title: 'カウンター', titleZh: '台面', noteZh: '人造大理石（P 基本）／纯色（T/S/N）／无／智能台面／凳式台面（F）。', note: '人工大理石（P基本）／単色（T/S/N）／なし／スマート／ベンチ（F）。' },
+    { n: 6, title: '便利アイテム', titleZh: '便利功能件', noteZh: '地板刮水清洗、浴室清洁保持、自清洁浴缸、自动排水栓、まるごときれい、つながる快適套装。', note: '床ワイパー洗浄、浴室クリアキープ、おそうじ浴槽、自動排水栓、まるごときれい、つながる快適セット。' },
+    { n: 7, title: '照明', titleZh: '照明', noteZh: '吸顶灯/半球形/立方体/圆形/筒灯/扁平形＋调光系统。', note: 'シーリング/半球形/キューブ/丸形/ダウンライト/フラット形＋調光システム。' },
+    { n: 8, title: '換気・暖房', titleZh: '换气·暖房', noteZh: '换气扇/三乾王/温水式/雾浴＋晾衣杆＋洗面室暖风机·あたたか快適套装。', note: '換気扇/三乾王/温水式/ミスト＋ランドリーパイプ＋洗面所暖房機・あたたか快適セット。' },
+    { n: 9, title: '水栓・シャワー', titleZh: '水龙头·花洒', noteZh: '洗手区水龙头（按型号基本/寒冷地）、顶喷、花洒头、浴缸水龙头、滑杆、毛巾杆。', note: '洗い場水栓（タイプ別基本/寒冷地）、オーバーヘッド、シャワーヘッド、バス水栓、スライドバー、タオル掛け。' },
+    { n: 10, title: '鏡', titleZh: '镜子', noteZh: '带框竖长（P/T）/竖长（S/N）/宽幅/椭圆/方形/无＋防雾。', note: 'フレーム付縦長（P/T）/縦長（S/N）/ワイド/楕円/四角/なし＋くもり止め。' },
+    { n: 11, title: '収納棚', titleZh: '收纳架', noteZh: '分体收纳架（W270/W260/W185/W175）、金属丝架、收纳杆、自由袋、无。', note: 'セパレート収納棚（W270/W260/W185/W175）、ワイヤー、収納バー、フリーポケット、なし。' },
+    { n: 12, title: 'ドア', titleZh: '门', noteZh: '折叠门（基本）/平开门/推拉门/FIX 窗×颜色×高度＋门外毛巾架。', note: '折戸（基本）/開き戸/引戸/FIX窓×カラー×高さ＋ドア外タオル掛け。' },
+    { n: 13, title: '窓・追いだき', titleZh: '窗·追焚', noteZh: '推拉窗/自由尺寸窗框＋追焚加工（循环适配器）。', note: '引き違い窓/フリーサイズ窓枠＋追いだき加工（循環アダプター）。' },
+    { n: 14, title: '快適オプション', titleZh: '舒适选项', noteZh: '多功能遥控器/余水洗衣利用/隔热材套装/浴室电视/浴室音响/窗/福祉设备/单品。', note: 'マルチリモコン/ノコリ〜ユECO/断熱材パック/浴室テレビ/浴室オーディオ/窓/福祉機器/単品。' }
   ];
 
   /* ---------------- 维度配置 ---------------- */
@@ -155,9 +155,27 @@
   /** 壁柄花纹级（sazanaWallPatterns） */
   /** 墙面三模式：4SAME（四面同色）/ FRONT_ACCENT（正面跳色=器具面侧）/ SIDE_ACCENT（浴缸侧跳色）；S/N/F タイプ默认跳色 */
   function wallPlan() {
-    if (state.sub.wall_plan) return state.sub.wall_plan;
     var t = typeCode();
-    return (t === 'S' || t === 'N' || t === 'F') ? 'FRONT_ACCENT' : '4SAME';
+    var noFourSame = (t === 'S' || t === 'N' || t === 'F');
+    // S/N/F タイプ四面同色不可：残留的 4SAME 计划作废，回退正面跳色（修复切换型号后的死锁）
+    if (state.sub.wall_plan && !(noFourSame && state.sub.wall_plan === '4SAME')) return state.sub.wall_plan;
+    return noFourSame ? 'FRONT_ACCENT' : '4SAME';
+  }
+  /** 型号切换后清理非法壁面选择：S/N/F 下四面同色柄（fourSame）不可用 → 清空 sel.wall 与花纹子选择 */
+  function clearInvalidWall() {
+    var t = typeCode();
+    if (t !== 'S' && t !== 'N' && t !== 'F') return;
+    if (state.sub.wall_plan === '4SAME') delete state.sub.wall_plan;
+    var wc = state.sel.wall;
+    if (wc) {
+      var wo = opt('wall', wc);
+      if (wo && wo.fourSame === true) {
+        delete state.sel.wall;
+        delete state.sub.wall_pattern;
+        delete state.sub.wall_surround;
+        delete state.sub.wall_surround_pattern;
+      }
+    }
   }
   /** ACC_* → アクセントグレード键（accentPriceMatrix 键） */
   var WALL_ACC_GRADE = {
@@ -550,6 +568,8 @@
 
   /** 选中某维度选项后的自动修复 */
   function autoFix(dimId, code) {
+    // 型号切换：清理对新型号非法的壁面选择（四面同色柄仅 P/T）
+    if (dimId === 'type') clearInvalidWall();
     // おそうじ浴槽 → 断熱防水パン CXX01 自动
     if (dimId === 'clean_other' && (code === 'YFS32' || code === 'JLH11')) {
       if (!selIs('kudai', 'CXX01')) state.sel.kudai = 'CXX01';
@@ -575,6 +595,7 @@
       for (var i = 0; i < fallback.length; i++) {
         if (tbp[fallback[i]] && tbp[fallback[i]][code] != null) { state.sel.type = fallback[i]; break; }
       }
+      clearInvalidWall();
     }
   }
 

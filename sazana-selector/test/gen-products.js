@@ -10,6 +10,20 @@ const DST = path.join(__dirname, '..', 'data', 'products.js');
 
 const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));
 
+// ---------- 壁柄花纹级数据前置读取：建「日文柄名→中文名」翻译字典（accentPatterns + surroundPatterns 已人工翻译） ----------
+let WP = null;
+try {
+  WP = JSON.parse(fs.readFileSync('D:/DSH工作区/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
+} catch (e) {
+  console.warn('wall-patterns load failed: ' + e.message);
+}
+const ZH_BY_JA = {};
+if (WP) {
+  (WP.accentPatterns || []).forEach(p => { if (p.name_ja && p.name_zh) ZH_BY_JA[p.name_ja] = p.name_zh; });
+  (WP.surroundPatterns || []).forEach(p => { if (p.name_ja && p.name_zh) ZH_BY_JA[p.name_ja] = p.name_zh; });
+}
+function zhOfPattern(jaName) { return ZH_BY_JA[jaName] || jaName; }
+
 function convertOption(o, catId) {
   const out = { code: o.code, name_ja: o.name_ja, name_zh: o.name_zh };
   if (o.priceDiff != null) out.priceDiff = o.priceDiff;
@@ -60,15 +74,16 @@ d.categories.forEach(c => {
     c.options.forEach(o => {
       const conv = convertOption(o, c.id);
       if ((o.code === 'HⅡ' || o.code === 'HⅠ' || o.code === 'BASIC') && o.note) {
-        // note 解析「柄名/品番、柄名/品番...」→ 每柄独立选项
+        // note 解析「柄名/品番、柄名/品番...」→ 每柄独立选项（name_zh 查翻译字典，不再复制日文）
         const re = /([^/、]+)\/([A-Za-z0-9]+)/g;
         let m;
         const cls = String(o.name_ja || '').split('柄')[0].trim();
         while ((m = re.exec(o.note)) !== null) {
+          const jaBase = m[1].replace(/^柄[:：]\s*/, '');
           options.push({
             code: m[2],
-            name_ja: m[1].replace(/^柄[:：]\s*/, '') + '（' + cls + '）',
-            name_zh: m[1].replace(/^柄[:：]\s*/, ''),
+            name_ja: jaBase + '（' + cls + '）',
+            name_zh: zhOfPattern(jaBase),
             priceByType: conv.priceByType || {},
             grade: cls,
             class: cls,
