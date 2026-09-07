@@ -22,7 +22,7 @@
   var STEPS = [
     { n: 0, title: 'サイズ・タイプ', titleZh: '尺寸与型号', noteZh: '选择尺寸（10 种）与型号（P/T/S/N/F），决定本体价格（型号×尺寸矩阵）。F 型仅 1620/1616/1618，N 型无 1220。', note: 'サイズ（10種）とタイプ（P/T/S/N/F）を選択、本体価格を決定（タイプ×サイズマトリクス）。Fタイプは1620/1616/1618のみ、Nタイプは1220なし。' },
     { n: 1, title: '架台・配管・ドア位置', titleZh: '架台·配管·门位置', noteZh: '架台（吊架台/平床 F/S/R/H/隔热防水底盘/气密胶带）、给水给汤配管、门位置（A/B/C/D＋移动）。', note: '架台（吊架台/フラット床F/S/R/H・断熱防水パン・気密テープ）、給水給湯配管、ドア位置（A/B/C/D＋移動）。' },
-    { n: 2, title: '壁柄', titleZh: '壁面花纹', noteZh: '四面同色（仅 P/T 型可选）或跳色（accent）：P/T/S/N/F 均可选跳色，S/N/F 仅跳色＋等级（Premium/HⅡ/HⅠ/Basic）。', note: '4面同色（P/Tのみ）またはアクセントプラン（S/N/Fはアクセントのみ）＋グレード（プレミアム/HⅡ/HⅠ/ベーシック）。' },
+    { n: 2, title: '壁柄', titleZh: '壁面花纹', noteZh: '四面同色（全型号可选，P/T/S/F 同价、N 型别价）或跳色（accent）＋等级（Premium/HⅡ/HⅠ/Basic）。', note: '4面同色プラン（全タイプ選択可）またはアクセントプラン＋グレード（プレミアム/HⅡ/HⅠ/ベーシック）。' },
     { n: 3, title: '浴槽', titleZh: '浴缸', noteZh: '浴缸形状（Yururira/Round/Cradle 等）×材质×颜色、内饰扶手杆、浴缸内扶手、浴缸盖。', note: '浴槽形状（ゆるリラ/ラウンド/クレイドル等）×材質×色、インテリア・バー、ハンドグリップ、ふろふた。' },
     { n: 4, title: '床・天井', titleZh: '地板·天花板', noteZh: 'Hokkarari 地板（地毯纹/瓷砖纹/纯色）·Karari 地板（N 基本），平天花板/斜天花板×壁高。', note: 'ほっカラリ床（ラグ/タイル/単色）・カラリ床（N基本）、平天井/勾配天井×壁高。' },
     { n: 5, title: 'カウンター', titleZh: '台面', noteZh: '人造大理石（P 基本）／纯色（T/S/N）／无／智能台面／凳式台面（F）。', note: '人工大理石（P基本）／単色（T/S/N）／なし／スマート／ベンチ（F）。' },
@@ -153,29 +153,10 @@
   function typeGroup() { return P.typeGroupOf(typeCode()); }
 
   /** 壁柄花纹级（sazanaWallPatterns） */
-  /** 墙面三模式：4SAME（四面同色）/ FRONT_ACCENT（正面跳色=器具面侧）/ SIDE_ACCENT（浴缸侧跳色）；S/N/F タイプ默认跳色 */
+  /** 墙面三模式：4SAME（四面同色）/ FRONT_ACCENT（正面跳色=器具面侧）/ SIDE_ACCENT（浴缸侧跳色）；全タイプ四面同色可选，默认 4SAME */
   function wallPlan() {
-    var t = typeCode();
-    var noFourSame = (t === 'S' || t === 'N' || t === 'F');
-    // S/N/F タイプ四面同色不可：残留的 4SAME 计划作废，回退正面跳色（修复切换型号后的死锁）
-    if (state.sub.wall_plan && !(noFourSame && state.sub.wall_plan === '4SAME')) return state.sub.wall_plan;
-    return noFourSame ? 'FRONT_ACCENT' : '4SAME';
-  }
-  /** 型号切换后清理非法壁面选择：S/N/F 下四面同色柄（fourSame）不可用 → 清空 sel.wall 与花纹子选择 */
-  function clearInvalidWall() {
-    var t = typeCode();
-    if (t !== 'S' && t !== 'N' && t !== 'F') return;
-    if (state.sub.wall_plan === '4SAME') delete state.sub.wall_plan;
-    var wc = state.sel.wall;
-    if (wc) {
-      var wo = opt('wall', wc);
-      if (wo && wo.fourSame === true) {
-        delete state.sel.wall;
-        delete state.sub.wall_pattern;
-        delete state.sub.wall_surround;
-        delete state.sub.wall_surround_pattern;
-      }
-    }
+    // 四面同色（4SAME）全タイプ選択可（P.115 座標検証）：sub.wall_plan があれば尊重、なければ 4SAME
+    return state.sub.wall_plan || '4SAME';
   }
   /** ACC_* → アクセントグレード键（accentPriceMatrix 键） */
   var WALL_ACC_GRADE = {
@@ -219,7 +200,7 @@
     if (wallCode === 'EGAA1' || wallCode === 'EGAC3' || wallCode === 'EGAH6' || wallCode === 'EGAW4') return 'プレミアムグレード';
     return String(o.name_ja || '').split('柄')[0].trim() || null;
   }
-  /** 壁柄贡献：4SAME（sel.wall=柄）priceByType；跳色（sel.wall=ACC_* グレード，sub.wall_pattern=柄）× 周辺グレード → accentPriceMatrix + L2 柄 +21,000 */
+  /** 壁柄贡献：4SAME（sel.wall=柄）priceByType（P/T/S/F 同价、N 别价）；跳色（sel.wall=ACC_* グレード，sub.wall_pattern=柄）× 周辺グレード → accentPriceMatrix（L1=P/T/S/F、L2=Nタイプ，柄による差なし） */
   function wallContribution() {
     var plan = wallPlan();
     var wallCode = state.sel.wall;
@@ -240,8 +221,8 @@
     var matrix = (DATA.sazanaWallPatterns && DATA.sazanaWallPatterns.accentPriceMatrix) || {};
     var cell = matrix[ap.class] && matrix[ap.class][sg];
     if (!cell) return null;
-    var v = (typeCode() === 'T') ? (cell.L2 != null ? cell.L2 : cell.L1) : (cell.L1 != null ? cell.L1 : cell.L2);
-    if (ap.level === 'L2' && typeof v === 'number') v += 21000;   // L2 柄（深色柄）+21,000
+    // P.116-117 表構造（pdfplumber 座標検証）：価格行は「P T S F」合併行と「N」行の2行
+    var v = (typeCode() === 'N') ? (cell.L2 != null ? cell.L2 : cell.L1) : (cell.L1 != null ? cell.L1 : cell.L2);
     return P.toAmount(v);
   }
 
@@ -568,8 +549,6 @@
 
   /** 选中某维度选项后的自动修复 */
   function autoFix(dimId, code) {
-    // 型号切换：清理对新型号非法的壁面选择（四面同色柄仅 P/T）
-    if (dimId === 'type') clearInvalidWall();
     // おそうじ浴槽 → 断熱防水パン CXX01 自动
     if (dimId === 'clean_other' && (code === 'YFS32' || code === 'JLH11')) {
       if (!selIs('kudai', 'CXX01')) state.sel.kudai = 'CXX01';
@@ -595,7 +574,6 @@
       for (var i = 0; i < fallback.length; i++) {
         if (tbp[fallback[i]] && tbp[fallback[i]][code] != null) { state.sel.type = fallback[i]; break; }
       }
-      clearInvalidWall();
     }
   }
 
