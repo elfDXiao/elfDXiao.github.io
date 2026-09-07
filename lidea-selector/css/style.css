@@ -27,6 +27,7 @@ img { max-width: 100%; display: block; }
 .muted { color: var(--ink-3); font-size: 13px; }
 
 /* ---------- 按钮 ---------- */
+[hidden] { display: none !important; }   /* .btn 的 display:inline-flex 会覆盖 hidden 属性默认值，此处强制隐藏（修复最后一页「下一步」不消失） */
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; font-size: 14px; letter-spacing: .06em;
   border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; transition: .25s; font-family: var(--sans); }
 .btn-solid { background: var(--ink); color: var(--paper); }
