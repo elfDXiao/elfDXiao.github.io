@@ -182,6 +182,7 @@
       if (btn) btn.addEventListener('click', hide);
       wrap.addEventListener('click', function (e) { if (e.target === wrap) hide(); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) hide(); });
+      window.__hobbyShow = show;   // 密码解锁后再弹「业余时间制作」提示
       show();
     })();
   </script>
@@ -195,6 +196,75 @@
     document.addEventListener('DOMContentLoaded', function () {
       window.PREDENCIA.wizard.init(window.PREDENCIA_DATA);
     });
+  </script>
+
+  <!-- 密码门控：输入密码进入选型系统（本机记住，无需重复输入） -->
+  <div id="pwGate" class="pw-wrap" aria-hidden="true">
+    <div class="pw-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+      <div class="pw-icon">🔒</div>
+      <h3 class="pw-title" id="pwTitle">TAKARA STANDARD プレデンシア Predencia 系统浴室选型</h3>
+      <p class="pw-text">请输入访问密码 / アクセスパスワードを入力してください</p>
+      <input type="password" class="pw-input" id="pwInput" placeholder="密码" autocomplete="off">
+      <p class="pw-err" id="pwErr">密码错误，请重试 / パスワードが違います</p>
+      <button type="button" class="pw-btn" id="pwBtn">进入系统</button>
+    </div>
+  </div>
+  <style>
+    .pw-wrap{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;background:#f6f4ef;padding:20px;}
+    .pw-wrap.show{display:flex;}
+    .pw-card{background:#fff;color:#211f1b;max-width:400px;width:100%;border-radius:14px;padding:30px 32px 26px;text-align:center;box-shadow:0 18px 50px rgba(33,31,27,.18);border:1px solid #d8d2c6;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",system-ui,sans-serif;}
+    .pw-card.shake{animation:pwshake .35s;}
+    @keyframes pwshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    .pw-icon{font-size:38px;line-height:1;margin-bottom:10px;}
+    .pw-title{font-family:Georgia,"Songti SC","SimSun",serif;font-size:21px;letter-spacing:.06em;margin:0 0 10px;color:#211f1b;}
+    .pw-text{font-size:13.5px;line-height:1.7;color:#6b655c;margin:0 0 16px;}
+    .pw-input{display:block;width:100%;box-sizing:border-box;padding:11px 14px;font-size:15px;letter-spacing:.2em;border:1px solid #d8d2c6;border-radius:8px;background:#faf8f4;color:#211f1b;text-align:center;outline:none;}
+    .pw-input:focus{border-color:#a65b33;}
+    .pw-err{display:none;margin:10px 0 0;font-size:12.5px;color:#b3402e;}
+    .pw-btn{margin-top:16px;padding:10px 34px;border:none;border-radius:999px;background:#a65b33;color:#f6f4ef;font-size:14px;letter-spacing:.14em;cursor:pointer;font-family:inherit;}
+    .pw-btn:hover{background:#8f4a27;}
+    @media print{#pwGate{display:none!important;}}
+  </style>
+  <script>
+    (function () {
+      var KEY = 'predencia_selector_pw_ok';
+      var gate = document.getElementById('pwGate');
+      if (!gate) return;
+      function stored() { try { return window.localStorage && localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+      function remember() { try { if (window.localStorage) localStorage.setItem(KEY, '1'); } catch (e) { /* 隐私模式静默降级 */ } }
+      if (stored()) { gate.remove(); return; }
+      var card = gate.querySelector('.pw-card');
+      var inp = document.getElementById('pwInput');
+      var err = document.getElementById('pwErr');
+      function show() {
+        gate.classList.add('show');
+        gate.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        var hobby = document.getElementById('hobbyNotice');
+        if (hobby) { hobby.classList.remove('show'); hobby.setAttribute('aria-hidden', 'true'); }
+        try { inp.focus(); } catch (e) { /* noop */ }
+      }
+      function unlock() {
+        remember();
+        gate.classList.remove('show');
+        gate.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function () { if (gate.parentNode) gate.remove(); }, 250);
+        if (typeof window.__hobbyShow === 'function') window.__hobbyShow();
+      }
+      function submit() {
+        if (inp.value === 'elff') { unlock(); return; }
+        err.style.display = 'block';
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        inp.value = '';
+        try { inp.focus(); } catch (e) { /* noop */ }
+      }
+      document.getElementById('pwBtn').addEventListener('click', submit);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+      show();
+    })();
   </script>
 </body>
 </html>
