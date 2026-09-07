@@ -48,13 +48,13 @@ function waitFor(win, check, ms) {
   doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_plan"]').length === 3 && doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 39; }, 2000);
   assert('三模式 chips 3 + 四面同色 39 柄（默认）', doc.querySelectorAll('#wizBody input[name="wall_plan"]').length === 3 && doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 39);
-  doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAA1"]').click();  // T タイプ +126,000
-  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0; }, 2000);
-  assert('选 EGAA1 后合计 = 1,575,000', doc.querySelector('#sumJPY').textContent.indexOf('1,575,000') >= 0, doc.querySelector('#sumJPY').textContent);
-  // HⅡ 柄 EGAB5 第一段直接点击（T タイプ +84,000）——无第二段
+  doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAA1"]').click();  // T タイプ +105,000（P/T/S/F 同価）
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,554,000') >= 0; }, 2000);
+  assert('选 EGAA1 后合计 = 1,554,000', doc.querySelector('#sumJPY').textContent.indexOf('1,554,000') >= 0, doc.querySelector('#sumJPY').textContent);
+  // HⅡ 柄 EGAB5 第一段直接点击（T タイプ +63,000）——无第二段
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="EGAB5"]').click();
-  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0; }, 2000);
-  assert('选 EGAB5（HⅡ柄）后合计 = 1,533,000（+84,000）', doc.querySelector('#sumJPY').textContent.indexOf('1,533,000') >= 0, doc.querySelector('#sumJPY').textContent);
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,512,000') >= 0; }, 2000);
+  assert('选 EGAB5（HⅡ柄）后合计 = 1,512,000（+63,000）', doc.querySelector('#sumJPY').textContent.indexOf('1,512,000') >= 0, doc.querySelector('#sumJPY').textContent);
 
   console.log('== 跳色两段（切跳色器具面侧模式 → ACC_* → 跳色柄 + 周辺グレード + 周辺柄） ==');
   doc.querySelector('#wizBody input[name="wall_plan"][data-wall-plan="FRONT_ACCENT"]').click();
@@ -72,9 +72,9 @@ function waitFor(win, check, ms) {
   doc.querySelector('#wizBody input[name="wall_surround_pattern"][data-wall-surround-pattern="EGAG2"]').click();
   await waitFor(win, function () { return doc.querySelector('#wizBody').textContent.indexOf('品番：EG2J1+EGAG2') >= 0; }, 2000);
   assert('アクセント品番 EG2J1+EGAG2 显示', doc.querySelector('#wizBody').textContent.indexOf('EG2J1+EGAG2') >= 0);
-  // 价格：T タイプ ACC_PRE × 周辺BASIC = +31,500（L2）→ 1,449,000+31,500 = 1,480,500
-  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,480,500') >= 0; }, 2000);
-  assert('T タイプ ACC_PRE × 周辺BASIC → 1,480,500', doc.querySelector('#sumJPY').textContent.indexOf('1,480,500') >= 0, doc.querySelector('#sumJPY').textContent);
+  // 价格：T タイプ ACC_PRE × 周辺BASIC = +10,500（L1=P/T/S/F）→ 1,449,000+10,500 = 1,459,500
+  await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('1,459,500') >= 0; }, 2000);
+  assert('T タイプ ACC_PRE × 周辺BASIC → 1,459,500', doc.querySelector('#sumJPY').textContent.indexOf('1,459,500') >= 0, doc.querySelector('#sumJPY').textContent);
 
   console.log('== タイプ切换（P）联动本体价 ==');
   doc.querySelector('#wizStepper .wstep[data-step="0"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));

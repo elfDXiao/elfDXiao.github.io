@@ -539,15 +539,14 @@
       var plan = Q.wallPlan();
       var typeCode = Q.typeCode();
       var html = '';
-      // 模式 chips（三模式，双语；4SAME 仅 P/T タイプ可选）
+      // 模式 chips（三模式，双语；四面同色全タイプ可选，P/T/S/F 同价・N 別価）
       html += '<div class="sub-row" style="margin-top:-2px;"><span class="dim-sub-title">' + t('墙面模式 / 配色模式：', '壁面モード：') + '</span>';
       [['4SAME', '四面同色', '4面同色'],
         ['FRONT_ACCENT', '跳色器具面侧', '正面アクセント'],
         ['SIDE_ACCENT', '跳色浴缸侧', '浴槽横アクセント']].forEach(function (m) {
         var on = plan === m[0];
-        var dis = (m[0] === '4SAME' && (typeCode === 'S' || typeCode === 'N' || typeCode === 'F'));
-        html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '"' + (dis ? ' title="' + esc('四面同色仅 P/T タイプ可选（S/N/F 请选跳色）') + '"' : '') + '>' +
-          '<input type="radio" name="wall_plan" data-wall-plan="' + m[0] + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '">' +
+          '<input type="radio" name="wall_plan" data-wall-plan="' + m[0] + '"' + (on ? ' checked' : '') + '>' +
           esc(m[1]) + ' <span class="ja">' + esc(m[2]) + '</span></label>';
       });
       html += '</div>';
