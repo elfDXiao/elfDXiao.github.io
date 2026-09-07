@@ -271,7 +271,7 @@
     var html = '<div class="wiz-step-head">' +
       '<span class="wiz-step-no">' + t('步骤 / STEP', 'ステップ') + ' ' + st.n + ' / ' + total + '</span>' +
       '<h3>' + (st.n === 0 ? t('尺寸与型号', 'サイズ・タイプ') : t(st.titleZh, st.title)) + '</h3>' +
-      '<p class="wiz-note">' + esc(st.note) + '</p></div>';
+      '<p class="wiz-note">' + t(st.noteZh || st.note, st.note) + '</p></div>';
 
     if (st.n === 0) {
       html += step0Info();
@@ -540,7 +540,7 @@
       var typeCode = Q.typeCode();
       var html = '';
       // 模式 chips（三模式，双语；4SAME 仅 P/T タイプ可选）
-      html += '<div class="sub-row" style="margin-top:-2px;"><span class="dim-sub-title">' + t('墙面模式 / 配色方案：', '壁面モード：') + '</span>';
+      html += '<div class="sub-row" style="margin-top:-2px;"><span class="dim-sub-title">' + t('墙面模式 / 配色模式：', '壁面モード：') + '</span>';
       [['4SAME', '四面同色', '4面同色'],
         ['FRONT_ACCENT', '跳色器具面侧', '正面アクセント'],
         ['SIDE_ACCENT', '跳色浴缸侧', '浴槽横アクセント']].forEach(function (m) {
