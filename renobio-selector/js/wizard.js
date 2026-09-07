@@ -256,7 +256,7 @@
     var html = '<div class="wiz-step-head">' +
       '<span class="wiz-step-no">' + t('步骤 / STEP', 'ステップ') + ' ' + st.n + ' / ' + total + '</span>' +
       '<h3>' + (st.n === 0 ? t('尺寸·型号·地域', 'サイズ・タイプ・地域') : t(st.titleZh, st.title)) + '</h3>' +
-      '<p class="wiz-note">' + esc(st.note) + '</p></div>';
+      '<p class="wiz-note">' + t(st.noteZh || st.note, st.note) + '</p></div>';
 
     if (st.n === 0) {
       html += step0Info();
@@ -318,7 +318,7 @@
     // 地域区分（step 0 的其他维度）
     var rd = Q.dim('region');
     if (rd) html += dimensionHtml(rd);
-    // 写真セット（step 0 参考套餐）
+    // 写真セット（step 0 参考基准套装）
     var ps = Q.dim('photo_set');
     if (ps) html += dimensionHtml(ps);
 
