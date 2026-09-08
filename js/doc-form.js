@@ -301,7 +301,7 @@
       (field.optional ? '<span class="opt-tag">可选</span>' : '') + '</label>';
     var body = '';
     var ph = field.placeholder ? ' placeholder="' + esc(field.placeholder) + '"' : '';
-    if (field.std) body += '<p class="std-line"><span class="std-tag">标准</span>' + esc(field.std) + '</p>';
+    if (field.std) body += '<p class="std-line"><span class="std-tag">备注</span>' + esc(field.std) + '</p>';
 
     if (field.type === 'textarea') {
       body += '<textarea name="' + field.id + '" rows="3"' + ph + '></textarea>';
@@ -313,7 +313,7 @@
       body += '<div class="state-grid">' + opts.map(function (o) {
         return '<label class="state"><input type="radio" name="' + field.id + '" value="' + esc(o) + '"><span>' + esc(o) + '</span></label>';
       }).join('') + '</div>';
-      body += '<input type="text" class="remark-input" placeholder="现场记录 / 备注（尺寸、问题、责任人…）">';
+      body += '<input type="text" class="remark-input" placeholder="现场记录（尺寸、问题、责任人…）">';
     } else if (field.type === 'radio' || field.type === 'checkbox') {
       var input = field.type === 'radio' ? 'radio' : 'checkbox';
       body += '<div class="choice-grid">' + (field.options || []).map(function (o) {
@@ -527,7 +527,7 @@
   /* ---------------- 生成文档 ---------------- */
   function renderRow(field, fi, res, filled) {
     var q = '<div class="doc-q"><span class="doc-no">' + (fi + 1) + '</span>' + esc(field.label) +
-      (field.std ? '<span class="doc-std">标准：' + esc(field.std) + '</span>' : '') + '</div>';
+      (field.std ? '<span class="doc-std">备注：' + esc(field.std) + '</span>' : '') + '</div>';
     var a;
     if (!filled) {
       a = '<div class="doc-a"><span class="st wait">待确认</span></div>';
