@@ -1,5 +1,5 @@
 /* =========================================================
-   客户需求调查 · 交互逻辑
+   文档产出 01 · 全案设计客户需求调查 · 交互逻辑
    - 分步问卷向导（进度导航 / 自动保存到本机）
    - 生成需求表预览（不含任何个人信息）
    - 导出 PDF（html2pdf.js 直接生成 PDF 文件下载，无需调出打印机）
@@ -9,6 +9,8 @@
 
   var DATA = window.SURVEY_DATA;
   var STORE_KEY = 'elfd_survey_v1';
+
+  function lsGet(k) { try { return window.localStorage ? window.localStorage.getItem(k) : null; } catch (e) { return null; } }
   if (!DATA) return;
 
   var form = document.getElementById('surveyForm');
@@ -227,7 +229,7 @@
         }
       });
     });
-    var step = parseInt(localStorage.getItem(STORE_KEY + '_step') || '0', 10);
+    var step = parseInt(lsGet(STORE_KEY + '_step') || '0', 10);
     showStep(isNaN(step) ? 0 : step, true);
   }
 
@@ -389,7 +391,7 @@
     }
     var pdfOpt = {
       margin: [12, 10, 14, 10],
-      filename: '客户需求表-' + String(docNo || '').replace('#', '') + '.pdf',
+      filename: '全案设计客户需求调查-' + String(docNo || '').replace('#', '') + '.pdf',
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -412,5 +414,5 @@
   render();
   restore();
   refreshProgress();
-  showStep(parseInt(localStorage.getItem(STORE_KEY + '_step') || '0', 10) || 0, true);
+  showStep(parseInt(lsGet(STORE_KEY + '_step') || '0', 10) || 0, true);
 })();

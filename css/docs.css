@@ -1,0 +1,232 @@
+/* =========================================================
+   文档产出板块 · 专用样式（docs.html + 各交底/确认单页）
+   配色与字体沿用 css/style.css 的 :root 设计系统：
+   纸底 #f6f4ef / 深墨 #211f1b / 灰线 #d8d2c6 / 赤陶 #a65b33
+   ========================================================= */
+
+/* ---------- 1. 板块首页：文档清单 ---------- */
+.doc-list { display: grid; gap: 18px; }
+.doc-card {
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  gap: 26px;
+  align-items: center;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 26px 28px;
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+.doc-card:hover { border-color: var(--ink-3); transform: translateY(-3px); }
+.doc-card-num {
+  font-family: var(--serif);
+  font-size: 30px;
+  letter-spacing: .06em;
+  color: var(--ink-3);
+  text-align: center;
+  border-right: 1px solid var(--line);
+  padding-right: 22px;
+}
+.doc-card:hover .doc-card-num { color: var(--accent); border-right-color: var(--accent-soft); }
+.doc-card-title { font-size: clamp(19px, 2.2vw, 25px); margin-bottom: 6px; }
+.doc-card-desc { color: var(--ink-2); font-size: 14px; max-width: 62ch; }
+.doc-card-meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 12px; }
+.doc-card-meta span {
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  color: var(--ink-3);
+  border: 1px solid var(--line);
+  padding: 2px 9px;
+}
+.doc-card-side { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.doc-card-go { font-size: 12.5px; letter-spacing: .16em; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+.doc-card-go .arr { transition: transform .25s; }
+.doc-card:hover .doc-card-go .arr { transform: translateX(5px); }
+.doc-state { font-size: 11px; letter-spacing: .14em; padding: 3px 10px; border: 1px solid var(--accent); color: var(--accent); }
+.doc-state.client { border-color: var(--ink-3); color: var(--ink-2); }
+
+/* 状态角标与「施工中」红字 */
+.doc-badge { font-family: var(--sans); font-size: 11px; letter-spacing: .12em; padding: 3px 9px; border: 1px solid var(--line); color: var(--ink-3); margin-left: 10px; vertical-align: .18em; white-space: nowrap; }
+.doc-badge.live { color: #fff; background: var(--accent); border-color: var(--accent); }
+.doc-wip {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: #b3402e;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+.doc-card-side .doc-wip { margin-left: 0; }
+.doc-state.soon { border-color: #b3402e; color: #b3402e; }
+.doc-card-note { font-size: 12px; letter-spacing: .1em; color: var(--ink-3); }
+/* 未上线的文档：只留入口，不可点、无 hover */
+.doc-card.coming { cursor: default; background: var(--paper); }
+.doc-card.coming:hover { transform: none; border-color: var(--line); }
+.doc-card.coming .doc-card-num { color: var(--ink-3); border-right-color: var(--line); }
+.doc-card.coming:hover .doc-card-num { color: #b3402e; border-right-color: var(--accent-soft); }
+.doc-card.coming .doc-card-desc { color: var(--ink-3); }
+/* 板块首页：文档编号规范说明条 */
+.doc-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.doc-rule { border-top: 2px solid var(--ink); padding-top: 16px; }
+.doc-rule h3 { font-size: 16px; margin-bottom: 8px; }
+.doc-rule p { font-size: 13.5px; color: var(--ink-2); }
+
+/* 已知全站坑：.btn 的 display 会盖掉 hidden 属性（与选型系统同源问题），
+   本页专用样式补一条兜底，保证「生成交底单」按钮只在最后一步出现。 */
+[hidden] { display: none !important; }
+.btn:disabled { opacity: .38; cursor: default; }
+.btn:disabled:hover { background: transparent; color: var(--ink); border-color: var(--line); }
+/* ---------- 2. 子页面包屑（返回板块） ---------- */
+.doc-crumb { font-size: 12px; letter-spacing: .18em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 18px; }
+.doc-crumb a { color: var(--accent); border-bottom: 1px solid var(--accent-soft); text-transform: none; letter-spacing: .06em; }
+.doc-crumb a:hover { border-bottom-color: var(--accent); }
+
+/* ---------- 3. 表单：标准要求行 + 确认态选项 ---------- */
+.std-line {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  border-left: 2px solid var(--accent-soft);
+  padding: 7px 12px;
+  margin: 2px 0 8px;
+  line-height: 1.65;
+}
+.std-tag {
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  color: var(--accent);
+  border: 1px solid var(--accent-soft);
+  padding: 1px 6px;
+  margin-right: 8px;
+}
+.state-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
+.field label.state {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-bottom: 0; padding: 6px 14px;
+  border: 1px solid var(--line);
+  font-size: 13.5px; font-weight: 400; letter-spacing: .04em;
+  color: var(--ink-2); cursor: pointer;
+  transition: border-color .2s, background .2s, color .2s;
+}
+.field label.state:hover { border-color: var(--ink-3); }
+.state input { width: 14px; height: 14px; accent-color: var(--accent); flex: none; }
+.state.picked { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.field input.remark-input { margin-top: 2px; border-style: dashed; padding: 9px 12px; font-size: 13.5px; }
+
+/* 章节说明 */
+.sec-lead { font-size: 13.5px; color: var(--ink-2); margin: -6px 0 14px; }
+.sec-tips { margin: 0 0 18px; padding: 12px 16px; border: 1px dashed var(--line); background: var(--paper); }
+.sec-tips li { font-size: 13px; color: var(--ink-2); line-height: 1.75; padding-left: 14px; position: relative; }
+.sec-tips li::before { content: ""; position: absolute; left: 0; top: .75em; width: 5px; height: 5px; background: var(--accent); }
+.doc-step { margin-bottom: 0; }
+
+/* ---------- 4. 生成文档：确认状态与签认栏 ---------- */
+.doc-alert { border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 12px 16px; margin-bottom: 24px; }
+.doc-alert b { font-size: 12px; letter-spacing: .18em; color: var(--accent); display: block; margin-bottom: 6px; }
+.doc-alert p { font-size: 12.5px; color: var(--ink-2); line-height: 1.75; }
+.doc-lead { font-size: 13px; color: var(--ink-2); margin-bottom: 12px; }
+.doc-tips { margin: 10px 0 4px; padding-left: 18px; }
+.doc-tips li { font-size: 12.5px; color: var(--ink-2); line-height: 1.7; list-style: disc; }
+.doc-q { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.doc-q .doc-no { color: var(--accent); font-weight: 700; margin-right: 2px; }
+.doc-q .doc-std { font-size: 11.5px; color: var(--ink-3); font-weight: 400; flex-basis: 100%; padding-left: 1.4em; }
+.doc-a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.doc-note-txt { font-size: 12.5px; color: var(--ink-2); }
+.doc-row.is-wait { background: rgba(216, 210, 198, .16); }
+.doc-row.is-wait .doc-a { color: var(--ink-3); }
+.st {
+  display: inline-block; font-size: 12px; letter-spacing: .08em;
+  padding: 1px 10px; border: 1px solid var(--line); color: var(--ink-2);
+  white-space: nowrap;
+}
+.st.ok { border-color: #2e7d4f; color: #2e7d4f; background: rgba(46, 125, 79, .07); }
+.st.bad { border-color: #b03a2e; color: #b03a2e; background: rgba(176, 58, 46, .07); }
+.st.na { border-color: var(--line); color: var(--ink-3); background: var(--paper-2); }
+.st.wait { border-style: dashed; color: var(--ink-3); }
+.doc-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.doc-tag { font-size: 12px; border: 1px solid var(--line); padding: 1px 8px; color: var(--ink); }
+.sign-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; margin-top: 6px; }
+.sign-cell { border: 1px solid var(--line); padding: 12px 16px 14px; }
+.sign-role { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+.sign-line { font-size: 12.5px; color: var(--ink-3); border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 10px; }
+.sign-line:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 4px; }
+
+/* ---------- 5. 打印 ---------- */
+@media print {
+  body.doc-page #docSheet { position: static; }
+  .doc-row { break-inside: avoid; }
+  .doc-sec-title { break-after: avoid; }
+  .sign-grid { break-inside: avoid; }
+}
+
+/* ---------- 6. 响应式 ---------- */
+@media (max-width: 900px) {
+  .doc-card { grid-template-columns: 64px 1fr; padding: 20px 18px; gap: 18px; }
+  .doc-card-side { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+  .doc-card-num { font-size: 24px; padding-right: 16px; }
+  .doc-rules { grid-template-columns: 1fr; }
+  .sign-grid { grid-template-columns: 1fr; }
+}
+/* ---------- 2b. 项目信息登记弹窗 / 手写签字弹窗 ---------- */
+.elfd-mask {
+  position: fixed; inset: 0; z-index: 10002;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(33, 31, 27, .52);
+  backdrop-filter: blur(3px);
+  padding: 20px; overflow: auto;
+}
+.elfd-card {
+  background: #fff; color: var(--ink);
+  width: min(620px, 100%);
+  border-radius: 14px; border: 1px solid var(--line);
+  box-shadow: 0 18px 50px rgba(33, 31, 27, .22);
+  padding: 28px 30px 24px;
+}
+.elfd-card.wide { width: min(680px, 100%); }
+.elfd-title { font-family: var(--serif); font-size: 21px; letter-spacing: .06em; margin-bottom: 8px; }
+.elfd-note { font-size: 13px; color: var(--ink-2); line-height: 1.75; margin-bottom: 18px; }
+.gate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.gate-cell { display: block; }
+.gate-cell.wide { grid-column: 1 / -1; margin-top: 16px; }
+.gate-cell > span { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .05em; color: var(--ink-2); margin-bottom: 6px; }
+.gate-cell input, .gate-cell select {
+  width: 100%; box-sizing: border-box; padding: 10px 12px;
+  font-size: 14.5px; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px; background: #faf8f4;
+}
+.gate-cell input:focus, .gate-cell select:focus { border-color: var(--accent); outline: none; }
+.gate-cell .state {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  padding: 6px 14px; border: 1px solid var(--line);
+  font-size: 13.5px; font-weight: 400; letter-spacing: .04em;
+  color: var(--ink-2); cursor: pointer; margin: 0;
+  transition: border-color .2s, background .2s, color .2s;
+}
+.gate-cell .state:hover { border-color: var(--ink-3); }
+.gate-cell .state.picked { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.gate-cell .state input { width: 14px; height: 14px; accent-color: var(--accent); flex: none; }
+.elfd-err { display: none; margin: 14px 0 0; font-size: 12.5px; color: #b3402e; }
+.elfd-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.elfd-actions .btn { padding: 11px 24px; font-size: 13.5px; }
+.sig-box { position: relative; border: 1px dashed var(--line); border-radius: 8px; background: #fdfcfa; }
+.sig-box canvas { display: block; width: 100%; height: 220px; touch-action: none; cursor: crosshair; }
+.sig-hint {
+  position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+  text-align: center; font-size: 13px; letter-spacing: .12em; color: var(--ink-3);
+  pointer-events: none;
+}
+.sig-name { margin-top: 14px; }
+.meta-line { border: 1px solid var(--line); background: var(--paper); padding: 11px 16px; margin-bottom: 18px; font-size: 13px; color: var(--ink-2); }
+.meta-line b { color: var(--ink); }
+.meta-line a { color: var(--accent); border-bottom: 1px solid var(--accent-soft); margin-left: 6px; font-size: 12.5px; }
+.step-state:not(.done) { color: var(--ink-3); font-size: 11.5px; font-weight: 400; }
+.step-link.locked { opacity: .45; }
+.opt-tag { font-size: 10.5px; letter-spacing: .1em; color: var(--ink-3); border: 1px solid var(--line); padding: 0 6px; }
+.doc-byline { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-top: 10px; font-size: 12.5px; color: var(--ink-2); }
+.doc-byline b { color: var(--ink); }
+.sign-hand { border: 1px solid var(--line); padding: 12px 16px 10px; margin-bottom: 14px; }
+.sign-hand-cap { font-size: 12.5px; color: var(--ink-3); letter-spacing: .08em; }
+.sign-hand-img { display: block; max-height: 120px; margin: 6px 0 4px; }
+.sign-hand-info { font-size: 12.5px; color: var(--ink-2); }
+@media (max-width: 640px) { .gate-grid { grid-template-columns: 1fr; } }
+@media print { .elfd-mask { display: none !important; } }
