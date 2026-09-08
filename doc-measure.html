@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="全屋定制复尺（精尺）上门前，逐项确认完成面基准线、水电点位、门窗洞口与搬运条件，生成可签字的 PDF 确认单。">
+  <title>全屋定制前置测量条件确认 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/glass.css">
+  <link rel="stylesheet" href="css/docs.css">
+</head>
+<body class="page survey-page doc-page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫选型系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html">浴室案例</a></li>
+        <li><a href="docs.html" class="active">文档产出</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="doc-crumb">Section 06 · <a href="docs.html">文档产出</a> · 02</p>
+        <h1 class="sec-title">全屋定制前置测量条件确认</h1>
+        <p class="sec-sub">柜体尺寸只有在墙、地、顶三大完成面确定之后才有意义。进入时先登记项目地址与你的身份（业主 / 设计师 / 项目经理），再逐章确认现场条件，最后手写签字：生成的 PDF 抬头带项目地址与提交人身份，结尾就是签字确认。</p>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="privacy-note">
+          <strong>什么时候用：</strong>定制柜「上门复尺（精尺）」之前。业主、设计师或项目经理任一身份登记提交，结论作为复尺与厂内下单的前置依据。<br>
+          <strong>怎么用：</strong>进入时先登记项目地址与身份，再按 01 → 06 逐章确认（本章没确认完不能进下一章），需要数字的地方直接填现场实测值与 mm 单位；最后一章给出结论后手写签字，即生成本单并可导出 PDF。
+        </div>
+      </div>
+    </section>
+
+    <!-- 逐项确认向导 -->
+    <section class="section-tight" id="wizardView">
+      <div class="container">
+        <p class="meta-line" id="metaLine" hidden></p>
+        <div class="survey-wrap">
+          <aside class="wizard-nav">
+            <div class="wizard-progress">
+              <div class="progress-label">确认进度 <b id="doneCount">0</b> / <b id="totalCount">0</b> 项</div>
+              <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+            </div>
+            <ol class="wizard-steps" id="wizardSteps"></ol>
+            <p class="privacy-note" style="margin-top:16px;"><strong>说明：</strong>未确认的项不会消失，会在生成的文档里以「待确认」原样列出，直接作为现场待办清单使用。内容只保存在本机浏览器。</p>
+          </aside>
+
+          <div class="wizard-panel">
+            <form id="docForm" novalidate>
+              <div id="stepContainer"></div>
+              <div class="wizard-buttons">
+                <button type="button" class="btn btn-line" id="btnPrev" disabled>← 上一项</button>
+                <button type="button" class="btn btn-solid" id="btnNext">下一项 →</button>
+                <button type="submit" class="btn btn-accent" id="btnSubmit" hidden>手写签字并生成确认单</button>
+              </div>
+              <p class="form-tip" id="formTip"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 文档预览 / 导出 -->
+    <section class="section-tight result-section" id="resultSection" hidden>
+      <div class="container">
+        <div class="result-actions no-print">
+          <button type="button" class="btn btn-line" id="btnBack">← 返回修改</button>
+          <button type="button" class="btn btn-line" id="btnCopy">复制文本</button>
+          <button type="button" class="btn btn-solid" id="btnReset">重新填写</button>
+          <button type="button" class="btn btn-accent" id="btnExportPdf">导出 PDF</button>
+        </div>
+        <p class="result-tip no-print" id="resultTip"></p>
+        <article class="survey-doc" id="docSheet" data-doc-root></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="muted"><a href="docs.html">← 返回文档产出</a>　·　上一份：<a href="survey.html">全案设计客户需求调查</a>　·　下一份：整体浴室落地交底文档 <span class="doc-wip">施工中</span></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫选型系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">浴室案例</a>
+          <a href="docs.html">文档产出</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系</h4>
+          <a href="mailto:xtqsbx@gmail.com">xtqsbx@gmail.com</a>
+          <a href="#">微信 · 电话（待添加）</a>
+          <a href="#">所在地 · 中国</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/lib/html2pdf.bundle.min.js"></script>
+  <script src="js/city-data.js"></script>
+  <script src="js/doc-measure-data.js"></script>
+  <script src="js/doc-form.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

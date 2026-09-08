@@ -731,8 +731,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   @page { size: A4; margin: 14mm 12mm; }
   body { background: #fff !important; }
   body * { visibility: hidden; }
-  #surveyDoc, #surveyDoc * { visibility: visible; }
-  #surveyDoc {
+  #surveyDoc, #surveyDoc *, [data-doc-root], [data-doc-root] * { visibility: visible; }
+  #surveyDoc, [data-doc-root] {
     position: absolute; left: 0; top: 0; width: 100%;
     max-width: 100%; border: 0; box-shadow: none; padding: 0;
   }
