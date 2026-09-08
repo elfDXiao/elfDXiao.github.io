@@ -230,3 +230,11 @@
 .sign-hand-info { font-size: 12.5px; color: var(--ink-2); }
 @media (max-width: 640px) { .gate-grid { grid-template-columns: 1fr; } }
 @media print { .elfd-mask { display: none !important; } }
+
+/* ---------- 7. 文档正文：规范依据与典型问题 ---------- */
+.doc-std-box { border: 1px solid var(--line); padding: 12px 16px; margin-bottom: 22px; }
+.doc-std-box b { font-size: 12px; letter-spacing: .18em; color: var(--accent); display: block; margin-bottom: 8px; }
+.doc-std-box span { display: inline-block; font-size: 12px; color: var(--ink-2); margin: 0 14px 4px 0; }
+.doc-issue { border: 1px solid #b3402e; border-left-width: 3px; background: rgba(179, 64, 46, .05); padding: 12px 16px; margin: 4px 0 22px; }
+.doc-issue b { font-size: 12px; letter-spacing: .16em; color: #b3402e; display: block; margin-bottom: 6px; }
+.doc-issue p { font-size: 12.5px; color: var(--ink-2); line-height: 1.75; }
