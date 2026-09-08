@@ -119,7 +119,14 @@ function waitFor(win, check, ms) {
   assert('报价单无公式（不含 0.8 / rmbRate / 汇率算式）', qtext.indexOf('0.8') < 0 && qtext.indexOf('rmbRate') < 0 && qtext.indexOf('×汇率') < 0, qtext.slice(0, 200));
   assert('报价单含安装费描述', qtext.indexOf('安装人工费') >= 0 || qtext.indexOf('据付人工費') >= 0);
 
-  console.log('== 返回选型 + 语言切换 ==');
+  console.log('== 下载入口（唯一·百度网盘·无左侧 dl-row）==');
+var dlLinks = doc.querySelectorAll('a.download-link');
+assert('仅 1 个下载入口', dlLinks.length === 1, dlLinks.length);
+assert('保留右侧 dl-box 卡片', !!doc.querySelector('.dl-box a.download-link'));
+assert('链接直达百度网盘', dlLinks[0] && String(dlLinks[0].getAttribute('href')).indexOf('https://pan.baidu.com/s/') === 0, dlLinks[0] && dlLinks[0].getAttribute('href'));
+assert('左下 dl-row 已删除', !doc.querySelector('#dlRow'));
+
+console.log('== 返回选型 + 语言切换 ==');
   doc.querySelector('#btnBack').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
   assert('返回后向导显示', doc.querySelector('#view-wizard').classList.contains('active'));
   doc.querySelector('#langBar .lang-btn[data-lang="ja"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
