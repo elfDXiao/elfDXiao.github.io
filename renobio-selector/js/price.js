@@ -100,8 +100,17 @@
    *   priceDiff → priceByType → pricesBySize → price → isBasic(0) → null
    * 返回数字或 null（null=未选/无法确定/该タイプ不可选）。
    */
-  function priceFor(option, typeCode, size) {
+  /** 寒冷地差し替え：coldPriceByType を priceByType として扱う浅いコピー */
+  function coldAs(option) {
+    var copy = {};
+    for (var k in option) if (Object.prototype.hasOwnProperty.call(option, k)) copy[k] = option[k];
+    copy.priceByType = option.coldPriceByType;
+    return copy;
+  }
+
+  function priceFor(option, typeCode, size, cold) {
     if (!option) return null;
+    if (cold && option.coldPriceByType) option = coldAs(option);
     if (typeof option.priceDiff === 'number') return option.priceDiff;
     var v = priceByTypeValue(option, typeCode);
     if (v != null) return toAmount(v);
@@ -117,8 +126,9 @@
   /**
    * 选项价格摘要（卡片显示）：返回 { text, type }。
    */
-  function optionPriceSummary(option, typeCode, size) {
+  function optionPriceSummary(option, typeCode, size, cold) {
     if (!option) return { text: '—', type: 'empty' };
+    if (cold && option.coldPriceByType) option = coldAs(option);
     if (typeof option.priceDiff === 'number') {
       if (option.priceDiff === 0) return { text: '基本仕様', type: 'basic' };
       return { text: fmtDiff(option.priceDiff), type: 'num' };

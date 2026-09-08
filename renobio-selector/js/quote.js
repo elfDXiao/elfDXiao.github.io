@@ -28,7 +28,7 @@
     { n: 2, title: '床', titleZh: '地板', noteZh: '岩石肌理单色（白/N86 标准·米/Y71·灰/U61 ±¥0）。裙板与地板同色。', note: '岩肌調 単色（ホワイト/N86 標準・ベージュ/Y71・グレー/U61 ±¥0）。エプロンは床と同色。' },
     { n: 3, title: '壁パネル', titleZh: '壁面', noteZh: '四面同色全贴（哑光白标准／其他花纹 ＋¥70,000）／局部跳色 B面·C面（四面墙板 基础 ＋¥10,000·高级 ＋¥70,000）→ 花纹 13 柄。', note: '全面張り（マットホワイト標準／他柄 ＋¥70,000）／アクセント張り B面・C面（ベース ベーシック ＋¥10,000・ハイクラス ＋¥70,000）→ 壁柄 13 種。' },
     { n: 4, title: '浴槽', titleZh: '浴缸', noteZh: '圆角 FRP 浴缸（白/NW1 标准·米/Y71·粉/P91 ±¥0）＋排水栓·浴缸内扶手（1014 无）。', note: 'ラウンド形状 FRP 浴槽（ホワイト/NW1 標準・ベージュ/Y71・ピンク/P91 ±¥0）＋排水栓・浴槽内握りバー（1014 ―）。' },
-    { n: 5, title: 'フロフタ・フック', titleZh: '浴缸盖·挂钩', noteZh: '卷帘盖 标准／分体盖（C/B 无）／无浴缸盖（−¥8,000、1014 −¥7,500）＋浴缸盖挂钩 7 种。', note: '巻フタ 標準／組フタ（C/B ―）／フロフタなし（−¥8,000、1014 −¥7,500）＋フロフタフック 7 種。' },
+    { n: 5, title: 'フロフタ・フック', titleZh: '浴缸盖·挂钩', noteZh: '卷帘盖 标准／折叠盖（仅 B 型不可）／无浴缸盖（−¥8,000、1014 −¥7,500）＋浴缸盖挂钩 7 种。', note: '巻フタ 標準／組フタ（B ―）／フロフタなし（−¥8,000、1014 −¥7,500）＋フロフタフック 7 種。' },
     { n: 6, title: '天井・換気', titleZh: '天花板·换气', noteZh: '内装平顶（壁高 2000/1900）＋换气设备（格栅/换气扇/换气干燥暖风机）＋晾衣杆。', note: '内組平天井（壁高 2000/1900）＋換気設備（グリル/換気扇/換気乾燥暖房機）＋ランドリーパイプ。' },
     { n: 7, title: 'ドア', titleZh: '门', noteZh: '折叠门（门槛高差11/50mm·800/700/600W·2000/1900/1800H）／带填充条（1216/1116）／双扇推拉门（1216）／平开门 洁净门。', note: '折り戸（11/50mm 段差・800/700/600W・2000/1900/1800H）／フィラー付（1216/1116）／2枚引き戸（1216）／開き戸 キレイドア。' },
     { n: 8, title: '水栓', titleZh: '水龙头', noteZh: '洗手区侧（N=QM 出水90·T/C=SP 兼用250·B=SS 兼用170）＋浴缸侧（仅 N 可选 BS/BU）＋安装脚隔热罩。', note: '洗い場側（N=QM 吐水90・T/C=SP 兼用250・B=SS 兼用170）＋浴槽側（N のみ BS/BU 選択可）＋取付脚断熱カバー。' },
@@ -319,11 +319,12 @@
     var o = opt(dimId, code);
     if (!o) return null;
     if (o.priceByType) {
-      var tv = P.priceByTypeValue(o, typeCode());
+      var src = (isCold() && o.coldPriceByType) ? { priceByType: o.coldPriceByType } : o;
+      var tv = P.priceByTypeValue(src, typeCode());
       if (tv != null) return P.toAmount(tv);
       return null;
     }
-    return P.priceFor(o, typeCode(), sizeCode());
+    return P.priceFor(o, typeCode(), sizeCode(), isCold());
   }
 
   /** 当前门宽（door 选项名 800W/700W/600W → '800'/'700'/'600'） */
@@ -376,7 +377,7 @@
         out.nameZh = o.name_zh || o.name_ja || '';
         out.nameJa = o.name_ja || '';
         out.code = o.code || '';
-        out.model = o.partNumber || o.selectMark || '';
+        out.model = modelOf(o);
         // 壁パネル：附加花纹名与注文コード
         if (dimId === 'wall') {
           var pc = state.sub.wall_pattern;
@@ -473,6 +474,19 @@
     var t = typeCode();
     var prefix = t === 'B' ? 'BLKS' : 'BKS';
     return prefix + '-' + sizeCode() + 'LB' + t + '-B+H(C)' + doorPosCode();
+  }
+
+  /** 寒冷地セレクション（region=C）か */
+  function isCold() { return state.sel.region === 'C'; }
+
+  /** 品番表記解決：寒冷地は「（寒冷地: …）」内側を抽出、一般地は括弧注記を除去 */
+  function modelOf(o) {
+    var m = String((o && (o.partNumber || o.selectMark)) || '');
+    if (isCold()) {
+      var cm = m.match(/（寒冷地[:：]\s*([^）]+)）/);
+      if (cm) return cm[1].trim();
+    }
+    return m.replace(/（寒冷地[:：][^）]*）/g, '').trim();
   }
 
   /* ---------------- 组合约束 ---------------- */
@@ -774,6 +788,7 @@
     codesOf: codesOf, catOpts: catOpts,
     virtualBasicOf: virtualBasicOf, isVirtualBasic: isVirtualBasic,
     typeCode: typeCode, sizeCode: sizeCode, typeGroup: typeGroup, basePrice: basePrice,
+    isCold: isCold,
     doorPosCode: doorPosCode, sizeAltPrice: sizeAltPrice,
     wallPatterns: wallPatterns, wallPattern: wallPattern, wallBases: wallBases, wallMode: wallMode, wallBase: wallBase,
     wallContribution: wallContribution, wallPatternPartNo: wallPatternPartNo,
