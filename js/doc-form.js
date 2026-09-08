@@ -287,10 +287,10 @@
   function stateClass(field, res) {
     var v = String(res.v);
     if (field.type === 'checkbox') v = res.v[0] || '';
-    if (/不适用|不需要|无此项/.test(v)) return 'na';
-    if (/^(不符合|未完成|未确定|未|缺|无|否|不是|需整改|需返工|不满足|冲突|偏低|偏高|超长|偏长|偏短)/.test(v)) return 'bad';
-    if (/^(符合|满足|已完成|已确认|已确定|已到位|已预留|已弹线|已办理|已报备|已约定|已复核|是|有|OK|通过|正常|可|无冲突|可通过|已单独接入|已保温|已设置|已处理)/.test(v)) return 'ok';
-    if (/待定|待确认|另定|商量|不确定|不清楚|需进一步|待现场|待测|待复核/.test(v)) return 'na';
+    if (/^(不适用|不需要|无需|无此项|不涉及|暂无|无特殊)/.test(v)) return 'na';
+    if (/待定|待确认|待补|待测|待复核|另定|商量|不确定|不清楚|需进一步|待现场/.test(v)) return 'na';
+    if (/^(不符合|未完成|未|缺|不满足|不是|否|冲突|偏长|偏短|偏低|偏高|超长|需整改|需返工|被遮挡|有冲突|有改动|未提交|未开辟|未裸露)/.test(v)) return 'bad';
+    if (/^(符合|满足|已完成|已确认|已确定|已到位|已预留|已弹线|已办理|已报备|已约定|已复核|已提交|已开辟|已裸露|已记录|已单独接入|已保温|已设置|已处理|通过|正常|可以|可通过|无冲突|无改动|无需改动|无此项风险|是|OK)/.test(v)) return 'ok';
     return '';
   }
 
@@ -623,7 +623,12 @@
         '</header>' +
         (CFG.printNotes && CFG.printNotes.length ? '<div class="doc-alert"><b>使用说明</b>' +
           CFG.printNotes.map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('') + '</div>' : '') +
-        html + signSectionHTML() +
+        (CFG.standards && CFG.standards.length ? '<div class="doc-std-box"><b>本文件规范依据</b>' +
+          CFG.standards.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') + '</div>' : '') +
+        html +
+        (CFG.issues && CFG.issues.length ? '<div class="doc-issue"><b>典型问题（历次返工主因）</b>' +
+          CFG.issues.map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('') + '</div>' : '') +
+        signSectionHTML() +
         '<footer class="doc-footer">' + foot.map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('') + '</footer>'
     };
   }
