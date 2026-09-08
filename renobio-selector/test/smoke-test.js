@@ -285,6 +285,26 @@ console.log('== 漢数字 ==');
 assert('925,650 → 玖拾弐万伍仟陸佰伍拾円', Q.kanjiYen(925650) === '玖拾弐万伍仟陸佰伍拾円', Q.kanjiYen(925650));
 assert('0 → 零円', Q.kanjiYen(0) === '零円', Q.kanjiYen(0));
 
+console.log('== 寒冷地オプション差額（coldPriceByType）==');
+Q.reset(); Q.setSize('1216'); Q.state.sel.type = 'N'; Q.state.sel.region = 'C'; Q.state.sel.faucet = 'BS';
+assert('寒冷地 BS 差額=¥67,200', Q.contributionFor('faucet') === 67200, Q.contributionFor('faucet'));
+var rcold = Q.computeQuote();
+assert('寒冷地 N1216+BS 税抜=¥913,700', rcold.totalEx === 913700, rcold.totalEx);
+Q.state.sel.faucet = 'BU';
+assert('寒冷地 BU 差額=¥114,100', Q.contributionFor('faucet') === 114100, Q.contributionFor('faucet'));
+Q.state.sel.faucet = 'BS'; Q.state.sel.region = 'H';
+assert('一般地 BS=¥63,900（回退不变）', Q.contributionFor('faucet') === 63900, Q.contributionFor('faucet'));
+Q.state.sel.faucet = 'BU';
+assert('一般地 BU=¥110,800（回退不变）', Q.contributionFor('faucet') === 110800, Q.contributionFor('faucet'));
+Q.state.sel.faucet = 'BS';
+var rh = Q.computeQuote(); var lh = rh.lines.filter(function (l) { return l.code === 'BS'; })[0];
+Q.state.sel.region = 'C'; var rc2 = Q.computeQuote(); var lc = rc2.lines.filter(function (l) { return l.code === 'BS'; })[0];
+assert('品番解決 一般地=BF-KA345T-12PU', lh && lh.model === 'BF-KA345T-12PU', lh && lh.model);
+assert('品番解決 寒冷地=BF-KA345TN-12PU', lc && lc.model === 'BF-KA345TN-12PU', lc && lc.model);
+assert('STEP5 文案 組フタ（B ―）', Q.STEPS[5].note.indexOf('組フタ（B ―）') >= 0 && Q.STEPS[5].noteZh.indexOf('仅 B 型不可') >= 0, Q.STEPS[5].note);
+assert('数据无违禁词 プラン', JSON.stringify(DATA).indexOf('プラン') < 0);
+assert('数据无违禁词 套餐', JSON.stringify(DATA).indexOf('套餐') < 0);
+
 console.log('== CSV ==');
 Q.state.sel.type = 'N';
 const csv = Q.toCSV();

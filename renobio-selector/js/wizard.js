@@ -454,11 +454,12 @@
       return typeof ps === 'number' ? ps - Q.basePrice() : null;
     }
     if (o.priceByType) {
-      var tv = P.priceByTypeValue(o, Q.typeCode());
+      var src = (Q.isCold() && o.coldPriceByType) ? { priceByType: o.coldPriceByType } : o;
+      var tv = P.priceByTypeValue(src, Q.typeCode());
       if (tv != null) return P.toAmount(tv);
       return null;
     }
-    var v2 = P.priceFor(o, Q.typeCode(), Q.sizeCode());
+    var v2 = P.priceFor(o, Q.typeCode(), Q.sizeCode(), Q.isCold());
     return (typeof v2 === 'number') ? v2 : null;
   }
 
@@ -474,7 +475,7 @@
     var sel = Q.state.sel[d.id] === code ? ' on' : '';
     var dis = Q.disabledReason(d.id, code);
     var disCls = dis ? ' disabled' : '';
-    var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode());
+    var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode(), Q.isCold());
     var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
     var note = '';
     if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
@@ -530,7 +531,7 @@
       var on = Q.state.multi[d.id] && Q.state.multi[d.id][code];
       var dis = Q.disabledReason(d.id, code);
       var disCls = dis ? ' disabled' : '';
-      var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode());
+      var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode(), Q.isCold());
       var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
       var note = '';
       if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
