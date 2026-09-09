@@ -55,7 +55,7 @@
         '<div class="product-body">' +
           '<div class="cat">' + esc(p.cat) + ' · ' + esc(p.brand || '') + '</div>' +
           '<h3>' + esc(p.name) + '</h3>' +
-          '<div class="price">' + (p.file ? '<a class="download-link" href="' + esc(p.file) + '" download>下载 PDF</a>' : '<small>参考价</small>') + '</div>' +
+          '<div class="price">' + (p.file ? '<a class="download-link" href="' + esc(p.file) + '" download>下载 PDF</a>' : p.link ? '<a class="download-link" href="' + esc(p.link) + '" target="_blank" rel="noopener">下载 PDF（网盘）</a>' + (p.linkNote ? '<span style="font-size:12px;color:var(--ink-3);margin-left:6px;">' + esc(p.linkNote) + '</span>' : '') : '<small>参考价</small>') + '</div>' +
         '</div>';
       grid.appendChild(card);
     });
