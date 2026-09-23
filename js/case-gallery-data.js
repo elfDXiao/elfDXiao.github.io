@@ -46,6 +46,22 @@ window.CASE_GALLERY = {
             thumb: 'img/360/spage-nt-01-thumb.jpg'
           }
         ] }
+      } },
+      '110000': { name: '北京市', cities: {
+        '110000': { name: '北京市', cases: [
+          {
+            pano: true,
+            id: 'p-bj-01',
+            title: 'SPAGE 整体浴室 · 北京',
+            brand: 'LIXIL（リクシル）',
+            series: 'SPAGE（スページ）',
+            price: '¥95,000（含安装）',
+            desc: 'LIXIL SPAGE PZ系列整体浴室，含有肩乐汤及腰乐汤。',
+            tags: ['SPAGE', '肩乐汤', '腰乐汤', '追焚'],
+            image: 'img/360/spage-bj-01.jpg',
+            thumb: 'img/360/spage-bj-01-thumb.jpg'
+          }
+        ] }
       } }
     }
   },
