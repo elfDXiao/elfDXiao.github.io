@@ -4,6 +4,9 @@
    用法：window.PanoViewer.open({
             title, date,
             province, city,        // 安装省份 / 安装城市
+            provinceLabel,         // 省份标签（可选，缺省「安装省份」；如工地巡检传「项目省份」）
+            cityLabel,             // 城市标签（可选，缺省「安装城市」）
+            fields,                // 额外自定义字段（可选）[{label, value}]，空值自动跳过
             brand, series,         // 品牌 / 系列（可选；全屋定制不传）
             price, priceLabel,     // 价格 / 价格标签（缺省「含安装人民币价格」）
             priceNote, desc, tags, // 说明信息（可选）
@@ -154,8 +157,13 @@ window.PanoViewer = (function () {
   function renderInfo(cfg) {
     var tags = (cfg.tags || []).map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('');
     var fields =
-      '<div class="pano-field"><span>安装省份</span><b>' + esc(cfg.province || '—') + '</b></div>' +
-      '<div class="pano-field"><span>安装城市</span><b>' + esc(cfg.city || '—') + '</b></div>';
+      '<div class="pano-field"><span>' + esc(cfg.provinceLabel || '安装省份') + '</span><b>' + esc(cfg.province || '—') + '</b></div>' +
+      '<div class="pano-field"><span>' + esc(cfg.cityLabel || '安装城市') + '</span><b>' + esc(cfg.city || '—') + '</b></div>';
+    // 额外自定义字段（可选）：[{label, value}]，空值自动跳过
+    (cfg.fields || []).forEach(function (f) {
+      if (!f || !f.value) return;
+      fields += '<div class="pano-field"><span>' + esc(f.label || '') + '</span><b>' + esc(f.value) + '</b></div>';
+    });
     if (cfg.brand) fields += '<div class="pano-field"><span>品牌</span><b>' + esc(cfg.brand) + '</b></div>';
     if (cfg.series) fields += '<div class="pano-field"><span>系列</span><b>' + esc(cfg.series) + '</b></div>';
     if (cfg.price) fields += '<div class="pano-field pano-price"><span>' + esc(cfg.priceLabel || '含安装人民币价格') + '</span><b>' + esc(cfg.price) + '</b></div>';

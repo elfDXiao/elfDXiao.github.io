@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="工作室内部工地巡检 —— 按省份与城市归档的施工现场 360° 全景记录，卡片显示工地地址（小区名字 / 楼栋号 / 门牌号）。内部资料，需访问密码。">
+  <title>工作室内部工地巡检 · elf_D老肖的世界</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/glass.css">
+  <link rel="stylesheet" href="css/docs.css">
+</head>
+<body class="page doc-page">
+
+  <header class="site-header on-page" id="siteHeader">
+    <nav class="nav container">
+      <a href="index.html" class="brand">elf_D老肖的世界 <small>STUDIO</small></a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="database.html">产品资料库</a></li>
+        <li><a href="furniture.html">全屋定制</a></li>
+        <li><a href="kitchen.html">厨卫选型系统</a></li>
+        <li><a href="studio.html">工作室案例</a></li>
+        <li><a href="bathroom.html">浴室案例</a></li>
+        <li><a href="docs.html" class="active">文档产出</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="doc-crumb">Section 06 · <a href="docs.html">文档产出</a> · 内部</p>
+        <h1 class="sec-title">工作室内部工地巡检</h1>
+        <p class="sec-sub">工作室内部资料，不对外公开。按省份与城市归档的施工现场 360° 全景记录，每张卡片显示工地地址：小区名字 / 楼栋号 / 门牌号。</p>
+      </div>
+    </section>
+
+    <!-- 地图 + 选城市 -->
+    <section class="section-tight">
+      <div class="container">
+        <div class="sec-head reveal">
+          <span class="sec-label">Site Inspection</span>
+          <h2 class="sec-title">选择省份与城市</h2>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的巡检记录。带 <b class="pano-badge-inline">360°</b> 角标的记录可打开现场全景实拍。</p>
+        </div>
+        <div class="explorer-wrap reveal">
+          <div class="explorer-stage">
+            <div class="map-box">
+              <div id="mapInspect"></div>
+              <p class="map-hint" id="hintInspect">请点击地图上的省份开始浏览</p>
+            </div>
+          </div>
+          <div class="sel-box">
+            <h3>选择城市</h3>
+            <div class="crumb" id="crumbInspect">请先在左侧地图选择省份</div>
+            <div id="cityPanelInspect" style="display:none;">
+              <div class="city-grid" id="cityGridInspect"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 巡检记录 -->
+    <section class="section bg-alt" id="caseSectionInspect" style="display:none;">
+      <div class="container">
+        <div class="case-section-title"><h2 id="caseTitleInspect"></h2></div>
+        <div class="case-grid" id="caseGridInspect"></div>
+        <p class="case-empty" id="caseEmptyInspect" style="display:none;"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 灯箱 -->
+  <div class="lightbox" id="lbInspect">
+    <div class="lb-card">
+      <div class="lb-media">
+        <button class="lb-close" id="lbCloseInspect" aria-label="关闭">✕</button>
+        <span class="lb-count" id="lbCountInspect"></span>
+        <div id="lbMediaInspect"></div>
+        <button class="lb-nav lb-prev" id="lbPrevInspect" aria-label="上一张">‹</button>
+        <button class="lb-nav lb-next" id="lbNextInspect" aria-label="下一张">›</button>
+      </div>
+      <div class="lb-body" id="lbBodyInspect"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-brand">elf_D老肖的世界<small>DESIGN STUDIO · 个人主页</small></p>
+          <p class="footer-owner">老肖 · 室内设计 / 全屋定制 / 旅行家 / 律师 / 自控工程师</p>
+        </div>
+        <div class="footer-col">
+          <h4>板块</h4>
+          <a href="database.html">日系产品资料库</a>
+          <a href="furniture.html">全屋定制展示</a>
+          <a href="kitchen.html">厨卫选型系统</a>
+          <a href="studio.html">工作室案例</a>
+          <a href="bathroom.html">浴室案例</a>
+          <a href="docs.html">文档产出</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> elf_D老肖的世界 · 保留所有权利</span>
+        <span>由 GitHub Pages 免费托管</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/china-map-data.js"></script>
+  <script src="js/city-data.js"></script>
+  <script src="js/inspection-data.js"></script>
+  <script src="js/ph.js"></script>
+  <script src="js/map-explorer.js"></script>
+  <script src="js/lib/three.min.js"></script>
+  <script src="js/pano-viewer.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.initMapExplorer({
+        type: 'inspection',
+        dataSource: { inspection: window.CASE_INSPECTION },
+        mapId: 'mapInspect',
+        hintId: 'hintInspect',
+        crumbId: 'crumbInspect',
+        cityId: 'cityPanelInspect',
+        cityGridId: 'cityGridInspect',
+        caseSectionId: 'caseSectionInspect',
+        caseTitleId: 'caseTitleInspect',
+        caseGridId: 'caseGridInspect',
+        caseEmptyId: 'caseEmptyInspect',
+        lightboxId: 'lbInspect',
+        lbMediaId: 'lbMediaInspect',
+        lbCountId: 'lbCountInspect',
+        lbBodyId: 'lbBodyInspect',
+        lbPrevId: 'lbPrevInspect',
+        lbNextId: 'lbNextInspect',
+        lbCloseId: 'lbCloseInspect',
+        onOpenCase: function (c, i, provName, cityName) {
+          // 巡检记录：只显示工地地址，不显示品牌 / 系列 / 价格 / 介绍
+          window.PanoViewer.open({
+            title: c.title,
+            date: c.date,
+            province: provName || '',
+            city: cityName || '',
+            provinceLabel: '项目省份',
+            cityLabel: '项目城市',
+            fields: [
+              { label: '楼栋号', value: c.building },
+              { label: '门牌号', value: c.unit }
+            ],
+            image: c.image,
+            photos: Array.isArray(c.images) ? c.images : null
+          });
+        }
+      });
+    });
+  </script>
+  <script src="js/main.js"></script>
+
+  <!-- 密码门控：内部资料，输入密码进入（本机记住，无需重复输入） -->
+  <div id="pwGate" class="pw-wrap" aria-hidden="true">
+    <div class="pw-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+      <div class="pw-icon">🔒</div>
+      <h3 class="pw-title" id="pwTitle">工作室内部工地巡检</h3>
+      <p class="pw-text">内部资料。请输入访问密码 / アクセスパスワードを入力してください</p>
+      <input type="password" class="pw-input" id="pwInput" placeholder="密码" autocomplete="off">
+      <p class="pw-err" id="pwErr">密码错误，请重试 / パスワードが違います</p>
+      <button type="button" class="pw-btn" id="pwBtn">进入</button>
+    </div>
+  </div>
+  <style>
+    .pw-wrap{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;background:#f6f4ef;padding:20px;}
+    .pw-wrap.show{display:flex;}
+    .pw-card{background:#fff;color:#211f1b;max-width:400px;width:100%;border-radius:14px;padding:30px 32px 26px;text-align:center;box-shadow:0 18px 50px rgba(33,31,27,.18);border:1px solid #d8d2c6;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",system-ui,sans-serif;}
+    .pw-card.shake{animation:pwshake .35s;}
+    @keyframes pwshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+    .pw-icon{font-size:38px;line-height:1;margin-bottom:10px;}
+    .pw-title{font-family:Georgia,"Songti SC","SimSun",serif;font-size:21px;letter-spacing:.06em;margin:0 0 10px;color:#211f1b;}
+    .pw-text{font-size:13.5px;line-height:1.7;color:#6b655c;margin:0 0 16px;}
+    .pw-input{display:block;width:100%;box-sizing:border-box;padding:11px 14px;font-size:15px;letter-spacing:.2em;border:1px solid #d8d2c6;border-radius:8px;background:#faf8f4;color:#211f1b;text-align:center;outline:none;}
+    .pw-input:focus{border-color:#a65b33;}
+    .pw-err{display:none;margin:10px 0 0;font-size:12.5px;color:#b3402e;}
+    .pw-btn{margin-top:16px;padding:10px 34px;border:none;border-radius:999px;background:#a65b33;color:#f6f4ef;font-size:14px;letter-spacing:.14em;cursor:pointer;font-family:inherit;}
+    .pw-btn:hover{background:#8f4a27;}
+    @media print{#pwGate{display:none!important;}}
+  </style>
+  <script>
+    (function () {
+      var KEY = 'inspection_pw_ok';
+      var gate = document.getElementById('pwGate');
+      if (!gate) return;
+      function stored() { try { return window.localStorage && localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+      function remember() { try { if (window.localStorage) localStorage.setItem(KEY, '1'); } catch (e) { /* 隐私模式静默降级 */ } }
+      if (stored()) { gate.remove(); return; }
+      var card = gate.querySelector('.pw-card');
+      var inp = document.getElementById('pwInput');
+      var err = document.getElementById('pwErr');
+      function show() {
+        gate.classList.add('show');
+        gate.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        try { inp.focus(); } catch (e) { /* noop */ }
+      }
+      function unlock() {
+        remember();
+        gate.classList.remove('show');
+        gate.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function () { if (gate.parentNode) gate.remove(); }, 250);
+      }
+      function submit() {
+        if (inp.value === 'xiaoxue') { unlock(); return; }
+        err.style.display = 'block';
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        inp.value = '';
+        try { inp.focus(); } catch (e) { /* noop */ }
+      }
+      document.getElementById('pwBtn').addEventListener('click', submit);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+      show();
+    })();
+  </script>
+</body>
+</html>
