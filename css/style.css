@@ -924,6 +924,45 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
   background: rgba(0,0,0,.35);
   padding: 4px 10px;
 }
+/* 多张 360° 场景切换条：悬浮在 360 视图顶部中央（多张全景时才出现）
+   放在顶部而非底部：视口较矮时 .pano-stage（16:9）会被 .pano-card 裁切，
+   底部控件（含信息面板）会落在可视区外，顶部控件打开即见。 */
+.pano-scenes {
+  position: absolute;
+  left: 50%; top: 12px;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 6px;
+  background: rgba(33,31,27,.55);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  z-index: 3;
+}
+.pano-scene-nav {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; line-height: 1;
+  color: rgba(255,255,255,.92);
+  border-radius: 50%;
+  transition: background .2s;
+}
+.pano-scene-nav:hover { background: rgba(255,255,255,.16); }
+.pano-scene-label {
+  min-width: 62px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.92);
+  white-space: nowrap;
+}
+.pano-scene-label b { font-weight: 400; }
+.pano-scene-label span {
+  margin-left: 8px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.6);
+}
 .pano-spinner {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;

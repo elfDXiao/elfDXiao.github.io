@@ -10,11 +10,13 @@
             brand, series,         // 品牌 / 系列（可选；全屋定制不传）
             price, priceLabel,     // 价格 / 价格标签（缺省「含安装人民币价格」）
             priceNote, desc, tags, // 说明信息（可选）
-            image,                 // 360° 等距柱状投影图（可选）
+            image,                 // 单张 360° 等距柱状投影图（可选）
+            panos,                 // 多张 360° 全景（可选，优先于 image）：['a.jpg', …]
+                                   //   或 [{ image, label }]，label 显示在场景切换条上
             photos                 // 普通照片数组（可选，可多张）
           })
-   交互：拖拽 = 第一人称环顾；滚轮/双指 = 缩放；「照片」按钮切换普通照片浏览；
-         按钮 = 自动旋转/重置/全屏；Esc/✕ = 关闭
+   交互：拖拽 = 第一人称环顾；滚轮/双指 = 缩放；多张全景时底部 ‹ ›（或 ← →）切换场景；
+         「照片」按钮切换普通照片浏览；按钮 = 自动旋转/重置/全屏；Esc/✕ = 关闭
    ========================================================= */
 window.PanoViewer = (function () {
   'use strict';
@@ -32,6 +34,7 @@ window.PanoViewer = (function () {
   var dragging = false, pointers = {}, pinchDist = 0, pinchFov = 75;
   var opened = false, disposed = true, loaded = false, interacted = false;
   var photoMode = false, photos = [], photoIdx = 0, has360 = false;
+  var panos = [], panoIdx = 0;   // 多张 360° 场景
 
   // ---------- DOM ----------
   function build() {
@@ -53,6 +56,11 @@ window.PanoViewer = (function () {
             '<button type="button" class="pano-photo-nav pano-next" aria-label="下一张">›</button>' +
             '<span class="pano-photo-count"></span>' +
           '</div>' +
+          '<div class="pano-scenes" style="display:none">' +
+            '<button type="button" class="pano-scene-nav pano-scene-prev" aria-label="上一个场景">‹</button>' +
+            '<span class="pano-scene-label"></span>' +
+            '<button type="button" class="pano-scene-nav pano-scene-next" aria-label="下一个场景">›</button>' +
+          '</div>' +
           '<div class="pano-toolbar">' +
             '<button type="button" class="pano-btn" data-act="photos" title="查看现场照片">照片</button>' +
             '<button type="button" class="pano-btn" data-act="pano360" style="display:none" title="查看 360° 全景">360° 全景</button>' +
@@ -73,10 +81,16 @@ window.PanoViewer = (function () {
     errEl = root.querySelector('.pano-error');
 
     root.querySelector('.pano-backdrop').addEventListener('click', close);
-    root.addEventListener('keydown', function (e) {
+    // 绑在 document 上：.pano-stage 无 tabindex，stage.focus() 不生效，
+    // 绑 root 会出现「焦点不在模态内时 Esc / 方向键失灵」
+    document.addEventListener('keydown', function (e) {
+      if (!opened) return;
       if (e.key === 'Escape') close();
       if (photoMode && e.key === 'ArrowLeft') { e.preventDefault(); photoNav(-1); }
       if (photoMode && e.key === 'ArrowRight') { e.preventDefault(); photoNav(1); }
+      // 360 模式且有多张全景时，← → 切换场景
+      if (!photoMode && panos.length > 1 && e.key === 'ArrowLeft') { e.preventDefault(); sceneNav(-1); }
+      if (!photoMode && panos.length > 1 && e.key === 'ArrowRight') { e.preventDefault(); sceneNav(1); }
     });
     Array.prototype.forEach.call(root.querySelectorAll('.pano-btn'), function (b) {
       b.addEventListener('click', function (e) { e.stopPropagation(); onAction(b.getAttribute('data-act')); });
@@ -85,6 +99,10 @@ window.PanoViewer = (function () {
     var pn = root.querySelector('.pano-next');
     if (pp) pp.addEventListener('click', function (e) { e.stopPropagation(); photoNav(-1); });
     if (pn) pn.addEventListener('click', function (e) { e.stopPropagation(); photoNav(1); });
+    var sp = root.querySelector('.pano-scene-prev');
+    var sn = root.querySelector('.pano-scene-next');
+    if (sp) sp.addEventListener('click', function (e) { e.stopPropagation(); sceneNav(-1); });
+    if (sn) sn.addEventListener('click', function (e) { e.stopPropagation(); sceneNav(1); });
     document.addEventListener('fullscreenchange', function () {
       var btn = root.querySelector('[data-act="fullscreen"]');
       if (btn) btn.textContent = document.fullscreenElement ? '退出全屏' : '全屏';
@@ -151,6 +169,8 @@ window.PanoViewer = (function () {
     if (pBtn) pBtn.style.display = (photoMode || !photos.length) ? 'none' : '';
     if (p360Btn) p360Btn.style.display = (photoMode && has360) ? '' : 'none';
     extra.forEach(function (b) { if (b) b.style.display = photoMode ? 'none' : ''; });
+    var sBar = root.querySelector('.pano-scenes');
+    if (sBar) sBar.style.display = (!photoMode && has360 && panos.length > 1) ? '' : 'none';
   }
 
   // ---------- 信息面板 ----------
@@ -208,27 +228,72 @@ window.PanoViewer = (function () {
     scene.add(mesh);
 
     loaded = false;
-    texture = new THREE.TextureLoader().load(
-      cfg.image,
-      function (tex) {
-        loaded = true;
-        mat.map = tex;
-        mat.needsUpdate = true;
-        hideSpinner();
-        if (!interacted && hint) hint.style.opacity = '1';
-      },
-      undefined,
-      function () {
-        hideSpinner();
-        showErr('360 全景图加载失败：' + esc(cfg.image) + '<br>请确认图片已上传到正确位置。');
-      }
-    );
+    renderScene(true);
     bindEvents();
     resize();
     if (window.ResizeObserver) {
       new ResizeObserver(function () { if (opened && !disposed) resize(); }).observe(stage);
     }
     rafId = requestAnimationFrame(tick);
+  }
+
+  // ---------- 多张 360° 场景 ----------
+  // 把 panos 归一化为 [{image, label}]；兼容字符串、{image}/{src, label}
+  function normalizePanos(src) {
+    if (!src || !src.length) return [];
+    return src.map(function (p) {
+      if (!p) return null;
+      if (typeof p === 'string') return { image: p, label: '' };
+      return { image: p.image || p.src || '', label: p.label || '' };
+    }).filter(function (p) { return p && p.image; });
+  }
+
+  // 载入当前场景的贴图（切换场景时保留旧贴图直至新图就绪，避免黑屏）
+  function renderScene(initial) {
+    var entry = panos[panoIdx];
+    if (!entry || !mesh || !mesh.material) return;
+    var mat = mesh.material;
+    var url = entry.image;
+    showSpinner();
+    hideErr();
+    loaded = false;
+    new THREE.TextureLoader().load(url, function (t) {
+      loaded = true;
+      if (texture && texture !== t) texture.dispose();
+      texture = t;
+      mat.map = t;
+      mat.needsUpdate = true;
+      hideSpinner();
+      if (initial && !interacted && hint) hint.style.opacity = '1';
+      syncSceneBar();
+    }, undefined, function () {
+      hideSpinner();
+      showErr('360 全景图加载失败：' + esc(url) + '<br>请确认图片已上传到正确位置。');
+    });
+  }
+
+  function syncSceneBar() {
+    if (!root) return;
+    var bar = root.querySelector('.pano-scenes');
+    var lab = bar && bar.querySelector('.pano-scene-label');
+    if (!lab) return;
+    var entry = panos[panoIdx] || {};
+    var total = panos.length;
+    var pos = '<span>' + (panoIdx + 1) + ' / ' + total + '</span>';
+    lab.innerHTML = entry.label ? esc(entry.label) + pos : '<b>' + (panoIdx + 1) + ' / ' + total + '</b>';
+  }
+
+  function sceneNav(dir) {
+    if (panos.length < 2) return;
+    panoIdx = (panoIdx + dir + panos.length) % panos.length;
+    // 换场景：回到默认视角、恢复自动旋转、重新显示操作提示
+    yaw = 0; pitch = 0; targetYaw = 0; targetPitch = 0; vYaw = 0; vPitch = 0;
+    autoRotate = true;
+    idleT = 0;
+    interacted = false;
+    syncRotateBtn();
+    if (hint) hint.style.opacity = '1';
+    renderScene(false);
   }
 
   function bindEvents() {
@@ -376,7 +441,9 @@ window.PanoViewer = (function () {
     cfg = cfg || {};
     photos = (cfg.photos && cfg.photos.length) ? cfg.photos.slice() : [];
     photoIdx = 0;
-    has360 = !!cfg.image;
+    panos = normalizePanos(cfg.panos && cfg.panos.length ? cfg.panos : (cfg.image ? [cfg.image] : null));
+    panoIdx = 0;
+    has360 = panos.length > 0;
     photoMode = false;
     opened = true;
     disposed = false;
@@ -398,9 +465,10 @@ window.PanoViewer = (function () {
     var ph = root.querySelector('.pano-photos');
     if (ph) ph.style.display = 'none';
     syncToolbar();
-    if (cfg.image) {
+    if (has360) {
       showSpinner();
       if (hint) hint.style.opacity = '1';
+      syncSceneBar();
       startThree(cfg);
     } else if (photos.length) {
       hideSpinner();
@@ -417,6 +485,8 @@ window.PanoViewer = (function () {
     opened = false;
     photoMode = false;
     photos = [];
+    panos = [];
+    panoIdx = 0;
     disposeThree();
     if (root) root.classList.remove('open');
     document.body.style.overflow = '';
