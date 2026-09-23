@@ -109,6 +109,14 @@ function waitFor(win, check, ms) {
   doc.querySelector('#langBar .lang-btn[data-lang="zh"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
   assert('中文模式步骤标题为中文', /[\u4e00-\u9fff]/.test(doc.querySelector('#wizBody .wiz-step-head h3').textContent), doc.querySelector('#wizBody .wiz-step-head h3').textContent);
 
+  console.log('== 下载入口（唯一·百度网盘直达）==');
+  const dlLinks = doc.querySelectorAll('a.download-link');
+  assert('仅 1 个下载入口', dlLinks.length === 1, dlLinks.length);
+  assert('保留右侧 dl-box 卡片', !!doc.querySelector('.dl-box a.download-link'));
+  assert('链接直达百度网盘', dlLinks[0] && String(dlLinks[0].getAttribute('href')).indexOf('https://pan.baidu.com/s/') === 0, dlLinks[0] && dlLinks[0].getAttribute('href'));
+  assert('不再指向服务器 PDF', doc.documentElement.outerHTML.indexOf('assets/pdf/TOTO') < 0);
+  assert('左下 dl-row 已删除', !doc.querySelector('#dlRow'));
+
   console.log('\n' + (fails === 0 ? '✅ 全部通过' : '❌ ' + fails + ' 项失败'));
   dom.window.close();
   process.exit(fails === 0 ? 0 : 1);
