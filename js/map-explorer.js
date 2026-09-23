@@ -148,18 +148,23 @@ window.initMapExplorer = function (config) {
       card.setAttribute('role', 'button');
       card.tabIndex = 0;
       var thumb = c.thumb || (Array.isArray(c.images) ? c.images[0] : window.PH.image(1, ds.hue, ds.label));
-      var meta = c.meta || (c.pano ? (c.brand || '') + ' · ' + (c.series || '') : '');
-      card.innerHTML =
-        '<div class="case-thumb">' +
-          '<img src="' + escapeAttr(thumb) + '" alt="' + escapeAttr(c.title) + '">' +
-          (c.pano ? '<span class="case-pano">360° 全景</span>' : '') +
-          (c.images ? '<span class="img-count">' + imgCount(c) + ' 张</span>' : '') +
-        '</div>' +
-        '<div class="case-body">' +
-          '<div class="meta">' + escapeHtml(meta) + '</div>' +
-          '<h3>' + escapeHtml(c.title) + '</h3>' +
-          '<div class="price">' + escapeHtml(c.price) + '<small>' + (c.pano ? '点击查看 360° 全景' : '点击查看详情') + '</small></div>' +
-        '</div>';
+            // meta 缺省由 brand · series 组成；两者都没有则整行不渲染（避免出现孤立的「 · 」）
+            var meta = c.meta || (c.pano ? [c.brand, c.series].filter(function (x) { return x; }).join(' · ') : '');
+            var goText = c.pano ? '点击查看 360° 全景' : '点击查看详情';
+            card.innerHTML =
+              '<div class="case-thumb">' +
+                '<img src="' + escapeAttr(thumb) + '" alt="' + escapeAttr(c.title) + '">' +
+                (c.pano ? '<span class="case-pano">360° 全景</span>' : '') +
+                (c.images ? '<span class="img-count">' + imgCount(c) + ' 张</span>' : '') +
+              '</div>' +
+              '<div class="case-body">' +
+                (meta ? '<div class="meta">' + escapeHtml(meta) + '</div>' : '') +
+                '<h3>' + escapeHtml(c.title) + '</h3>' +
+                // 无价格时整行不渲染；此时仍保留「点击查看 360° 全景」的可点提示
+                (c.price
+                  ? '<div class="price">' + escapeHtml(c.price) + '<small>' + goText + '</small></div>'
+                  : (c.pano ? '<div class="price"><small>' + goText + '</small></div>' : '')) +
+              '</div>';
       card.addEventListener('click', function () {
         if (c.pano && config.onOpenCase) config.onOpenCase(c, i, pName, cName);
         else openLightbox(c, i);
