@@ -1,7 +1,7 @@
 /* 日系产品资料库 · 产品数据（仅收录已上传产品手册 PDF 的产品） */
 window.PRODUCT_DATA = [
   { id: 'p13', cat: '卫浴系统', name: '骊住 SPAGE 整体浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/spage-cover.jpg', link: 'https://pan.baidu.com/s/1bpDjit_rbcKarRhqn2EsiQ?pwd=wjse', linkNote: '提取码：wjse' },
-  { id: 'p14', cat: '卫浴系统', name: '骊住 Lidea 整体浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/lidea-cover.jpg', file: 'assets/pdf/骊住品牌Lidea整体浴室产品手册.pdf' },
+  { id: 'p14', cat: '卫浴系统', name: '骊住 Lidea 整体浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/lidea-cover.jpg', link: 'https://pan.baidu.com/s/1xjvDiMvf-ufaGbBQ7I4UYw?pwd=2mgw', linkNote: '提取码：2mgw' },
   { id: 'p15', cat: '卫浴系统', name: '骊住 renobio Fit 系列 小型浴室产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/renobio-cover.jpg', link: 'https://pan.baidu.com/s/19cQzXxfKrcx0ett7cpZ1LA?pwd=4eeh', linkNote: '提取码：4eeh' },
   { id: 'p16', cat: '卫浴系统', name: '骊住整体淋浴产品手册', brand: 'LIXIL', hue: 155, cover: 'assets/img/covers/shower-cover.jpg', file: 'assets/pdf/骊住品牌整体淋浴.pdf' },
   { id: 'p17', cat: '卫浴系统', name: 'TOTO 品牌旗舰 Synla 系列整体浴室产品手册', brand: 'TOTO', hue: 155, cover: 'assets/img/covers/synla-cover.jpg', link: 'https://pan.baidu.com/s/1VSuYRnjohSffZZvmUZN05g?pwd=8tk9', linkNote: '提取码：8tk9' },
