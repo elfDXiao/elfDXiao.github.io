@@ -136,6 +136,14 @@ window.initMapExplorer = function (config) {
     if (caseTitleEl) {
       var pName = (window.CITY_DATA[provAd] || {}).name || '';
       var cName = city ? city.name : '';
+      // 该城市在数据源里暂无记录时，回退到 CITY_DATA 的城市名，
+      // 避免标题显示成「江苏省 · 　0 个案例」（城市名空缺）
+      if (!cName) {
+        var pcities = (window.CITY_DATA[provAd] || {}).cities || [];
+        for (var ci = 0; ci < pcities.length; ci++) {
+          if (pcities[ci].adcode === cityAd) { cName = pcities[ci].name; break; }
+        }
+      }
       caseTitleEl.innerHTML = (pName + ' · ' + cName) + '　<span>' + cases.length + ' 个案例</span>';
     }
     caseGridEl.innerHTML = '';
