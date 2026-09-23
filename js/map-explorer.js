@@ -155,7 +155,8 @@ window.initMapExplorer = function (config) {
       card.className = 'case-card' + (c.pano ? ' case-card-pano' : '');
       card.setAttribute('role', 'button');
       card.tabIndex = 0;
-      var thumb = c.thumb || (Array.isArray(c.images) ? c.images[0] : window.PH.image(1, ds.hue, ds.label));
+      var psrc = panoSrcs(c);
+      var thumb = c.thumb || psrc[0] || (Array.isArray(c.images) ? c.images[0] : window.PH.image(1, ds.hue, ds.label));
             // meta 缺省由 brand · series 组成；两者都没有则整行不渲染（避免出现孤立的「 · 」）
             var meta = c.meta || (c.pano ? [c.brand, c.series].filter(function (x) { return x; }).join(' · ') : '');
             var goText = c.pano ? '点击查看 360° 全景' : '点击查看详情';
@@ -163,7 +164,9 @@ window.initMapExplorer = function (config) {
               '<div class="case-thumb">' +
                 '<img src="' + escapeAttr(thumb) + '" alt="' + escapeAttr(c.title) + '">' +
                 (c.pano ? '<span class="case-pano">360° 全景</span>' : '') +
-                (c.images ? '<span class="img-count">' + imgCount(c) + ' 张</span>' : '') +
+                // 多条 360 场景时角标显示场景数；否则沿用普通照片的「N 张」
+                (psrc.length > 1 ? '<span class="img-count">' + psrc.length + ' 个场景</span>'
+                  : (c.images ? '<span class="img-count">' + imgCount(c) + ' 张</span>' : '')) +
               '</div>' +
               '<div class="case-body">' +
                 (meta ? '<div class="meta">' + escapeHtml(meta) + '</div>' : '') +
@@ -229,6 +232,14 @@ window.initMapExplorer = function (config) {
   // images 兼容两种形态：数字=占位图数量；数组=真实图片路径列表
   function imgCount(c) {
     return Array.isArray(c.images) ? c.images.length : (c.images || 1);
+  }
+  // 360 全景路径列表：兼容 c.image（单张）与 c.panos（多张，字符串或 {image,label}）
+  function panoSrcs(c) {
+    if (!Array.isArray(c.panos)) return c.image ? [c.image] : [];
+    return c.panos.map(function (p) {
+      if (!p) return '';
+      return typeof p === 'string' ? p : (p.image || p.src || '');
+    }).filter(function (x) { return x; });
   }
   function imgSrc(c, idx) {
     return Array.isArray(c.images) ? c.images[idx] : window.PH.image(idx + 1, ds.hue, ds.label);

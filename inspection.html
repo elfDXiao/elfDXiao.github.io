@@ -35,7 +35,7 @@
       <div class="container">
         <p class="doc-crumb">Section 06 · <a href="docs.html">文档产出</a> · 内部</p>
         <h1 class="sec-title">工作室内部工地巡检</h1>
-        <p class="sec-sub">工作室内部资料，不对外公开。按省份与城市归档的施工现场 360° 全景记录，每张卡片显示工地地址：小区名字 / 楼栋号 / 门牌号。</p>
+        <p class="sec-sub">工作室内部资料，不对外公开。按省份与城市归档的施工现场记录，卡片显示工地地址：小区名字 / 楼栋号 / 门牌号。一条记录可带多张 360° 全景，逐张环顾。</p>
       </div>
     </section>
 
@@ -45,7 +45,7 @@
         <div class="sec-head reveal">
           <span class="sec-label">Site Inspection</span>
           <h2 class="sec-title">选择省份与城市</h2>
-          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的巡检记录。带 <b class="pano-badge-inline">360°</b> 角标的记录可打开现场全景实拍。</p>
+          <p class="sec-sub">点击左侧地图上的省份，然后在右侧选择城市，即可查看该城市的巡检记录。带 <b class="pano-badge-inline">360°</b> 角标的记录可打开现场全景实拍；含多张全景时，用查看器顶部的 <b>‹ ›</b>（或键盘 ← →）逐张切换场景。</p>
         </div>
         <div class="explorer-wrap reveal">
           <div class="explorer-stage">
@@ -154,7 +154,7 @@
               { label: '楼栋号', value: c.building },
               { label: '门牌号', value: c.unit }
             ],
-            image: c.image,
+            panos: Array.isArray(c.panos) ? c.panos : (c.image ? [c.image] : null),
             photos: Array.isArray(c.images) ? c.images : null
           });
         }
