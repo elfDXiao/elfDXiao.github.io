@@ -284,12 +284,26 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
 .statement { text-align: center; max-width: 760px; margin: 0 auto; }
 .statement .sec-label { justify-content: center; margin-bottom: 26px; }
 .statement .sec-label::before, .statement .sec-label::after { content: ""; width: 28px; height: 1px; background: var(--ink-3); }
-.statement blockquote {
-  font-family: var(--serif);
-  font-size: clamp(22px, 3.4vw, 36px);
-  line-height: 1.7;
-  letter-spacing: .05em;
+/* 理念句 · 圆体马卡龙色：站酷庆科黄油体，仅子集化本句 12 字形（2.5KB 自托管，无外部依赖）
+   改理念句文字后需重新子集化：pyftsubset 源TTF --text="新句全文" --flavor=woff2 */
+@font-face {
+  font-family: "HuangYou Quote";
+  src: url("../assets/fonts/qingkehuangyou-quote.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
+.statement blockquote {
+  font-family: "HuangYou Quote", var(--sans);
+  font-size: clamp(24px, 3.6vw, 40px);
+  line-height: 1.75;
+  letter-spacing: .06em;
+}
+.statement blockquote span:nth-of-type(5n+1) { color: #C96E8D; }  /* 玫瑰粉 */
+.statement blockquote span:nth-of-type(5n+2) { color: #3E9B7E; }  /* 薄荷绿 */
+.statement blockquote span:nth-of-type(5n+3) { color: #C08A2D; }  /* 蜜杏黄 */
+.statement blockquote span:nth-of-type(5n+4) { color: #4D8FC4; }  /* 湖蓝 */
+.statement blockquote span:nth-of-type(5n+5) { color: #7C6CC2; }  /* 香芋紫 */
 .statement p { margin-top: 26px; color: var(--ink-2); font-size: 14.5px; }
 
 /* 三步骤 */
