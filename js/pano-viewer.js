@@ -261,6 +261,11 @@ window.PanoViewer = (function () {
       loaded = true;
       if (texture && texture !== t) texture.dispose();
       texture = t;
+      if (renderer) {
+        t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      }
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.generateMipmaps = true;
       mat.map = t;
       mat.needsUpdate = true;
       hideSpinner();
