@@ -51,6 +51,29 @@ window.CASE_INSPECTION = {
             { image: 'img/inspect/i-gz-01-04.jpg', label: '场景4' }
           ],
           thumb: 'img/inspect/i-gz-01-01-thumb.jpg'
+        },
+        {
+          pano: true,
+          id: 'i-gz-02',
+          title: '黄埔·星樾花园',
+          meta: '黄埔区 星樾花园',
+          date: '2026',
+          panos: [
+            { image: 'img/inspect/i-gz-02-01.jpg', label: '场景1' },
+            { image: 'img/inspect/i-gz-02-02.jpg', label: '场景2' },
+            { image: 'img/inspect/i-gz-02-03.jpg', label: '场景3' },
+            { image: 'img/inspect/i-gz-02-04.jpg', label: '场景4' },
+            { image: 'img/inspect/i-gz-02-05.jpg', label: '场景5' },
+            { image: 'img/inspect/i-gz-02-06.jpg', label: '场景6' },
+            { image: 'img/inspect/i-gz-02-07.jpg', label: '场景7' },
+            { image: 'img/inspect/i-gz-02-08.jpg', label: '场景8' },
+            { image: 'img/inspect/i-gz-02-09.jpg', label: '场景9' },
+            { image: 'img/inspect/i-gz-02-10.jpg', label: '场景10' },
+            { image: 'img/inspect/i-gz-02-11.jpg', label: '场景11' },
+            { image: 'img/inspect/i-gz-02-12.jpg', label: '场景12' },
+            { image: 'img/inspect/i-gz-02-13.jpg', label: '场景13' }
+          ],
+          thumb: 'img/inspect/i-gz-02-01-thumb.jpg'
         }
       ] },
       '441900': { name: '东莞市', cases: [
