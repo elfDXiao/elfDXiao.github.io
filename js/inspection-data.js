@@ -36,7 +36,6 @@ window.CASE_INSPECTION = {
   intro: '工作室内部工地巡检记录：拖动鼠标即可第一人称环顾施工现场。点击地图省份选择城市查看。',
 
   provinces: {
-    // ---- 广东省 ----
     '440000': { name: '广东省', cities: {
       '440100': { name: '广州市', cases: [
         {
@@ -52,6 +51,25 @@ window.CASE_INSPECTION = {
             { image: 'img/inspect/i-gz-01-04.jpg', label: '场景4' }
           ],
           thumb: 'img/inspect/i-gz-01-01-thumb.jpg'
+        }
+      ] },
+      '441900': { name: '东莞市', cases: [
+        {
+          pano: true,
+          id: 'i-dg-01',
+          title: '大运万科城',
+          meta: '东莞市 大运万科城',
+          date: '2026',
+          panos: [
+            { image: 'img/inspect/i-dg-01-01.jpg', label: '场景1' },
+            { image: 'img/inspect/i-dg-01-02.jpg', label: '场景2' },
+            { image: 'img/inspect/i-dg-01-03.jpg', label: '场景3' },
+            { image: 'img/inspect/i-dg-01-04.jpg', label: '场景4' },
+            { image: 'img/inspect/i-dg-01-05.jpg', label: '场景5' },
+            { image: 'img/inspect/i-dg-01-06.jpg', label: '场景6' },
+            { image: 'img/inspect/i-dg-01-07.jpg', label: '场景7' }
+          ],
+          thumb: 'img/inspect/i-dg-01-01-thumb.jpg'
         }
       ] }
     } }
