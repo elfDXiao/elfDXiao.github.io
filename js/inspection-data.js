@@ -94,6 +94,21 @@ window.CASE_INSPECTION = {
           ],
           thumb: 'img/inspect/i-dg-01-01-thumb.jpg'
         }
+      ] },
+      '440300': { name: '深圳市', cases: [
+        {
+          pano: true,
+          id: 'i-sz-01',
+          title: '南山·金众云山海公馆',
+          meta: '南山区 金众云山海公馆',
+          date: '2026',
+          panos: [
+            { image: 'img/inspect/i-sz-01-01.jpg', label: '场景1' },
+            { image: 'img/inspect/i-sz-01-02.jpg', label: '场景2' },
+            { image: 'img/inspect/i-sz-01-03.jpg', label: '场景3' }
+          ],
+          thumb: 'img/inspect/i-sz-01-01-thumb.jpg'
+        }
       ] }
     } }
   }
