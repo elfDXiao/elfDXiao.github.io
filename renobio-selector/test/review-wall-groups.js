@@ -1,9 +1,9 @@
 // reviewer t24: verify wall class groups (dim-group-title)
 'use strict';
 const fs = require('fs'), path = require('path');
-const { JSDOM } = require('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom');
-const ROOT = 'D:/DSH工作区/lidea-renobio/web';
-const dom = new JSDOM(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'), { runScripts: 'outside-only', url: 'file:///D:/DSH工作区/lidea-renobio/web/index.html' });
+const { JSDOM } = require('E:/自媒体账号阶段性成活/个人主页管理/rakuviac-bathroom/scripts/node_modules/jsdom');
+const ROOT = 'E:/自媒体账号阶段性成活/个人主页管理/lidea-renobio/web';
+const dom = new JSDOM(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'), { runScripts: 'outside-only', url: 'file:///E:/自媒体账号阶段性成活/个人主页管理/lidea-renobio/web/index.html' });
 const { window } = dom, { document } = window;
 ['data/products.js', 'js/price.js', 'js/quote.js', 'js/wizard.js'].forEach(f => window.eval(fs.readFileSync(path.join(ROOT, f), 'utf8')));
 window.RENOBIO.wizard.init(window.RENOBIO_DATA);

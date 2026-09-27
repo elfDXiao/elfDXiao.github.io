@@ -1,7 +1,7 @@
 // debug-sazana-acc.js
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const ctx = { window: {}, console }; vm.createContext(ctx);
-['data/products.js', 'js/price.js', 'js/quote.js'].forEach(f => vm.runInContext(fs.readFileSync(path.join('D:/DSH工作区/toto-sazana/web', f), 'utf8'), ctx));
+['data/products.js', 'js/price.js', 'js/quote.js'].forEach(f => vm.runInContext(fs.readFileSync(path.join('E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/web', f), 'utf8'), ctx));
 const Q = ctx.window.SAZANA.quote; Q.init(ctx.window.SAZANA_DATA);
 console.log('wall options: ' + Q.cat('wall').options.length);
 Q.state.sel.type = 'P';

@@ -1,8 +1,8 @@
 // stress-render.js — 全量数据渲染压力检查（door 98 / window 139 等大选项组）
 const fs = require('fs'), path = require('path');
-const { JSDOM } = require('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom');
-const ROOT = 'D:/DSH工作区/toto-synla/web';
-const dom = new JSDOM(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'), { runScripts: 'outside-only', url: 'file:///D:/DSH工作区/toto-synla/web/index.html' });
+const { JSDOM } = require('E:/自媒体账号阶段性成活/个人主页管理/rakuviac-bathroom/scripts/node_modules/jsdom');
+const ROOT = 'E:/自媒体账号阶段性成活/个人主页管理/toto-synla/web';
+const dom = new JSDOM(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'), { runScripts: 'outside-only', url: 'file:///E:/自媒体账号阶段性成活/个人主页管理/toto-synla/web/index.html' });
 const { window } = dom, { document } = window;
 ['data/products.js', 'js/price.js', 'js/quote.js', 'js/wizard.js'].forEach(f => window.eval(fs.readFileSync(path.join(ROOT, f), 'utf8')));
 window.SYNLA.wizard.init(window.SYNLA_DATA);

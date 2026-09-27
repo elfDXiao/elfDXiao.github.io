@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = 'D:/DSH工作区/toto-synla/data/synla-data.json';
+const SRC = 'E:/自媒体账号阶段性成活/个人主页管理/toto-synla/data/synla-data.json';
 const DST = path.join(__dirname, '..', 'data', 'products.js');
 
 const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));

@@ -1,11 +1,11 @@
 // dom-test.js — Predencia 选型报价系统 DOM 集成测试（jsdom）
 // 用法：node test/dom-test.js
-// 依赖：D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom
+// 依赖：E:/自媒体账号阶段性成活/个人主页管理/rakuviac-bathroom/scripts/node_modules/jsdom
 // 覆盖：初始化渲染、模式切换、プラン/サイズ選択、浴槽・機能・水栓連動、报价单渲染、无公式泄漏
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { JSDOM } = require('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules/jsdom');
+const { JSDOM } = require('E:/自媒体账号阶段性成活/个人主页管理/rakuviac-bathroom/scripts/node_modules/jsdom');
 
 const WEB = path.join(__dirname, '..');
 function load(f) { return fs.readFileSync(path.join(WEB, f), 'utf8'); }
@@ -16,7 +16,7 @@ const html = load('index.html')
   .replace('js/quote.js', 'js/quote.js')
   .replace('js/wizard.js', 'js/wizard.js');
 
-const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true, url: 'file:///D:/DSH工作区/takara-predencia/web/index.html' });
+const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true, url: 'file:///E:/自媒体账号阶段性成活/个人主页管理/takara-predencia/web/index.html' });
 const { window } = dom;
 const { document } = window;
 

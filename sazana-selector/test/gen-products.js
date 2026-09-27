@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = 'D:/DSH工作区/toto-sazana/data/sazana-data.json';
+const SRC = 'E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/data/sazana-data.json';
 const DST = path.join(__dirname, '..', 'data', 'products.js');
 
 const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));
@@ -13,7 +13,7 @@ const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));
 // ---------- 壁柄花纹级数据前置读取：建「日文柄名→中文名」翻译字典（accentPatterns + surroundPatterns 已人工翻译） ----------
 let WP = null;
 try {
-  WP = JSON.parse(fs.readFileSync('D:/DSH工作区/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
+  WP = JSON.parse(fs.readFileSync('E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
 } catch (e) {
   console.warn('wall-patterns load failed: ' + e.message);
 }
@@ -141,7 +141,7 @@ const out = { meta, categories };
 
 // ---------- 壁柄花纹级数据（sazana-wall-patterns.json：accentPatterns 37 + surroundPatterns 8 + accentPriceMatrix） ----------
 try {
-  const wp = JSON.parse(fs.readFileSync('D:/DSH工作区/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
+  const wp = JSON.parse(fs.readFileSync('E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/data/sazana-wall-patterns.json', 'utf8'));
   out.sazanaWallPatterns = wp;
   console.log('sazanaWallPatterns merged: accent=' + (wp.accentPatterns || []).length + ', surround=' + (wp.surroundPatterns || []).length);
 } catch (e) {

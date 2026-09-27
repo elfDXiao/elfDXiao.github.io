@@ -1,7 +1,7 @@
 # TOTO Synla（シンラ）整体浴室选型报价系统
 
 > 部署目标：`elfDXiao.github.io/synla-selector/`
-> 基准范例：rakuvia 选型系统（`D:\DSH工作区\报价系统\web\`），遵循《选型系统构建规范》
+> 基准范例：rakuvia 选型系统（`E:\自媒体账号阶段性成活\个人主页管理\rakuviac-bathroom\web\`），遵循《选型系统构建规范》
 > 数据源：TOTO シンラ プランニング／オプションガイド（52 页，P.136-186）；`data/synla-data.json`（data-analyst MiMo 提取）+ `数据提取说明.md`
 
 ## 一、文件清单

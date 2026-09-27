@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = 'D:/DSH工作区/lidea-spage/data/spage-data.json';
+const SRC = 'E:/自媒体账号阶段性成活/个人主页管理/lidea-spage/data/spage-data.json';
 const DST = path.join(__dirname, '..', 'data', 'products.js');
 
 const d = JSON.parse(fs.readFileSync(SRC, 'utf8'));
@@ -95,7 +95,7 @@ const out = { meta, categories };
 
 // ---------- 壁パネル花纹级数据（spage-wall-patterns.json，47 柄） ----------
 try {
-  const wp = JSON.parse(fs.readFileSync('D:/DSH工作区/lidea-spage/data/spage-wall-patterns.json', 'utf8'));
+  const wp = JSON.parse(fs.readFileSync('E:/自媒体账号阶段性成活/个人主页管理/lidea-spage/data/spage-wall-patterns.json', 'utf8'));
   out.wallPatterns = wp;
   // ★ 从 partNumbers 键提取ベース（四面墙板色）公共表（アクセントベース=xxx/CODE 键）
   const baseMap = {

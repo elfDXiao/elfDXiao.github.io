@@ -1,10 +1,10 @@
 // verify-sazana-3mode.js — t34 回归：三模式切换 / 跳色先四面后 DOM 顺序 / 计价一致性 / 品番方向
 const path = require('path');
-const { JSDOM } = require(path.join('D:/DSH工作区/rakuviac-bathroom/scripts/node_modules', 'jsdom'));
+const { JSDOM } = require(path.join('E:/自媒体账号阶段性成活/个人主页管理/rakuviac-bathroom/scripts/node_modules', 'jsdom'));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 (async function () {
-  const dom = await JSDOM.fromFile(path.join('D:/DSH工作区/toto-sazana/web', 'index.html'), { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true });
+  const dom = await JSDOM.fromFile(path.join('E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/web', 'index.html'), { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true });
   const win = dom.window, doc = win.document;
   for (let i = 0; i < 40; i++) {
     if (win.SAZANA && win.SAZANA.wizard && doc.querySelectorAll('#wizStepper .wstep').length > 0) break;

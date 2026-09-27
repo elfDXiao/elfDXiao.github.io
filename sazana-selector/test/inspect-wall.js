@@ -1,6 +1,6 @@
 // inspect-sazana-wall.js
 const fs = require('fs'), vm = require('vm');
-const code = fs.readFileSync('D:/DSH工作区/toto-sazana/web/data/products.js', 'utf8');
+const code = fs.readFileSync('E:/自媒体账号阶段性成活/个人主页管理/toto-sazana/web/data/products.js', 'utf8');
 const ctx = { window: {} }; vm.createContext(ctx);
 vm.runInContext(code, ctx);
 const j = ctx.window.SAZANA_DATA;

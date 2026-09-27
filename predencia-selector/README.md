@@ -1,6 +1,6 @@
 # TAKARA STANDARD プレデンシア（Predencia）选型报价系统
 
-本地开发部署目录：`D:\DSH工作区\takara-predencia\web\`（不推送 git，部署时拷到 elfDXiao.github.io 对应目录）。
+本地开发部署目录：`E:\自媒体账号阶段性成活\个人主页管理\takara-predencia\web\`（不推送 git，部署时拷到 elfDXiao.github.io 对应目录）。
 
 ## 页面
 - 入口：`index.html`（双击即可直开，file:// 可用；数据内嵌于 `data/products.js`，无 fetch）
@@ -32,7 +32,7 @@
 - 兼用水栓×浴槽用水栓 同時選択不可
 
 ## 数据链路
-- 数据源：`D:\DSH工作区\takara-predencia\data\predencia-data.json`（50 分类/382 选项，data-analyst 提取）
+- 数据源：`E:\自媒体账号阶段性成活\个人主页管理\takara-predencia\data\predencia-data.json`（50 分类/382 选项，data-analyst 提取）
 - 生成：`node test/gen-products.js` → `web/data/products.js`（window.PREDENCIA_DATA）
 - 不确定项：`data\数据提取说明.md` §5（設置用別売部品受梁/吊金具等 6 项 unknown、風呂フタフック ハンドバー一体型 unknown → 选择不可）
 
