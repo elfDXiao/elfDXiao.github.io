@@ -36,25 +36,24 @@ window.CASE_INSPECTION = {
   intro: '工作室内部工地巡检记录：拖动鼠标即可第一人称环顾施工现场。点击地图省份选择城市查看。',
 
   provinces: {
-    // 示例（把下面注释去掉并替换为真实数据即可）：
-    //
-    // '110000': { name: '北京市', cities: {
-    //   '110000': { name: '北京市', cases: [
-    //     {
-    //       pano: true,
-    //       id: 'i-bj-01',
-    //       title: '小区名字',
-    //       building: '3栋',
-    //       unit: '1501',
-    //       meta: '3栋 1501',
-    //       panos: [
-    //         { image: 'img/inspect/i-bj-01-01.jpg', label: '客厅' },
-    //         { image: 'img/inspect/i-bj-01-02.jpg', label: '主卧' },
-    //         { image: 'img/inspect/i-bj-01-03.jpg', label: '卫生间' }
-    //       ],
-    //       thumb: 'img/inspect/i-bj-01-01-thumb.jpg'
-    //     }
-    //   ] }
-    // } }
+    // ---- 广东省 ----
+    '440000': { name: '广东省', cities: {
+      '440100': { name: '广州市', cases: [
+        {
+          pano: true,
+          id: 'i-gz-01',
+          title: '番禺·东海花园',
+          meta: '番禺区 东海花园',
+          date: '2026',
+          panos: [
+            { image: 'img/inspect/i-gz-01-01.jpg', label: '场景1' },
+            { image: 'img/inspect/i-gz-01-02.jpg', label: '场景2' },
+            { image: 'img/inspect/i-gz-01-03.jpg', label: '场景3' },
+            { image: 'img/inspect/i-gz-01-04.jpg', label: '场景4' }
+          ],
+          thumb: 'img/inspect/i-gz-01-01-thumb.jpg'
+        }
+      ] }
+    } }
   }
 };

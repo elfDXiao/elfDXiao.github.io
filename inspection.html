@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="工作室内部工地巡检 —— 按省份与城市归档的施工现场 360° 全景记录，卡片显示工地地址（小区名字 / 楼栋号 / 门牌号）。内部资料，需访问密码。">
+  <meta name="description" content="工作室内部工地巡检 —— 按省份与城市归档的施工现场 360° 全景记录。内部资料，需访问密码。">
   <title>工作室内部工地巡检 · elf_D老肖的世界</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
   <link rel="stylesheet" href="css/style.css">
@@ -150,10 +150,7 @@
             city: cityName || '',
             provinceLabel: '项目省份',
             cityLabel: '项目城市',
-            fields: [
-              { label: '楼栋号', value: c.building },
-              { label: '门牌号', value: c.unit }
-            ],
+            fields: [],
             panos: Array.isArray(c.panos) ? c.panos : (c.image ? [c.image] : null),
             photos: Array.isArray(c.images) ? c.images : null
           });
@@ -215,7 +212,7 @@
         setTimeout(function () { if (gate.parentNode) gate.remove(); }, 250);
       }
       function submit() {
-        if (inp.value === 'xiaoxue') { unlock(); return; }
+        if (inp.value === 'YNE') { unlock(); return; }
         err.style.display = 'block';
         card.classList.remove('shake');
         void card.offsetWidth;
