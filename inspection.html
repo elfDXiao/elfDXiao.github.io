@@ -163,7 +163,7 @@
   </script>
   <script src="js/main.js"></script>
 
-  <!-- 密码门控：内部资料，输入密码进入（本机记住，无需重复输入） -->
+  <!-- 密码门控：内部资料，每次访问都需输入密码（不记住状态） -->
   <div id="pwGate" class="pw-wrap" aria-hidden="true">
     <div class="pw-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
       <div class="pw-icon">🔒</div>
@@ -192,12 +192,8 @@
   </style>
   <script>
     (function () {
-      var KEY = 'inspection_pw_v2';
       var gate = document.getElementById('pwGate');
       if (!gate) return;
-      function stored() { try { return window.localStorage && localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
-      function remember() { try { if (window.localStorage) localStorage.setItem(KEY, '1'); } catch (e) { /* 隐私模式静默降级 */ } }
-      if (stored()) { gate.remove(); return; }
       var card = gate.querySelector('.pw-card');
       var inp = document.getElementById('pwInput');
       var err = document.getElementById('pwErr');
@@ -208,7 +204,6 @@
         try { inp.focus(); } catch (e) { /* noop */ }
       }
       function unlock() {
-        remember();
         gate.classList.remove('show');
         gate.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
