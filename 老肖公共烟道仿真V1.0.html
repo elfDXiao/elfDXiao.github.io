@@ -503,7 +503,17 @@ $("smokeT").oninput = e => { ST.tSmoke = +e.target.value; $("smokeTv").textConte
 /* ---------- 帮助模态 ---------- */
 $("m_ok").onclick = () => { $("modal").style.display = "none"; };
 $("b_help2").onclick = () => showHelp();
-function showHelp() {
+function showHelp(brief) {
+  if (brief) { // 启动弹框：地精科技风，极简
+    $("m_title").textContent = "地精科技 震撼人心";
+    $("m_body").innerHTML = `<div style="text-align:center">
+      <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖公共烟道仿真 · 地精实验室出品</div>
+      六层住宅 · 公共烟道 · 任意焦点层<br>
+      <b class="k">拖鼠标转视角 · WASD 移动 · 滚轮缩放</b><br><br>
+      <span style="font-size:11.5px;color:#8b8478">完整说明点顶栏「说明」</span></div>`;
+    $("modal").style.display = "flex";
+    return;
+  }
   $("m_title").textContent = "老肖的公共烟道仿真 · 使用说明";
   $("m_body").innerHTML = `
    <b>这是一栋六层住宅</b>（楼层编号 <span class="k">1F·2F·3F·4F·5F·6F</span>），六户共用一条竖向<b>公共烟道</b>排烟；点任意户卡的<b>「设为焦点」</b>可切换观察层（监测面板/预设场景随之作用于该层）。<br><br>
@@ -1080,7 +1090,7 @@ function loop(now) {
 buildCards();
 init3D();
 applyPreset("peak");
-showHelp();
+showHelp(true); // 启动=地精科技弹框（完整说明在顶栏「说明」）
 v3t0 = performance.now();
 requestAnimationFrame(loop);
 
