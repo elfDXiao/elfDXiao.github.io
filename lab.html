@@ -10,8 +10,26 @@
   <link rel="stylesheet" href="css/glass.css">
   <link rel="stylesheet" href="css/docs.css">
   <link rel="stylesheet" href="css/wow.css">
+  <style>
+    /* ===== 地精实验室 · 车间做背景 ===== */
+    body.lab-page {
+      background: #0d0903 url('img/wow/lab-bg.jpg') center top / cover no-repeat fixed;
+    }
+    /* hero 让位给背景图，只留文字 */
+    body.lab-page .page-hero {
+      background: linear-gradient(180deg, rgba(10, 7, 3, .10), rgba(10, 7, 3, .55) 78%, rgba(10, 7, 3, .72)) !important;
+      border-bottom: 1px solid rgba(201, 162, 77, .28);
+    }
+    body.lab-page .page-hero::after { opacity: .35; }
+    body.lab-page .section-tight { background: transparent !important; }
+    body.lab-page .footer { background: rgba(10, 7, 3, .82) !important; }
+    body.lab-page .site-footer { background: rgba(10, 7, 3, .82) !important; }
+    /* 天赋树面板稍微透一点，能看出背景是车间 */
+    body.lab-page .tw-tree,
+    body.lab-page .tw-bar { background-color: rgba(18, 12, 5, .82); }
+  </style>
 </head>
-<body class="page docs-hub">
+<body class="page docs-hub lab-page">
 
   <header class="site-header on-page" id="siteHeader">
     <nav class="nav container">
@@ -37,75 +55,15 @@
       <div class="container">
         <p class="breadcrumb">Section 07 · Goblin Lab</p>
         <h1 class="sec-title">地精实验室</h1>
-        <p class="sec-sub">有些事讲不明白，就让它在浏览器里跑一遍：风往哪走、烟会不会倒灌、止逆阀在几楼会顶不住。这些小工具都是自己写的，全部离线可用，不用装软件、不用登录。</p>
+        <p class="sec-sub">这里是自研的小工具与仿真程序的入口：暖通空调、电器设备、灯光照明三棵树，点亮的天赋可以直接进程序，暗着的还在锻造。全部离线可用，不用装软件、不用登录。</p>
       </div>
     </section>
 
     <section class="section-tight">
       <div class="container">
-        <h2 class="sec-title" style="margin-bottom:6px">实验项目</h2>
-        <span class="sec-label">TOOLS &amp; SIMULATIONS</span>
-        <div class="doc-list" style="margin-top:26px">
-
-          <a class="doc-card" href="airflow.html">
-            <span class="doc-card-num">01</span>
-            <div>
-              <h3 class="doc-card-title">新风简易仿真系统<span class="doc-badge live">已上线</span></h3>
-              <p class="doc-card-desc">上传户型图并标定比例，自己画房间、门洞、窗洞，布送风口与回风口，设定主机额定风量与静压。2D 风速图 + 3D 粒子流演示，可切换关卡与风量，最后导出 PDF 报告。内嵌引擎，双击即用，不联网。</p>
-              <span class="doc-card-meta">
-                <span>3D 交互</span><span>粒子流</span><span>导出 PDF</span><span>离线可用</span>
-              </span>
-            </div>
-            <span class="doc-card-side">
-              <span class="pano-badge-inline">v1.0</span>
-              <span class="doc-card-go">进入实验台 <span class="arr">→</span></span>
-            </span>
-          </a>
-
-          <a class="doc-card" href="xinfeng-sim.html">
-            <span class="doc-card-num">02</span>
-            <div>
-              <h3 class="doc-card-title">新风仿真 · 实验分支<span class="doc-badge">测试中</span></h3>
-              <p class="doc-card-desc">下一代算法与界面的试验田：更细的网格、更长的风道与弯头损失、风口形式对比。数值与正式版可能有出入，用来比较方案差别。</p>
-              <span class="doc-card-meta">
-                <span>对比实验</span><span>风道损失</span><span>离线可用</span>
-              </span>
-            </div>
-            <span class="doc-card-side">
-              <span class="pano-badge-inline">beta</span>
-              <span class="doc-card-go">进入实验台 <span class="arr">→</span></span>
-            </span>
-          </a>
-
-          <div class="doc-card">
-            <span class="doc-card-num">03</span>
-            <div>
-              <h3 class="doc-card-title">公共烟道 / 拢烟仿真<span class="doc-badge soon">整理中</span></h3>
-              <p class="doc-card-desc">为什么中国厨房不需要拢烟结构：整栋楼共用一个烟道时，楼层压差、止逆阀开度与邻居开机情况如何互相影响。含多机型对比、倒灌流量与静压曲线，整理好搬上来。</p>
-              <span class="doc-card-meta">
-                <span>多楼层</span><span>止逆阀</span><span>倒灌计算</span>
-              </span>
-            </div>
-            <span class="doc-card-side">
-              <span class="pano-badge-inline">即将上线</span>
-            </span>
-          </div>
-
-          <div class="doc-card">
-            <span class="doc-card-num">04</span>
-            <div>
-              <h3 class="doc-card-title">待更实验位<span class="doc-badge soon">占位</span></h3>
-              <p class="doc-card-desc">还在草稿本上的东西：报价自动核算、户型图批量标注、部品选型对照表。做出来就放这儿，做不出来就当没说过。</p>
-              <span class="doc-card-meta">
-                <span>排队中</span><span>欢迎点单</span>
-              </span>
-            </div>
-            <span class="doc-card-side">
-              <span class="pano-badge-inline">cooking</span>
-            </span>
-          </div>
-
-        </div>
+        <h2 class="sec-title" style="margin-bottom:6px">天赋树</h2>
+        <span class="sec-label">TALENT TREE</span>
+        <div id="talentPanel"></div>
       </div>
     </section>
   </main>
@@ -136,6 +94,7 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/wow-talent.js" defer></script>
   <script src="js/wow-char.js" data-sect="lab" defer></script>
 </body>
 </html>

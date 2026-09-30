@@ -36,23 +36,22 @@
   ];
 
   /* ---------- 各页角色卡文案 ---------- */
-  var BASE_STATS = [['落地项目', '320+'], ['覆盖城市', '46'], ['在线工具', '11 套'], ['文档模板', '120+']];
   var SECT = {
-    home:      { name: 'elf_D老肖的世界', sub: 'ELF D. XIAO · DESIGN WORKSHOP', now: 'db',
+    home:      { face: 'img/wow/portraits/lab.jpg', name: 'elf_D老肖的世界', sub: 'ELF D. XIAO · DESIGN WORKSHOP', now: 'db',
                  role: '产品资料库 · 全屋定制 · 选型系统 · 工作室案例 · 整体浴室 · 工作文档 · 地精实验室' },
-    database:  { name: '日系产品资料库', sub: 'PRODUCT ARCHIVE', now: 'db',
+    database:  { face: 'img/wow/portraits/database.jpg', name: '日系产品资料库', sub: 'PRODUCT ARCHIVE', now: 'db',
                  role: '系统厨房，整体卫浴等检索可查' },
-    furniture: { name: '全屋定制', sub: 'WHOLE-HOUSE CUSTOM', now: 'wh',
+    furniture: { face: 'img/wow/portraits/furniture.jpg', name: '全屋定制', sub: 'WHOLE-HOUSE CUSTOM', now: 'wh',
                  role: '把户型图变成能施工的图：每一面墙、每一格柜都有交代' },
-    kitchen:   { name: '选型系统', sub: 'SELECTOR', now: 'kt',
+    kitchen:   { face: 'img/wow/portraits/kitchen.jpg', name: '选型系统', sub: 'SELECTOR', now: 'kt',
                  role: '日系厨房 / 整体浴室在线选型：中日双语，选完直接出全含报价' },
-    studio:    { name: '工作室案例', sub: 'STUDIO CASES', now: 'st',
+    studio:    { face: 'img/wow/portraits/studio.jpg', name: '工作室案例', sub: 'STUDIO CASES', now: 'st',
                  role: '真实项目实景与造价：看得见做过的房子，也看得见花过的钱' },
-    bathroom:  { name: '整体浴室', sub: 'UNIT BATHROOM · CHINA', now: 'bath',
+    bathroom:  { face: 'img/wow/portraits/bathroom.jpg', name: '整体浴室', sub: 'UNIT BATHROOM · CHINA', now: 'bath',
                  role: '日式整体浴室在中国的落地：360° 全景、型号尺寸与全含报价' },
-    docs:      { name: '工作文档', sub: 'DOCUMENTS', now: 'doc',
+    docs:      { face: 'img/wow/portraits/docs.jpg', name: '工作文档', sub: 'DOCUMENTS', now: 'doc',
                  role: '成套文档：从需求调查到施工交底，可在线逐项确认与导出' },
-    lab:       { name: '地精实验室', sub: 'GOBLIN LAB', now: 'lab',
+    lab:       { face: 'img/wow/portraits/lab.jpg', name: '地精实验室', sub: 'GOBLIN LAB', now: 'lab',
                  role: '自研小工具与仿真：新风、烟道、选型，先在浏览器里跑一遍再落地' }
   };
   /* 工具页/子页归到最近的板块（名字与专精跟着走） */
@@ -62,8 +61,9 @@
 
   var sect = (me.getAttribute('data-sect') || 'studio').toLowerCase();
   var cfg = SECT[sect] || SECT.studio;
-  // 画像：可指定 data-portrait；默认用巫妖王（阿尔萨斯）；加载失败自动回落到「老」字印章
-  var portrait = me.getAttribute('data-portrait') || (BASE + 'img/wow/arthas.jpg');
+  // 画像：优先 data-portrait，其次按板块（每页不同），都没有才用阿尔萨斯；加载失败回落「老」字印章
+  var portrait = me.getAttribute('data-portrait') ||
+                 (cfg.face ? BASE + cfg.face : BASE + 'img/wow/arthas.jpg');
 
   /* ---------- 样式表 ---------- */
   var link = document.createElement('link');
@@ -110,7 +110,6 @@
   }
 
   function build() {
-    var stats = BASE_STATS.map(function (x) { return '<div>' + x[0] + '<span>' + x[1] + '</span></div>'; }).join('');
     return el(
       '<div class="wchar-wrap">' +
         '<div class="wchar">' +
@@ -121,7 +120,7 @@
             '<div class="wchar-role">' + cfg.role + '</div>' +
             '<div class="wbar"><i style="width:100%"></i><b>统一更新于 2026 年 9 月 1 日</b></div>' +
             '<div class="wbar blue"><i style="width:96%"></i><b>年平均交付数量 1200 套</b></div>' +
-            '<div class="wchar-stats">' + stats + '</div>' +
+
           '</div>' +
         '</div>' +
         '<div class="wskills-head"><span>SKILLS · 技能</span></div>' +
