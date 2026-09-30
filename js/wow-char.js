@@ -21,38 +21,44 @@
     mep: 'M13.8 3.4 7.6 13.2h3.7l-.9 7.4 6.4-9.9h-3.8zM4.6 18.6c1.4-1 2.6-1 4 0s2.6 1 4 0',
     qq:  'M6.4 3.6h11.2v17l-1.9-1.3-1.9 1.3-1.9-1.3-1.9 1.3-1.9-1.3-1.7 1.3zM9.2 8.2h5.6M9.2 11.6h5.6M9.2 15h3.2',
     sim: 'M12 3.2 20 7.6v8.9L12 20.9 4 16.5V7.6zM4 7.6 12 12l8-4.4M12 12v8.9',
-    doc: 'M8.6 3.6h6.8v2.6H8.6zM8.6 5.4H5.8v15.2h12.4V5.4h-2.8M9.2 13.4l2.1 2.1 3.6-3.9'
+    doc: 'M8.6 3.6h6.8v2.6H8.6zM8.6 5.4H5.8v15.2h12.4V5.4h-2.8M9.2 13.4l2.1 2.1 3.6-3.9',
+    st:  'M3.6 5.6h16.8v12.8H3.6zM6.4 15.4l3.4-4.1 2.8 3 2.1-2.3 2.9 3.4M15.4 9.6h.01',
+    lab: 'M9.4 3.6h5.2v5.1l4.2 8.7a2.2 2.2 0 0 1-2 3.1H7.2a2.2 2.2 0 0 1-2-3.1l4.2-8.7zM7.2 14.8h9.6'
   };
   var SKILLS = [
-    { id: 'wh',   n: '全屋定制',   m: '等级 5/5 · 被动', d: '从户型到每一格柜体：木作、柜体、门窗、五金，按中国各地施工习惯出图。', cd: '施法时间：即时 · 冷却：无', href: 'furniture.html' },
-    { id: 'bath', n: '整体浴室',   m: '等级 5/5 · 被动', d: '日系整体浴室（1418/1616/1624 系列）选型、落位、给排水与电气点位一次说完。', cd: '施法时间：即时 · 冷却：无', href: 'bathroom.html' },
-    { id: 'kt',   n: '系统厨房',   m: '等级 4/5 · 被动', d: '系统厨房的动线、台面高度、收纳分区与设备尺寸核对，中日双语对照。', cd: '施法时间：即时 · 冷却：无', href: 'kitchen.html' },
-    { id: 'db',   n: '部品资料库', m: '等级 4/5 · 被动', d: '系统厨房 / 卫浴 / 收纳部品的图文资料库，可按品牌与分类筛选检索。', cd: '施法时间：即时 · 冷却：无', href: 'database.html' },
-    { id: 'mep',  n: '水电点位',   m: '等级 4/5 · 被动', d: '给水、排水、电气的点位与标高，按现场条件与设备要求反推，避免返工。', cd: '施法时间：即时 · 冷却：无', href: 'docs.html' },
-    { id: 'qq',   n: '报价核算',   m: '等级 5/5 · 主动', d: '选完即出全含报价：主材、辅材、人工、运输、损耗一次算清，不留尾巴。', cd: '施法时间：1 个工作日 · 冷却：无', href: 'kitchen.html' },
-    { id: 'sim',  n: '3D 仿真',    m: '等级 3/5 · 主动', d: '自研交互仿真：新风风量走向、公共烟道止逆阀与倒灌，先在浏览器里跑一遍。', cd: '施法时间：即时 · 冷却：无', href: 'airflow.html' },
-    { id: 'doc',  n: '文档交付',   m: '等级 5/5 · 被动', d: '需求调查 → 测量 → 方案 → 报价 → 施工 → 验收，成套文档逐项确认并可导出 PDF。', cd: '施法时间：即时 · 冷却：无', href: 'docs.html' }
+    { id: 'db',   n: '产品资料库', m: '等级 5/5 · 被动', d: '系统厨房、整体卫浴等产品资料，按分类检索可查。', cd: '施法时间：即时 · 冷却：无', href: 'database.html' },
+    { id: 'wh',   n: '全屋定制',   m: '等级 5/5 · 被动', d: '从户型到每一格柜体：木作、柜体、门窗、五金，按各地施工习惯出图。', cd: '施法时间：即时 · 冷却：无', href: 'furniture.html' },
+    { id: 'kt',   n: '选型系统',   m: '等级 5/5 · 主动', d: '日系厨房与整体浴室在线选型，中日双语对照，选完直接出全含报价。', cd: '施法时间：1 个工作日 · 冷却：无', href: 'kitchen.html' },
+    { id: 'st',   n: '工作室案例', m: '等级 4/5 · 被动', d: '按省份与城市看真实落地项目：现场照片、面积与造价，带 360° 的可转着看。', cd: '施法时间：即时 · 冷却：无', href: 'studio.html' },
+    { id: 'bath', n: '整体浴室',   m: '等级 5/5 · 被动', d: '日系整体浴室的落位、给排水与电气点位一次说完，实拍全景对照。', cd: '施法时间：即时 · 冷却：无', href: 'bathroom.html' },
+    { id: 'doc',  n: '工作文档',   m: '等级 5/5 · 被动', d: '需求调查 → 测量 → 方案 → 报价 → 施工 → 验收，成套文档在线确认可导出。', cd: '施法时间：即时 · 冷却：无', href: 'docs.html' },
+    { id: 'lab',  n: '地精实验室', m: '等级 3/5 · 主动', d: '自研小工具与仿真：新风走向、公共烟道止逆阀与倒灌，先在浏览器里跑一遍。', cd: '施法时间：即时 · 冷却：无', href: 'lab.html' }
   ];
 
   /* ---------- 各页角色卡文案 ---------- */
   var BASE_STATS = [['落地项目', '320+'], ['覆盖城市', '46'], ['在线工具', '11 套'], ['文档模板', '120+']];
   var SECT = {
-    home:      { sub: 'ELF D. XIAO · DESIGN WORKSHOP', role: '全屋定制 × 日系整体浴室 × 系统厨房 —— 设计 · 选型 · 文档 · 落地', now: 'wh' },
-    furniture: { sub: 'WHOLE-HOUSE CUSTOM',   role: '把户型图变成能施工的图：每一面墙、每一格柜都有交代', now: 'wh' },
-    studio:    { sub: 'STUDIO CASES',         role: '真实项目实景与造价：看得见做过的房子，也看得见花过的钱', now: 'qq' },
-    kitchen:   { sub: 'KITCHEN & BATH',       role: '在线选型：中日双语对照，选完直接出大陆地区全含报价', now: 'kt' },
-    database:  { sub: 'PRODUCT ARCHIVE',      role: '部品资料库：系统厨房・卫浴・收纳，按分类检索可查', now: 'db' },
-    bathroom:  { sub: 'UNIT BATHROOM · CHINA',role: '日式整体浴室在中国的落地：360° 全景、型号尺寸与全含报价', now: 'bath' },
-    docs:      { sub: 'DOCUMENTS',            role: '成套文档：从需求调查到施工交底，可在线逐项确认与导出', now: 'doc' },
-    panorama:  { sub: '360° PANORAMA',        role: '整体浴室全景实拍：把现场搬进浏览器里转着看', now: 'bath' },
-    inspection:{ sub: 'INSPECTION',           role: '验收巡检：每个节点留痕，问题清单一件件闭环', now: 'doc' },
-    survey:    { sub: 'REQUIREMENT SURVEY',   role: '需求调查：把口头想法变成可逐项核对的清单', now: 'doc' },
-    measure:   { sub: 'MEASUREMENT',          role: '现场测量：尺寸、标高、点位一次量准，不给返工留口子', now: 'mep' },
-    shower:    { sub: 'SHOWER SELECTOR',      role: '淋浴房选型：型号、尺寸、玻璃与五金一次配齐', now: 'kt' },
-    sinra:     { sub: 'TOTO シンラ SELECTOR', role: 'TOTO 系统浴室选型：类型 / 尺寸 / 墙地顶 / 设备，中日双语', now: 'bath' },
-    kitchenSel:{ sub: 'KITCHEN SELECTOR',     role: '厨房选型工具：柜体、台面、五金与电器逐项配', now: 'kt' },
-    tool:      { sub: 'SELECTOR TOOL',        role: '在线选型工具：按品牌与系列逐项选，选完直接出报价单', now: 'kt' }
+    home:      { name: 'elf_D老肖的世界', sub: 'ELF D. XIAO · DESIGN WORKSHOP', now: 'db',
+                 role: '产品资料库 · 全屋定制 · 选型系统 · 工作室案例 · 整体浴室 · 工作文档 · 地精实验室' },
+    database:  { name: '日系产品资料库', sub: 'PRODUCT ARCHIVE', now: 'db',
+                 role: '系统厨房，整体卫浴等检索可查' },
+    furniture: { name: '全屋定制', sub: 'WHOLE-HOUSE CUSTOM', now: 'wh',
+                 role: '把户型图变成能施工的图：每一面墙、每一格柜都有交代' },
+    kitchen:   { name: '选型系统', sub: 'SELECTOR', now: 'kt',
+                 role: '日系厨房 / 整体浴室在线选型：中日双语，选完直接出全含报价' },
+    studio:    { name: '工作室案例', sub: 'STUDIO CASES', now: 'st',
+                 role: '真实项目实景与造价：看得见做过的房子，也看得见花过的钱' },
+    bathroom:  { name: '整体浴室', sub: 'UNIT BATHROOM · CHINA', now: 'bath',
+                 role: '日式整体浴室在中国的落地：360° 全景、型号尺寸与全含报价' },
+    docs:      { name: '工作文档', sub: 'DOCUMENTS', now: 'doc',
+                 role: '成套文档：从需求调查到施工交底，可在线逐项确认与导出' },
+    lab:       { name: '地精实验室', sub: 'GOBLIN LAB', now: 'lab',
+                 role: '自研小工具与仿真：新风、烟道、选型，先在浏览器里跑一遍再落地' }
   };
+  /* 工具页/子页归到最近的板块（名字与专精跟着走） */
+  SECT.panorama = SECT.bathroom; SECT.inspection = SECT.docs; SECT.survey = SECT.docs;
+  SECT.measure = SECT.docs; SECT.shower = SECT.bathroom; SECT.sinra = SECT.bathroom;
+  SECT.kitchensel = SECT.kitchen; SECT.kitchenSel = SECT.kitchen; SECT.tool = SECT.kitchen;
 
   var sect = (me.getAttribute('data-sect') || 'studio').toLowerCase();
   var cfg = SECT[sect] || SECT.studio;
@@ -110,11 +116,11 @@
         '<div class="wchar">' +
           '<div class="wchar-face">' + faceHTML() + '</div>' +
           '<div class="wchar-body">' +
-            '<div class="wchar-name">老肖</div>' +
+            '<div class="wchar-name">' + cfg.name + '</div>' +
             '<div class="wchar-sub">' + cfg.sub + '</div>' +
             '<div class="wchar-role">' + cfg.role + '</div>' +
-            '<div class="wbar"><i style="width:82%"></i><b>从业经验 18 年</b></div>' +
-            '<div class="wbar blue"><i style="width:96%"></i><b>项目交付率 96%</b></div>' +
+            '<div class="wbar"><i style="width:100%"></i><b>统一更新于 2026 年 9 月 1 日</b></div>' +
+            '<div class="wbar blue"><i style="width:96%"></i><b>年平均交付数量 1200 套</b></div>' +
             '<div class="wchar-stats">' + stats + '</div>' +
           '</div>' +
         '</div>' +
