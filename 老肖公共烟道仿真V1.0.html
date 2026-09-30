@@ -38,13 +38,13 @@ body{font:13px/1.6 "Microsoft YaHei","Noto Sans SC","PingFang SC",sans-serif;
 
 #logo{display:flex;align-items:center;gap:9px;margin:2px 4px 12px;padding-bottom:10px;
   border-bottom:1px solid rgba(110,90,38,.55);box-shadow:0 1px 0 rgba(200,165,72,.14)}
-#logo b{font-family:var(--serif);font-size:15px;letter-spacing:.10em;
+#logo b{font-family:var(--serif);font-size:17px;letter-spacing:.10em;
   background:linear-gradient(90deg,#f0d68a,#c8a548);-webkit-background-clip:text;background-clip:text;
   color:transparent;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 #logo small{color:var(--w-mut2);font-size:10.5px}
 .dotlogo{width:12px;height:12px;border-radius:3px;flex:none;
   background:linear-gradient(135deg,#f0d68a,#8a6d2f);box-shadow:0 0 12px rgba(232,201,106,.55),inset 0 0 3px rgba(0,0,0,.4)}
-h2{font-family:var(--serif);font-size:10.5px;color:var(--w-gold);letter-spacing:.24em;margin:14px 6px 7px;
+h2{font-family:var(--serif);font-size:11.5px;color:var(--w-gold);letter-spacing:.24em;margin:14px 6px 7px;
   font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 button{display:flex;align-items:center;gap:8px;width:100%;margin:3px 0;padding:8px 10px;
   border:1px solid #4a3c1c;border-radius:5px;cursor:pointer;font:12.5px/1 inherit;
@@ -53,7 +53,7 @@ button{display:flex;align-items:center;gap:8px;width:100%;margin:3px 0;padding:8
 button:hover{background:linear-gradient(180deg,#57431c,#33280f);border-color:var(--w-gold);color:var(--w-gold-l)}
 button.on{background:linear-gradient(180deg,#5c4a1c,#3a2f10);border-color:var(--w-gold-l);
   color:var(--w-gold-l);font-weight:700;box-shadow:0 0 14px rgba(200,165,72,.35),inset 0 0 10px rgba(200,165,72,.15)}
-label{display:block;margin:7px 2px 2px;font-size:11px;color:var(--w-mut);letter-spacing:.04em}
+label{display:block;margin:7px 2px 2px;font-size:12.5px;color:var(--w-mut);letter-spacing:.04em}
 input,select{width:100%;padding:6px 9px;border:1px solid #4a3c1c;border-radius:5px;
   background:rgba(0,0,0,.35);color:var(--w-txt);font:inherit}
 input:focus,select:focus{outline:none;border-color:var(--w-gold);box-shadow:0 0 10px rgba(200,165,72,.28)}
@@ -66,20 +66,22 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 .uci.f3{border:1.5px solid var(--w-gold);
   box-shadow:0 0 16px rgba(200,165,72,.28), inset 0 0 12px rgba(200,165,72,.10)}
 .uci .hd{display:flex;align-items:center;gap:8px;margin-bottom:3px}
-.uci .hd b{font-family:var(--serif);font-size:15px;letter-spacing:.06em;color:var(--w-gold-l);
+.uci .hd b{font-family:var(--serif);font-size:17px;letter-spacing:.06em;color:var(--w-gold-l);
   text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.uci .hd .tag{font-size:10px;padding:1.5px 7px;border-radius:4px;background:rgba(0,0,0,.30);
+.uci .hd .tag{font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.30);
   color:var(--w-mut);border:1px solid #4a3c1c;white-space:nowrap}
 .uci .hd .tag.cn{background:rgba(224,87,60,.14);color:#e88a6a;border-color:rgba(224,87,60,.45)}
 .uci .hd .tag.jp{background:rgba(74,144,194,.14);color:#7ab3d8;border-color:rgba(74,144,194,.45)}
 .uci .sw{margin-left:auto;flex:none}
+#ucards.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#ucards.two .uci{margin-bottom:0}
 .qbar{height:8px;border-radius:4px;background:rgba(0,0,0,.45);overflow:hidden;margin-top:6px;
   border:1px solid rgba(74,60,28,.8)}
 .qbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#4a90c2,#61a35f);
   transition:width .25s;box-shadow:0 0 8px rgba(74,144,194,.4)}
 .qbar.warn i{background:linear-gradient(90deg,#d98a3a,#e0573c);box-shadow:0 0 8px rgba(217,138,58,.4)}
 .qbar.dead i{background:linear-gradient(90deg,#e0573c,#8a2415);box-shadow:0 0 8px rgba(224,87,60,.45)}
-.qread{display:flex;justify-content:space-between;font-size:10.5px;color:var(--w-mut);margin-top:3px;
+.qread{display:flex;justify-content:space-between;font-size:11.5px;color:var(--w-mut);margin-top:3px;
   font-variant-numeric:tabular-nums}
 .qread b{color:var(--w-txt);font-weight:600}
 .qread .rd{color:var(--red);font-weight:600}
@@ -91,36 +93,36 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 .sw.on{background:#3d5c2a;border-color:#61a35f}
 .sw.on::after{left:19px;background:linear-gradient(135deg,#b8e08a,#61a35f)}
 /* 国籍切换 */
-.kbtn{width:auto;margin:0;padding:3px 9px;font-size:11.5px;border-radius:4px;
+.kbtn{width:auto;margin:0;padding:4px 11px;font-size:12.5px;border-radius:4px;
   border:1px solid #4a3c1c;background:linear-gradient(180deg,#3a2f16,#261e0d);color:#b5a886;flex:none}
 .kbtn.on{border-color:var(--w-gold-l);background:linear-gradient(180deg,#5c4a1c,#3a2f10);
   color:var(--w-gold-l);font-weight:700;box-shadow:0 0 10px rgba(200,165,72,.30)}
-.lkbtn{width:auto;margin:0;padding:2.5px 8px;font-size:10.5px;border-radius:4px;
+.lkbtn{width:auto;margin:0;padding:3px 9px;font-size:11.5px;border-radius:4px;
   border:1px solid #4a3c1c;background:rgba(0,0,0,.28);color:var(--w-mut)}
 .lkbtn.on{border-color:rgba(224,87,60,.55);background:rgba(224,87,60,.14);color:#e88a6a;font-weight:600}
-.fbtn{width:auto;margin:0 0 0 auto;padding:1.5px 8px;font-size:10px;border-radius:4px;
+.fbtn{width:auto;margin:0 0 0 auto;padding:2px 9px;font-size:11px;border-radius:4px;
   border:1px solid var(--w-gold-d);background:rgba(200,165,72,.08);color:var(--w-gold);flex:none;cursor:pointer}
 .fbtn:hover{border-color:var(--w-gold);color:var(--w-gold-l);box-shadow:0 0 10px rgba(200,165,72,.25)}
 
 /* ---------- 右栏卡片（观察buff风） ---------- */
 .card{background:var(--w-bg2);border:1px solid #4a3c1c;border-radius:5px;padding:11px 12px;
   margin-bottom:11px;box-shadow:inset 0 1px 0 rgba(200,165,72,.10)}
-.card h3{font-family:var(--serif);font-size:11px;color:var(--w-gold);letter-spacing:.26em;
+.card h3{font-family:var(--serif);font-size:12.5px;color:var(--w-gold);letter-spacing:.26em;
   font-weight:600;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(110,90,38,.5);
   text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.big{font-family:var(--serif);font-size:26px;line-height:1.15;font-weight:500;color:var(--w-gold-l);
+.big{font-family:var(--serif);font-size:28px;line-height:1.15;font-weight:500;color:var(--w-gold-l);
   font-variant-numeric:tabular-nums;text-shadow:0 2px 4px rgba(0,0,0,.6)}
-.big small{font-size:11px;color:var(--w-mut);font-weight:400}
+.big small{font-size:12px;color:var(--w-mut);font-weight:400}
 .brow{display:flex;align-items:center;gap:8px;padding:5.5px 2px;border-bottom:1px dashed rgba(200,165,72,.14)}
 .brow:last-child{border:none}
-.brow .nm{flex:1;color:var(--w-mut);font-size:12px}
-.brow .nm small{color:var(--w-mut2);font-size:10px}
-.brow .v{color:var(--w-mut);font-variant-numeric:tabular-nums;font-size:12px}
+.brow .nm{flex:1;color:var(--w-mut);font-size:13.5px}
+.brow .nm small{color:var(--w-mut2);font-size:11px}
+.brow .v{color:var(--w-mut);font-variant-numeric:tabular-nums;font-size:13.5px}
 .brow .v b{color:var(--w-txt)}
 .pbar{display:inline-block;width:74px;height:7px;border-radius:4px;background:rgba(0,0,0,.45);
   overflow:hidden;vertical-align:middle;margin-right:3px;border:1px solid rgba(74,60,28,.8)}
 .pbar i{display:block;height:100%}
-.badge{display:inline-block;padding:3px 12px;border-radius:4px;font-size:12px;font-weight:700;
+.badge{display:inline-block;padding:4px 14px;border-radius:4px;font-size:13px;font-weight:700;
   letter-spacing:.10em;font-family:var(--serif)}
 .badge.ok{background:rgba(97,163,95,.14);color:#8fd08a;border:1px solid rgba(97,163,95,.55)}
 .badge.warn{background:rgba(217,138,58,.14);color:#eab064;border:1px solid rgba(217,138,58,.5)}
@@ -135,13 +137,13 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
   border:1px solid var(--w-gold-d);border-radius:6px;
   box-shadow:0 0 0 1px rgba(0,0,0,.65), inset 0 0 0 1px rgba(200,165,72,.20), 0 10px 30px rgba(0,0,0,.5);
   padding:8px 11px;display:flex;gap:5px;align-items:center;max-width:96%;flex-wrap:wrap;justify-content:center}
-#topbar .sc{font-size:11px;color:var(--w-gold);padding:0 5px;white-space:nowrap;letter-spacing:.08em}
-#topbar button{width:auto;margin:0;padding:4.5px 10px;font-size:11.5px;border-radius:4px;flex:none;
+#topbar .sc{font-size:12px;color:var(--w-gold);padding:0 5px;white-space:nowrap;letter-spacing:.08em}
+#topbar button{width:auto;margin:0;padding:6px 14px;font-size:13px;border-radius:4px;flex:none;
   border:1px solid #4a3c1c;background:linear-gradient(180deg,#3a2f16,#261e0d);color:#d9c68e}
 #topbar button:hover{filter:brightness(1.3);border-color:var(--w-gold)}
 #topbar button.on{background:linear-gradient(180deg,#5c4a1c,#3a2f10);border-color:var(--w-gold-l);
   color:var(--w-gold-l);font-weight:700;box-shadow:0 0 12px rgba(200,165,72,.35)}
-#topbar select{width:auto;padding:3px 6px;font-size:11px;border-radius:4px}
+#topbar select{width:auto;padding:5px 8px;font-size:13px;border-radius:4px}
 #topbar .grp{display:flex;gap:4px;align-items:center;padding:0 4px;border-left:1px solid rgba(110,90,38,.5);margin-left:4px}
 #smokeT{width:92px}
 #brand{position:absolute;left:270px;top:19px;z-index:6;font-size:11px;color:var(--w-mut2);letter-spacing:.22em}
@@ -156,7 +158,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 #v3hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:6;
   background:linear-gradient(180deg,rgba(26,20,12,.92),rgba(17,13,8,.94));
   border:1px solid var(--w-gold-d);border-radius:5px;color:var(--w-mut);padding:7px 18px;
-  font-size:11.5px;box-shadow:0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(200,165,72,.15);
+  font-size:12.5px;box-shadow:0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(200,165,72,.15);
   pointer-events:none;white-space:nowrap;letter-spacing:.05em}
 #modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);display:none;
   align-items:center;justify-content:center}
@@ -180,7 +182,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 .mbtns .pri:hover{background:linear-gradient(180deg,#c8a548,#8a6d2f);color:#fff8e0}
 #toast{position:absolute;top:104px;left:50%;transform:translateX(-50%);z-index:15;
   background:linear-gradient(180deg,rgba(34,26,16,.96),rgba(22,17,10,.97));color:var(--w-gold-l);
-  padding:9px 18px;border-radius:5px;font-size:12.5px;font-family:var(--serif);letter-spacing:.06em;
+  padding:10px 20px;border-radius:5px;font-size:13px;font-family:var(--serif);letter-spacing:.06em;
   border:1px solid var(--w-gold-d);
   box-shadow:0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(200,165,72,.20), 0 10px 30px rgba(0,0,0,.5);
   opacity:0;transition:opacity .3s;pointer-events:none;max-width:70%;text-align:center}
@@ -193,37 +195,19 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 <div id="brand">公共烟道 · 五层五户 · 任意焦点层</div>
 
 <div id="topbar">
-  <span class="sc">场景</span>
-  <button data-pre="peak">晚高峰·全楼中式</button>
-  <button data-pre="jpPeak">3F日式·邻居全开</button>
-  <button data-pre="jpChoke">3F日式·老楼憋停</button>
-  <button data-pre="backflow">3F停机·倒灌串味</button>
-  <button data-pre="solo">仅3F开机·抽吸</button>
-  <button data-pre="morning">清晨·6F独炊</button>
-  <span class="grp">
-    <select id="riserSel">
-      <option value="std">标准烟道 320×420</option>
-      <option value="old">老旧烟道 240×240</option>
-      <option value="big">大截面 350×450</option>
-    </select>
-    <span class="sc">烟温</span><input id="smokeT" type="range" min="20" max="80" step="5" value="45">
-    <span class="sc" id="smokeTv" style="width:30px">45°</span>
-  </span>
-  <span class="grp">
-    <button id="b_iso">复位视角</button>
-    <button id="b_f3" class="on">聚焦焦点层</button>
-    <button id="b_rot" class="on">自动旋转</button>
-    <button id="b_pt" class="on">烟流</button>
-    <button id="b_pl" class="on">压力标签</button>
-    <button id="b_help2">说明</button>
-  </span>
+  <select id="riserSel">
+    <option value="std">标准烟道 320×420</option>
+    <option value="old">老旧烟道 240×240</option>
+    <option value="big">大截面 350×450</option>
+  </select>
+  <button id="b_help2">说 明</button>
 </div>
 
 <div class="panel" id="left">
  <div id="logo"><div class="dotlogo"></div><b>老肖公共烟道仿真</b><small>V1.0</small></div>
  <div id="ucards"></div>
  <h2>图例</h2>
- <div style="font-size:12px;color:var(--w-mut);line-height:1.95;padding:2px 4px">
+ <div style="font-size:12.5px;color:var(--w-mut);line-height:2.0;padding:2px 4px">
   <div><span style="color:#ef8468;font-weight:600">红压柱</span>＝烟道正压(背压)</div>
   <div><span style="color:#7ab3d8;font-weight:600">蓝压柱</span>＝烟道负压(抽吸)</div>
   <div>机侧压 − 烟道侧压 &gt; 0 → 止逆阀开</div>
@@ -239,7 +223,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
  <div class="card"><h3>系统总览</h3><div id="sysinfo"></div></div>
 </div>
 
-<div id="v3hint">左/右键拖动转视角 · 滚轮缩放 · WASD 移动 · 拖面板标题区可移动工具箱</div>
+<div id="v3hint">左/右键拖动转视角 · 滚轮缩放 · WASD 移动 · 拖工具箱空白处可移动</div>
 <div id="modal"><div class="box"><h3 id="m_title"></h3><div class="mb" id="m_body"></div>
  <div class="mbtns"><button id="m_ok" class="pri">开 始</button></div></div></div>
 <div id="toast"></div>
@@ -258,7 +242,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 "use strict";
 /* ============================================================
    老肖的公共烟道仿真 V1.0
-   五层住宅（跳 4F）· 公共烟道 · 任意焦点层
+   五层住宅（1F–5F）· 公共烟道 · 任意焦点层
    ============================================================ */
 const $ = id => document.getElementById(id);
 
@@ -270,7 +254,7 @@ const TOP_EXIT_Z = 5 * FLOOR_H + 1.6; // 烟道出屋面总高 16.6m
 const BR_A = Math.PI * 0.075 * 0.075; // DN150 支管截面积
 const BR_ZETA = 1.3;          // 支管综合局部阻力（弯头+沿程+阀全开）
 const EXIT_ZETA = 0.6;        // 出口（变径+伞形风帽）
-const FLOOR_IDS = [1, 2, 3, 5, 6]; // 物理层0..4（跳 4F）
+const FLOOR_IDS = [1, 2, 3, 4, 5]; // 物理层0..4，从下到上 1F–5F
 const F3 = 2;                 // 3F 物理序号
 
 const RISER_KINDS = {
@@ -428,13 +412,22 @@ function buildCards() {
     }
   });
   refreshCardStatics();
+  layoutUcards();
 }
+function layoutUcards() { // 左工具箱一列放不下 → 自动切两列并加宽
+  const L = $("left"), U = $("ucards");
+  if (!L || !U) return;
+  U.classList.remove("two"); L.style.width = "";
+  if (U.scrollHeight > Math.max(120, L.clientHeight - 120)) {
+    U.classList.add("two"); L.style.width = "474px";
+  }
+}
+addEventListener("resize", () => setTimeout(layoutUcards, 60));
 function setFocus(f) { // 切换观察焦点层（1F–6F 任意）
   if (f === ST.focus) return;
   ST.focus = f;
   buildCards(); rebuildUnits3D();
   Object.assign(V3.orb, { th: 1.15, ph: 1.38, dist: 7.5, tx: 3.2, ty: f * FLOOR_H + 1.55, tz: -2.3, auto: false }); // 平视：视线从剖面侧进，不穿上层楼板
-  $("b_rot").classList.remove("on"); $("b_f3").classList.add("on");
   solve(); refreshRight(); refreshLeftDyn();
   toast(`${FLOOR_IDS[f]}F 已设为观察焦点`);
 }
@@ -525,7 +518,7 @@ function applyPreset(p) {
     jpChoke: "老楼细烟道(240×240)+邻居猛机：烟道压力超过日式机最大静压→憋停",
     backflow: "3F 停机且止逆阀失效：邻居油烟经烟道正压渗入 3F 厨房（串味）",
     solo: "只有 3F 开机：热浮力使烟道负压，排烟反而最顺（烟囱抽吸）",
-    morning: "清晨 6F 独炊：单户工况，背压极小"
+    morning: "清晨 5F 独炊：单户工况，背压极小"
   };
   toast(tips[p] || "");
 }
@@ -554,9 +547,8 @@ function toast(msg) {
 }
 
 /* ---------- 顶栏事件 ---------- */
-document.querySelectorAll("#topbar button[data-pre]").forEach(b => b.onclick = () => applyPreset(b.dataset.pre));
+document.querySelectorAll("#topbar button[data-pre]").forEach(b => b.onclick = () => applyPreset(b.dataset.pre)); // 预设按钮已从顶栏移除（启动默认晚高峰）
 $("riserSel").onchange = e => { riser = RISER_KINDS[e.target.value]; solve(); markPreset(null); toast("烟道截面切换：" + riser.name); };
-$("smokeT").oninput = e => { ST.tSmoke = +e.target.value; $("smokeTv").textContent = ST.tSmoke + "°"; solve(); };
 
 /* ---------- 帮助模态 ---------- */
 $("m_ok").onclick = () => { $("modal").style.display = "none"; };
@@ -566,7 +558,7 @@ function showHelp(brief) {
     $("m_title").textContent = "地精科技 震撼人心";
     $("m_body").innerHTML = `<div style="text-align:center">
       <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖公共烟道仿真 · 地精实验室出品</div>
-      五层住宅（跳 4F）· 公共烟道 · 任意焦点层<br>
+      五层住宅（1F–5F）· 公共烟道 · 任意焦点层<br>
       <b class="k">拖鼠标转视角 · WASD 移动 · 滚轮缩放</b><br><br>
       <span style="font-size:11.5px;color:#8b8478">完整说明点顶栏「说明」</span></div>`;
     $("modal").style.display = "flex";
@@ -574,7 +566,7 @@ function showHelp(brief) {
   }
   $("m_title").textContent = "老肖的公共烟道仿真 · 使用说明";
   $("m_body").innerHTML = `
-   <b>这是一栋五层住宅</b>（楼层编号 <span class="k">1F·2F·3F·5F·6F</span>，按习俗跳过 4F），五户共用一条竖向<b>公共烟道</b>排烟；点任意户卡的<b>「设为焦点」</b>可切换观察层（监测面板/预设场景随之作用于该层）。<br><br>
+   <b>这是一栋五层住宅</b>（楼层编号 <span class="k">1F·2F·3F·4F·5F</span>），五户共用一条竖向<b>公共烟道</b>排烟；点任意户卡的<b>「设为焦点」</b>可切换观察层（监测面板/预设场景随之作用于该层）。<br><br>
    <b>① 设定油烟机：</b>左侧每户卡片可独立开关、设定<b>额定风量</b>与<b>最大静压</b>（风机曲线按 P=Pmax·(1−(Q/Qmax)²) 建模）。<br>
    <b>② 3F 换机型：</b>3F 卡片可一键切换 <span class="k">🇨🇳中式机 / 🇯🇵日式机</span>（国旗皮肤+机身造型都会换），并可选止逆阀状态（完好/老化/失效）。<br>
    <b>③ 看什么：</b>右栏实时显示 <span class="k">3F 止逆阀前后压力、压差、阀片开度、实际排量与倒灌渗入量</span>。烟道旁的彩色压柱：红=正压(背压)，蓝=负压(抽吸)。<br>
@@ -883,8 +875,8 @@ const UCOL = [ // 各层荧光油烟色（高饱和，竖井中一眼分辨"哪�
   [1.00, 0.92, 0.00], // 1F 荧光金
   [1.00, 0.56, 0.00], // 2F 亮橙
   [1.00, 0.20, 0.05], // 3F 霓虹红（焦点层）
-  [1.00, 0.20, 0.85], // 5F 荧光品红
-  [0.62, 0.25, 1.00], // 6F 电紫
+  [1.00, 0.20, 0.85], // 4F 荧光品红
+  [0.62, 0.25, 1.00], // 5F 电紫
 ];
 let spawnAcc = [0, 0, 0, 0, 0], bfAcc = 0;
 function initParticles() {
@@ -1015,7 +1007,7 @@ function updateParticles(dt) {
   }
   V3.pts.geometry.attributes.position.needsUpdate = true;
   V3.pts.geometry.attributes.color.needsUpdate = true;
-  V3.pts.visible = $("b_pt").classList.contains("on");
+  V3.pts.visible = true; // 烟流按钮已移除，恒显示
 }
 function brPos(s) { // 支管折线弧长定位（层内局部坐标）
   if (s <= 0.43) return [STX, 1.45 + s, STZ];        // 罩内上升
@@ -1062,7 +1054,7 @@ function bindPanelDrag() { // 左右工具箱可拖动（参考油烟机仿真�
 function bindCam() {
   v3c.addEventListener("mousedown", e => {
     const o = V3.orb; if (!o) return;
-    V3.orb.auto = false; $("b_rot").classList.remove("on");
+    V3.orb.auto = false;
     // 魔兽式：左键/右键拖动都是转视角；Shift+拖动为平移
     v3drag = (e.button === 2 || e.button === 0) && !e.shiftKey ? { t: "rot" } : { t: "pan" };
     v3drag.x = e.clientX; v3drag.y = e.clientY;
@@ -1085,7 +1077,7 @@ function bindCam() {
   v3c.addEventListener("contextmenu", e => e.preventDefault());
   v3c.addEventListener("wheel", e => {
     e.preventDefault();
-    V3.orb.auto = false; $("b_rot").classList.remove("on");
+    V3.orb.auto = false;
     V3.orb.dist = Math.min(46, Math.max(3.5, V3.orb.dist * (e.deltaY > 0 ? 1.09 : 0.92)));
   }, { passive: false });
   addEventListener("keydown", e => {
@@ -1096,11 +1088,7 @@ function bindCam() {
   });
   addEventListener("keyup", e => { const k = e.key.toLowerCase(); if ("wasd".includes(k)) V3KEYS[k] = false; });
   addEventListener("blur", () => V3KEYS = {});
-  $("b_iso").onclick = () => { Object.assign(V3.orb, { th: 1.28, ph: 1.04, dist: 17.5, tx: 0.8, ty: 8.0, tz: 0, auto: true }); $("b_rot").classList.add("on"); $("b_f3").classList.remove("on"); };
-  $("b_f3").onclick = () => { Object.assign(V3.orb, { th: 1.15, ph: 1.38, dist: 7.5, tx: 3.2, ty: ST.focus * FLOOR_H + 1.55, tz: -2.3, auto: false }); $("b_rot").classList.remove("on"); $("b_f3").classList.add("on"); };
-  $("b_rot").onclick = e => { e.target.classList.toggle("on"); V3.orb.auto = e.target.classList.contains("on"); };
-  $("b_pt").onclick = e => e.target.classList.toggle("on");
-  $("b_pl").onclick = e => { e.target.classList.toggle("on"); $("lbls").style.display = e.target.classList.contains("on") ? "block" : "none"; };
+  // 顶栏仅保留烟道选择与说明（其余按钮已随 DOM 移除）
 }
 function v3Resize() {
   const w = innerWidth, h = innerHeight;
