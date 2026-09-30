@@ -1,0 +1,776 @@
+/* =========================================================
+   elf_D老肖的世界 · 魔兽世界风格主题层（WoW Fantasy Theme）
+   ---------------------------------------------------------
+   用法：在所有页面最后引入  <link rel="stylesheet" href="css/wow.css">
+   依赖：css/style.css 的变量；覆盖 css/glass.css 的毛玻璃风格
+   还原：删掉各页 <link ... wow.css> 即可 100% 回到原风格
+   素材：assets/fonts/cinzel-*.woff2（拉丁题字体，OFL）
+         assets/fonts/mashanzheng-site.woff2（中文毛笔楷，OFL，已子集化）
+         img/wow/parchment.jpg · img/wow/leather.jpg（程序生成的无缝纹理）
+   ========================================================= */
+
+/* ---------- 0. 字体 ---------- */
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../assets/fonts/cinzel-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../assets/fonts/cinzel-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+/* 马善政毛笔楷书（已按本站在用字符子集化），日文假名/生僻字自动回落到系统字体 */
+@font-face {
+  font-family: 'MaShanZheng';
+  src: url('../assets/fonts/mashanzheng-site.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00FF, U+2000-206F, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF;
+}
+
+/* ---------- 1. 设计变量：羊皮纸 + 鎏金 ---------- */
+:root {
+  --paper: #f0e4c8;
+  --paper-2: #e6d7b6;
+  --paper-3: #dbc9a2;
+  --ink: #2b2014;
+  --ink-2: #57432a;
+  --ink-3: #8d7448;
+  --line: #c3a97a;
+  --accent: #9d7430;
+  --accent-soft: #d9c08a;
+
+  --wow-gold: #c9a24d;
+  --wow-gold-lt: #f4e3ac;
+  --wow-gold-dk: #8a6520;
+  --wow-leather: #241a10;
+  --wow-leather-2: #170f07;
+  --wow-parch: #f0e4c8;
+  --wow-frame: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f2e0aa'/%3E%3Cstop offset='.45' stop-color='%23c39a45'/%3E%3Cstop offset='1' stop-color='%23866220'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='1.6' y='1.6' width='56.8' height='56.8' fill='none' stroke='url(%23g)' stroke-width='3.2'/%3E%3Crect x='5.6' y='5.6' width='48.8' height='48.8' fill='none' stroke='%235c4118' stroke-width='1' opacity='.7'/%3E%3Ccircle cx='7.4' cy='7.4' r='3' fill='%23f6e8bd' stroke='%236d5019' stroke-width='1'/%3E%3Ccircle cx='52.6' cy='7.4' r='3' fill='%23f6e8bd' stroke='%236d5019' stroke-width='1'/%3E%3Ccircle cx='7.4' cy='52.6' r='3' fill='%23f6e8bd' stroke='%236d5019' stroke-width='1'/%3E%3Ccircle cx='52.6' cy='52.6' r='3' fill='%23f6e8bd' stroke='%236d5019' stroke-width='1'/%3E%3C/svg%3E");
+  --wow-divider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='18' viewBox='0 0 260 18' fill='none'%3E%3Cpath d='M0 9h96M164 9h96' stroke='%23c9a24d' stroke-width='1'/%3E%3Cpath d='M130 1.5l7.5 7.5-7.5 7.5-7.5-7.5z' fill='%23c9a24d'/%3E%3Cpath d='M130 4.6l4.4 4.4-4.4 4.4-4.4-4.4z' fill='%23f6e8bd'/%3E%3Cpath d='M104 9l6-3.4v6.8zM156 9l-6-3.4v6.8z' fill='%23c9a24d'/%3E%3C/svg%3E");
+  --wow-compass: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='620' height='620' viewBox='0 0 620 620' fill='none'%3E%3Cg stroke='%23c9a24d' stroke-width='1.2' opacity='.9'%3E%3Ccircle cx='310' cy='310' r='252'/%3E%3Ccircle cx='310' cy='310' r='238'/%3E%3Ccircle cx='310' cy='310' r='168'/%3E%3Cpath d='M58 310h504M310 58v504'  stroke-dasharray='2 8'/%3E%3Cg stroke-dasharray='1 6'%3E%3Cpath d='M132 132l356 356M488 132L132 488'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23c9a24d'%3E%3Cpath d='M310 60l14 232-14 18-14-18z'/%3E%3Cpath d='M310 560l-14-232 14-18 14 18z' opacity='.6'/%3E%3Cpath d='M560 310l-232 14-18-14 18-14z' opacity='.6'/%3E%3Cpath d='M60 310l232-14 18 14-18 14z' opacity='.6'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* 字体：拉丁题字体 Cinzel 打头（无中文字形），中文落到毛笔楷书 */
+  --font-display: 'Cinzel', 'MaShanZheng', 'STKaiti', '华文楷体', 'KaiTi', '楷体', 'Noto Serif SC', serif;
+  --serif: 'Cinzel', 'MaShanZheng', 'STKaiti', '华文楷体', 'KaiTi', '楷体', 'Songti SC', 'Noto Serif SC', 'STSong', serif;
+  --sans: 'Cinzel', 'MaShanZheng', 'STKaiti', '华文楷体', 'KaiTi', '楷体', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --nav-h: 72px;
+}
+
+/* ---------- 2. 页面底：羊皮纸 + 暗角 ---------- */
+html { background: #1c1409; }
+body {
+  background-color: var(--wow-parch);
+  background-image:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 250, 232, .55), rgba(190, 160, 105, .28) 58%, rgba(92, 68, 32, .42) 100%),
+    linear-gradient(180deg, rgba(255, 250, 235, .30), rgba(150, 120, 70, .16)),
+    url('../img/wow/parchment.jpg');
+  background-size: cover, cover, 620px 620px;
+  background-attachment: scroll, scroll, scroll;
+  background-blend-mode: normal, multiply, normal;
+  color: var(--ink);
+  font-family: var(--sans);
+}
+/* 老浏览器/打印时留个底 */
+@supports not (background-blend-mode: multiply) {
+  body { background-image: url('../img/wow/parchment.jpg'); background-size: 620px 620px; }
+}
+
+::selection { background: rgba(201, 162, 77, .45); color: #1c1409; }
+
+/* 滚动条：皮革 + 金 */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #241a10; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d9b463, #8a6520);
+  border: 2px solid #241a10; border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f0dda4, #a87c2c); }
+
+/* ---------- 3. 排版 ---------- */
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; color: var(--ink); }
+.sec-title {
+  font-family: var(--font-display);
+  letter-spacing: .04em;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, .5);
+}
+.sec-sub { color: var(--ink-2); }
+.sec-sub em, .hero-sub em { font-style: normal; color: #8a5a1c; border-bottom: 1px solid rgba(138, 90, 28, .35); }
+.lead { color: var(--ink-2); }
+.muted { color: var(--ink-3); }
+
+.sec-label {
+  font-family: 'Cinzel', serif;
+  letter-spacing: .42em;
+  color: #8a6520;
+  font-size: 11.5px;
+}
+.sec-label::before {
+  width: 34px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--wow-gold));
+  box-shadow: 0 0 6px rgba(201, 162, 77, .6);
+}
+
+/* 标题下的金饰分隔（只在带 sec-head / page-hero 的标题上出现） */
+.sec-head .sec-title::after,
+.page-hero .sec-title::after {
+  content: "";
+  display: block;
+  width: 220px; max-width: 60%;
+  height: 18px;
+  margin-top: 14px;
+  background: var(--wow-divider) center/contain no-repeat;
+  opacity: .85;
+}
+.page-hero .sec-title::after { background-image: var(--wow-divider); filter: drop-shadow(0 0 6px rgba(201, 162, 77, .45)); }
+
+/* ---------- 4. 顶部导航：暗皮革 + 金线 ---------- */
+.site-header,
+.site-header.scrolled,
+.site-header.on-page {
+  background: linear-gradient(180deg, rgba(28, 20, 11, .92), rgba(20, 14, 8, .96)), url('../img/wow/leather.jpg');
+  background-size: cover, 420px 420px;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(201, 162, 77, .45);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .5), 0 10px 30px rgba(10, 6, 2, .45), inset 0 -1px 0 rgba(244, 227, 172, .12);
+}
+/* 顶栏下方的金线光晕 */
+.site-header::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -4px; height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 77, .5) 18%, rgba(244, 227, 172, .75) 50%, rgba(201, 162, 77, .5) 82%, transparent);
+  opacity: .6;
+}
+.brand {
+  font-family: var(--font-display);
+  color: var(--wow-gold-lt);
+  text-shadow: 0 1px 0 #000, 0 0 14px rgba(201, 162, 77, .5);
+  letter-spacing: .2em;
+}
+.brand small {
+  font-family: 'Cinzel', serif;
+  color: rgba(201, 162, 77, .75);
+  letter-spacing: .34em;
+}
+.nav-links a {
+  color: rgba(238, 226, 196, .82);
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  border-bottom: 1px solid transparent;
+}
+.nav-links a:hover {
+  color: var(--wow-gold-lt);
+  text-shadow: 0 0 12px rgba(244, 227, 172, .8);
+  border-bottom-color: rgba(201, 162, 77, .7);
+}
+.nav-links a.active {
+  color: var(--wow-gold-lt);
+  text-shadow: 0 0 10px rgba(201, 162, 77, .7);
+  border-bottom-color: var(--wow-gold);
+}
+.nav-toggle span { background: var(--wow-gold-lt); }
+
+@media (max-width: 680px) {
+  .nav-links {
+    background: linear-gradient(180deg, rgba(28, 20, 11, .97), rgba(18, 12, 7, .99)), url('../img/wow/leather.jpg');
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid rgba(201, 162, 77, .5);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, .5);
+  }
+}
+
+/* ---------- 5. 首屏 hero：暗皮革横幅 + 罗盘水印 ---------- */
+.hero {
+  background:
+    var(--wow-compass) 108% 118% / min(760px, 78vh) no-repeat,
+    radial-gradient(80% 70% at 50% 40%, rgba(201, 162, 77, .16), transparent 70%),
+    linear-gradient(180deg, rgba(26, 18, 10, .93), rgba(16, 11, 6, .97)),
+    url('../img/wow/leather.jpg');
+  background-size: min(760px, 78vh), cover, cover, 480px 480px;
+  color: #f0e4c8;
+  border-bottom: 1px solid rgba(201, 162, 77, .35);
+}
+.hero-vertical {
+  color: rgba(201, 162, 77, .6);
+  border-color: rgba(201, 162, 77, .35);
+}
+.hero-label {
+  font-family: 'Cinzel', serif;
+  color: rgba(201, 162, 77, .9);
+  letter-spacing: .42em;
+}
+.hero-label::before { background: linear-gradient(90deg, transparent, var(--wow-gold)); }
+.hero-title {
+  font-family: var(--font-display);
+  color: var(--wow-gold-lt);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .85), 0 0 26px rgba(201, 162, 77, .45), 0 0 60px rgba(201, 162, 77, .25);
+}
+.hero-title em {
+  font-style: normal;
+  color: #fff4d6;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .85), 0 0 22px rgba(244, 227, 172, .8);
+}
+.hero-sub { color: rgba(236, 226, 202, .82); }
+.hero-scroll { color: rgba(201, 162, 77, .8); font-family: 'Cinzel', serif; letter-spacing: .34em; }
+
+/* 内页 hero：暗色卷轴横幅 */
+.page-hero {
+  background:
+    var(--wow-compass) 104% 128% / min(520px, 58vh) no-repeat,
+    linear-gradient(180deg, rgba(26, 18, 10, .94), rgba(18, 12, 7, .96)),
+    url('../img/wow/leather.jpg');
+  background-size: min(520px, 58vh), cover, cover, 480px 480px;
+  color: #efe3c8;
+  border-bottom: 1px solid rgba(201, 162, 77, .35);
+  box-shadow: inset 0 -30px 60px rgba(0, 0, 0, .35);
+}
+.page-hero .sec-title {
+  color: var(--wow-gold-lt);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .9), 0 0 24px rgba(201, 162, 77, .4);
+}
+.page-hero .sec-sub { color: rgba(234, 223, 198, .84); }
+.page-hero .breadcrumb {
+  font-family: 'Cinzel', serif;
+  color: rgba(201, 162, 77, .85);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+/* ---------- 6. 按钮 / 文字链接：魔兽动作条质感 ---------- */
+.btn {
+  font-family: var(--font-display);
+  letter-spacing: .12em;
+  border-radius: 2px;
+  border: 1px solid var(--wow-gold-dk);
+  background: linear-gradient(180deg, #3a2a17, #221709);
+  color: var(--wow-gold-lt);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .18), 0 6px 16px rgba(30, 20, 8, .35);
+  transition: background .25s, color .25s, border-color .25s, box-shadow .25s, transform .25s;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--wow-gold-lt);
+  background: linear-gradient(180deg, #57401f, #3a2a12);
+  color: #fff6dc;
+  box-shadow: inset 0 1px 0 rgba(255, 245, 214, .3), 0 0 18px rgba(201, 162, 77, .55), 0 8px 22px rgba(30, 20, 8, .45);
+}
+.btn-solid, .btn-accent { background: linear-gradient(180deg, #4a3519, #2a1c0b); color: var(--wow-gold-lt); border-color: var(--wow-gold); }
+.btn-solid:hover, .btn-accent:hover { background: linear-gradient(180deg, #6b4d20, #402d12); border-color: var(--wow-gold-lt); color: #fff6dc; }
+.btn-line {
+  background: rgba(240, 228, 200, .35);
+  color: #4a3418; border-color: rgba(138, 101, 32, .6);
+  text-shadow: none;
+}
+.btn-line:hover { background: linear-gradient(180deg, #4a3519, #2a1c0b); color: var(--wow-gold-lt); border-color: var(--wow-gold); }
+
+/* hero 上的按钮保持魔兽质感（覆盖 glass 的 iOS 圆角） */
+.hero-actions .btn, .page-hero .btn { border-radius: 2px; }
+.hero-actions .btn-line {
+  background: rgba(240, 228, 200, .10);
+  border: 1px solid rgba(201, 162, 77, .55);
+  color: var(--wow-gold-lt);
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .16);
+}
+.hero-actions .btn-line:hover { background: rgba(201, 162, 77, .22); border-color: var(--wow-gold-lt); color: #fff6dc; }
+.hero-actions .btn-solid { box-shadow: 0 0 22px rgba(201, 162, 77, .45), inset 0 1px 0 rgba(244, 227, 172, .2); }
+
+.text-link { color: #6d4f1c; border-bottom-color: rgba(138, 101, 32, .5); }
+.text-link:hover { color: #a4781f; border-color: var(--wow-gold); }
+
+/* ---------- 7. 卡片与面板：魔兽提示框（金框 + 铜钉） ---------- */
+.index-item, .step, .statement blockquote,
+.product-card, .case-card, .sys-card, .select-card, .form-card, .aside-card,
+.map-box, .sel-box, .wizard-progress, .wizard-steps, .pano-field,
+.entry-360, .cta-box, .opt-block, .rate-box, .sum-box, .dl-box,
+.notice-box, .chart-box, .lib-filters button, .city-btn {
+  background: linear-gradient(180deg, rgba(255, 249, 232, .80), rgba(233, 219, 189, .88)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  border: 10px solid transparent;
+  border-image: var(--wow-frame) 20 / 10px stretch;
+  border-radius: 0;
+  box-shadow: 0 10px 26px rgba(58, 38, 12, .22), inset 0 0 40px rgba(160, 128, 72, .18);
+}
+.index-item:hover, .step:hover, .statement blockquote:hover,
+.product-card:hover, .case-card:hover, .sys-card:hover, .select-card:hover, .form-card:hover,
+.aside-card:hover, .map-box:hover, .sel-box:hover, .wizard-progress:hover, .wizard-steps:hover,
+.pano-field:hover, .entry-360:hover, .cta-box:hover, .opt-block:hover, .rate-box:hover,
+.sum-box:hover, .dl-box:hover {
+  background: linear-gradient(180deg, rgba(255, 252, 240, .92), rgba(240, 228, 200, .95)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border-image: var(--wow-frame) 20 / 10px stretch;
+  box-shadow: 0 14px 34px rgba(58, 38, 12, .3), 0 0 22px rgba(201, 162, 77, .45), inset 0 0 40px rgba(160, 128, 72, .16);
+}
+/* 卡片内文字 */
+.index-num {
+  font-family: 'Cinzel', serif;
+  color: #a4781f;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, .6);
+}
+.index-title, .product-body h3, .case-body h3, .sys-card h3, .select-body h3,
+.form-card h3, .aside-card h3, .step h3, .cta-box h2, .entry-360 .sec-title {
+  font-family: var(--font-display);
+  color: #33260f;
+}
+.index-desc, .product-body .note, .sys-card p, .asym-card p { color: var(--ink-2); }
+.index-go {
+  color: #a4781f;
+  font-family: 'Cinzel', serif;
+}
+.index-item:hover .index-go { text-shadow: 0 0 12px rgba(201, 162, 77, .8); }
+
+/* 数字/金额用题字体更醒目 */
+.price, .case-body .price, .lb-price, .pano-field.pano-price b, .index-num, .step-no, .flow-num {
+  font-family: 'Cinzel', serif;
+}
+
+/* 小徽标 / 标签 */
+.badge, .chip, .wip-stamp, .thumb-tag, .lb-tags span, .pano-tags span, .flow-tag, .pano-badge-inline {
+  background: linear-gradient(180deg, #3b2a15, #241809);
+  color: var(--wow-gold-lt);
+  border: 1px solid rgba(201, 162, 77, .65);
+  border-radius: 2px;
+  font-family: var(--font-display);
+  letter-spacing: .1em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+.wip-stamp { color: #f0dda4; }
+
+/* ---------- 8. 表单 ---------- */
+.field input, .field select, .field textarea, .lib-search input, .other-input {
+  background: rgba(255, 252, 242, .92);
+  border: 1px solid rgba(138, 101, 32, .45);
+  border-radius: 2px;
+  color: var(--ink);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .18);
+}
+.field input:focus, .field select:focus, .field textarea:focus, .lib-search input:focus {
+  border-color: var(--wow-gold);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .18), 0 0 0 3px rgba(201, 162, 77, .28);
+}
+.field label, .field-label { color: var(--ink-2); }
+.form-tip.ok { color: #4a6b22; }
+.form-tip.err { color: #8f2f1c; }
+
+/* ---------- 9. 中国地图（全屋定制页）---------- */
+.prov-path { fill: #e7d8b5; stroke: #c6ab79; }
+.prov-path.has-data { fill: #c9a660; stroke: #7d5f24; }
+.prov-path.has-data:hover { fill: #b28a3a; }
+.prov-path.has-data.active, .prov-path.has-data.active:hover { fill: #8a6520; stroke: #f4e3ac; }
+.prov-label { fill: #4a3518; }
+.map-hint { color: #7a6234; }
+
+/* ---------- 10. 页脚：暗皮革 ---------- */
+.site-footer {
+  background: linear-gradient(180deg, rgba(30, 21, 12, .95), rgba(16, 11, 6, .98)), url('../img/wow/leather.jpg');
+  background-size: cover, 460px 460px;
+  color: rgba(232, 219, 190, .72);
+  border-top: 1px solid rgba(201, 162, 77, .45);
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .12);
+}
+.footer-brand { font-family: var(--font-display); color: var(--wow-gold-lt); text-shadow: 0 1px 0 #000, 0 0 16px rgba(201, 162, 77, .45); }
+.footer-brand small { font-family: 'Cinzel', serif; color: rgba(201, 162, 77, .7); }
+.footer-grid { border-bottom-color: rgba(201, 162, 77, .28); }
+.footer-col h4 { font-family: 'Cinzel', serif; color: var(--wow-gold); letter-spacing: .26em; }
+.footer-col a { color: rgba(232, 219, 190, .7); }
+.footer-col a:hover { color: var(--wow-gold-lt); text-shadow: 0 0 10px rgba(201, 162, 77, .6); }
+.footer-bottom { color: rgba(201, 162, 77, .55); }
+.footer-owner { color: rgba(232, 219, 190, .6); }
+
+/* ---------- 11. 灯箱 / 全景 / 弹层：暗色魔兽窗 ---------- */
+.lightbox, .pano-modal { background: rgba(12, 8, 3, .9); }
+.lb-card, .pano-card {
+  background: linear-gradient(180deg, #2a1e11, #17100a), url('../img/wow/leather.jpg');
+  background-size: cover, 460px 460px;
+  border: 10px solid transparent;
+  border-image: var(--wow-frame) 20 / 10px stretch;
+  border-radius: 0;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .7), 0 0 40px rgba(201, 162, 77, .18);
+  color: #efe3c8;
+}
+.lb-body h3, .pano-title { font-family: var(--font-display); color: var(--wow-gold-lt); }
+.lb-desc, .pano-desc, .lb-meta { color: rgba(232, 219, 190, .78); }
+.lb-price, .pano-field b { color: var(--wow-gold-lt); }
+.lb-nav, .pano-btn, .lb-close, .pano-close {
+  background: linear-gradient(180deg, #3b2a15, #241809);
+  border: 1px solid rgba(201, 162, 77, .65);
+  color: var(--wow-gold-lt);
+  border-radius: 2px;
+}
+.lb-nav:hover, .pano-btn:hover, .lb-close:hover, .pano-close:hover {
+  background: linear-gradient(180deg, #6b4d20, #3a2a12);
+  border-color: var(--wow-gold-lt);
+  box-shadow: 0 0 16px rgba(201, 162, 77, .6);
+}
+
+/* ---------- 12. 文档表（docs / survey / inspection）---------- */
+.survey-doc, .doc-header, .doc-section, .doc-footer {
+  background: linear-gradient(180deg, rgba(255, 251, 238, .95), rgba(242, 232, 208, .96));
+  border-color: rgba(138, 101, 32, .4);
+}
+.doc-header h1, .doc-sec-title, .doc-brand { font-family: var(--font-display); color: #33260f; }
+.doc-sec-title { border-bottom-color: rgba(138, 101, 32, .45); }
+.doc-q { color: var(--ink-2); }
+.doc-a { color: #33260f; }
+
+/* ---------- 13. 首页首屏：魔兽世界地图 ---------- */
+.wowmap {
+  position: relative;
+  height: 100vh;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #150e04;
+  overflow: hidden;
+  padding: 0;
+}
+/* 背景：地图自身的模糊放大版铺满整屏（宽屏两侧不留死黑） */
+.wowmap-bg {
+  position: absolute; inset: -8vmax; z-index: 0;
+  background: url('../img/wow/worldmap-ai.jpg') center/cover no-repeat;
+  filter: blur(56px) saturate(1.3) brightness(.34);
+  transform: scale(1.06);
+  transition: filter 1.1s ease, transform 1.1s ease;
+}
+.wowmap.lit .wowmap-bg { filter: blur(56px) saturate(1.45) brightness(.5); transform: scale(1.1); }
+.wowmap::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 46%, rgba(12, 7, 0, .5) 100%);
+}
+/* 舞台：整张地图等比完整显示，不裁切不变形 */
+.wowmap-stage {
+  --sw: min(100vw, 173vh);
+  position: relative; z-index: 3;
+  width: var(--sw);
+  aspect-ratio: 2560 / 1440;
+  box-shadow: 0 0 0 1px rgba(122, 88, 30, .5), 0 22px 60px rgba(0, 0, 0, .62);
+  transition: box-shadow .7s ease;
+  animation: stageIn 1.15s cubic-bezier(.16, .84, .28, 1) both;
+}
+@keyframes stageIn { from { opacity: 0; transform: scale(.965); } to { opacity: 1; transform: scale(1); } }
+.wowmap-stage img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: block; user-select: none; -webkit-user-drag: none;
+}
+.wowmap-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.wowmap.lit .wowmap-stage {
+  box-shadow: 0 0 0 1px rgba(255, 199, 110, .8),
+              0 0 44px rgba(255, 190, 92, .55),
+              0 0 130px rgba(255, 158, 46, .45),
+              0 0 270px rgba(255, 140, 20, .25),
+              0 22px 60px rgba(0, 0, 0, .55);
+}
+/* 感应区 + 悬停金光 */
+.region { pointer-events: none; }
+.region text { pointer-events: auto; cursor: pointer; user-select: none; }
+.hit { fill: url(#spot); opacity: 0; transition: opacity .55s ease; filter: blur(26px); pointer-events: auto; }
+.region:hover .hit, .region.on .hit { opacity: 1; }
+/* 游戏地图式描边金字 */
+.lab { transform-box: fill-box; transform-origin: center; transition: transform .45s cubic-bezier(.2, .8, .3, 1); }
+.lb {
+  fill: #f3dda1; stroke: #2f1d05; stroke-width: 5px; paint-order: stroke fill;
+  font-family: var(--font-display); font-weight: 400; letter-spacing: 1.5px;
+  transition: fill .35s ease, stroke-width .35s ease;
+}
+.le {
+  fill: #e8cd92; stroke: #2f1d05; stroke-width: 3px; paint-order: stroke fill;
+  font-family: 'Cinzel', serif; letter-spacing: 9px; opacity: .85;
+}
+.region:hover .lb, .region.on .lb {
+  fill: #fffbe9; stroke-width: 7px;
+  filter: drop-shadow(0 0 14px rgba(255, 214, 120, .95)) drop-shadow(0 0 40px rgba(255, 176, 60, .85));
+}
+.region:hover .le, .region.on .le { fill: #fff4cf; opacity: 1; stroke-width: 4px; }
+.region:hover .lab, .region.on .lab { transform: scale(1.07); }
+/* 底部信息条 */
+.wowmap-tip {
+  position: absolute; left: 50%; bottom: clamp(16px, 3vh, 42px); z-index: 6;
+  width: min(780px, 88vw);
+  padding: clamp(12px, 1.6vh, 20px) clamp(18px, 2.4vw, 34px);
+  transform: translate(-50%, 26px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .38s ease, transform .45s cubic-bezier(.2, .8, .3, 1);
+  background: linear-gradient(180deg, rgba(32, 21, 7, .95), rgba(16, 10, 3, .97));
+  border: 1px solid rgba(216, 170, 82, .62);
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 10px 40px rgba(0, 0, 0, .72), inset 0 0 60px rgba(255, 170, 50, .16);
+  color: #e6d3a4;
+}
+.wowmap.lit .wowmap-tip { opacity: 1; transform: translate(-50%, 0); }
+.tipitem { display: none; text-align: center; }
+.tipitem.show { display: block; }
+.tipitem b {
+  display: block; font-family: var(--font-display); font-size: clamp(16px, 1.7vh, 22px);
+  color: #fff6d8; letter-spacing: .16em; margin-bottom: .34em;
+  text-shadow: 0 0 16px rgba(255, 196, 96, .65);
+}
+.tipitem span { display: block; font-size: clamp(12px, 1.1vh, 14.5px); line-height: 1.65; }
+.tipitem i {
+  display: block; margin-top: .5em; font-style: normal; color: #ffd98a;
+  font-size: clamp(11.5px, 1vh, 14px); letter-spacing: .14em;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+@keyframes breathe { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+.wowmap-hint {
+  position: absolute; right: 1.6vw; bottom: 1.6vh; z-index: 6;
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: .24em;
+  color: #d9bd7c; opacity: .5; pointer-events: none; transition: opacity .9s ease;
+}
+.wowmap.lit + .wowmap-hint, .wowmap.lit .wowmap-hint { opacity: 0; }
+/* 地图铺满首屏时隐藏站点顶栏，往下滚再出现 */
+body.map-top .site-header { opacity: 0; pointer-events: none; }
+.site-header { transition: background .3s, border-color .3s, opacity .45s ease, box-shadow .3s; }
+
+/* 地图下方的「关于工作室」条 */
+.about-strip {
+  background: linear-gradient(180deg, rgba(26, 18, 10, .94), rgba(18, 12, 7, .96)), url('../img/wow/leather.jpg');
+  background-size: cover, 480px 480px;
+  border-top: 1px solid rgba(201, 162, 77, .4);
+  border-bottom: 1px solid rgba(201, 162, 77, .35);
+  color: #efe3c8;
+  padding: clamp(48px, 7vw, 96px) 0;
+}
+.about-strip .sec-label { color: rgba(201, 162, 77, .9); }
+.about-strip .sec-label::before { background: linear-gradient(90deg, transparent, var(--wow-gold)); }
+.about-strip h2 { color: var(--wow-gold-lt); font-size: clamp(26px, 3.4vw, 44px); text-shadow: 0 2px 0 rgba(0, 0, 0, .85), 0 0 26px rgba(201, 162, 77, .35); }
+.about-strip h2 em { font-style: normal; color: #fff4d6; text-shadow: 0 2px 0 rgba(0, 0, 0, .85), 0 0 22px rgba(244, 227, 172, .7); }
+.about-strip p { margin-top: 18px; max-width: 720px; color: rgba(234, 223, 198, .84); line-height: 1.9; }
+.about-strip .hero-actions { margin-top: 26px; }
+
+/* ---------- 14. 首屏板块列表：魔兽任务列表风 ---------- */
+.index-list { border-top: 0; }
+
+/* ---------- 14b. 选型/报价工具页（子目录工具 + shower/sinra/kitchen 页内联样式）----------
+   这些页面的样式写在各自的 style.css 或页内 <style> 里，且在主样式之后，
+   故统一用 body 前缀提高优先级覆盖。 */
+
+/* 面板：羊皮纸 + 金框 */
+body .base-card, body .ref-box, body .rate-box, body .sum-box, body .dl-box, body .opt-block,
+body .doc-card, body .elfd-card, body .std-line, body .sec-tips, body .meta-line, body .sig-box,
+body .survey-doc, body .view-panel, body .wizard-panel {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .90), rgba(238, 226, 198, .94)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border: 8px solid transparent;
+  border-image: var(--wow-frame) 20 / 8px stretch;
+  border-radius: 0;
+  box-shadow: 0 8px 22px rgba(58, 38, 12, .18), inset 0 0 34px rgba(160, 128, 72, .14);
+  color: var(--ink);
+}
+body .base-card h3, body .step-head h3, body .sum-box h4, body .rate-box label, body .grade-title,
+body .dl-box-title, body .wstep > h4, body .opt-sub, body .dim-title, body .size-name {
+  font-family: var(--font-display);
+  color: #3a2a12;
+}
+
+/* 小选项卡 / 片选 / 行 */
+body .opt-card, body .size-card, body .wstep, body .check-row, body .dl-row, body .multi-item,
+body .opt-img, body .select-thumb.placeholder {
+  background: linear-gradient(180deg, rgba(255, 252, 242, .94), rgba(243, 232, 208, .96)), url('../img/wow/parchment.jpg');
+  background-size: cover, 460px 460px;
+  border: 1px solid rgba(138, 101, 32, .5);
+  border-radius: 2px;
+  color: var(--ink);
+  box-shadow: inset 0 1px 0 rgba(255, 250, 235, .8);
+}
+body .opt-card:hover, body .size-card:hover, body .wstep:hover, body .dl-row:hover {
+  border-color: var(--wow-gold);
+  box-shadow: 0 6px 18px rgba(58, 38, 12, .2), 0 0 14px rgba(201, 162, 77, .4), inset 0 1px 0 rgba(255, 250, 235, .8);
+}
+body .opt-card.on, body .size-card.on, body .wstep.on, body .check-row.on {
+  border-color: var(--wow-gold);
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  box-shadow: 0 0 0 1px var(--wow-gold), 0 0 18px rgba(201, 162, 77, .5);
+  color: #f4e3ac;
+}
+body .opt-card.on .opt-name, body .opt-card.on .opt-code, body .opt-card.on .opt-price,
+body .opt-card.on .opt-note, body .size-card.on .size-name, body .size-card.on .size-code { color: #f4e3ac; }
+body .opt-card.disabled { opacity: .38; }
+
+/* 片选按钮 */
+body .chip, body .sub-chip, body .tab-btn, body .lang-btn, body .app-tabs .tab-btn {
+  background: linear-gradient(180deg, rgba(255, 252, 242, .92), rgba(240, 228, 200, .95));
+  border: 1px solid rgba(138, 101, 32, .5);
+  border-radius: 2px;
+  color: #4a3418;
+}
+body .chip.on, body .chip.active, body .sub-chip.on, body .tab-btn.on, body .tab-btn.active {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border-color: var(--wow-gold);
+  color: var(--wow-gold-lt);
+  box-shadow: 0 0 12px rgba(201, 162, 77, .45);
+}
+
+/* 输入类控件 */
+body .rate-box input, body .customer-form input, body .customer-form select,
+body .mini-select, body .gate-cell input, body .gate-cell select, body .pipe-row input,
+body .opt-card select, body .size-grid input {
+  background: rgba(255, 252, 242, .95);
+  border: 1px solid rgba(138, 101, 32, .45);
+  border-radius: 2px;
+  color: var(--ink);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .16);
+}
+body .rate-box input:focus, body .customer-form input:focus, body .mini-select:focus {
+  outline: none; border-color: var(--wow-gold);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .16), 0 0 0 3px rgba(201, 162, 77, .28);
+}
+body .rate-box label, body .sum-box h4, body .customer-form label, body .base-label,
+body .rate-hint, body .hint, body .opt-note, body .opt-code, body .base-meta, body .step-note { color: var(--ink-3); }
+
+/* 报价单表格 */
+body .quote-table th {
+  background: linear-gradient(180deg, #3b2a15, #241809);
+  color: var(--wow-gold-lt);
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  border-bottom-color: rgba(201, 162, 77, .5);
+}
+body .quote-table td { border-bottom-color: rgba(138, 101, 32, .28); color: var(--ink-2); }
+body .quote-table tr:nth-child(even) td { background: rgba(201, 162, 77, .07); }
+body .sum-row { border-bottom-color: rgba(138, 101, 32, .3); }
+body .sum-row .k { color: var(--ink-2); }
+body .sum-row .v { font-family: 'Cinzel', serif; color: #3a2a12; }
+body .sum-total { border-top-color: rgba(138, 101, 32, .6); }
+body .sum-total .v, body .unit-price, body .size-price, body .opt-price, body .opt-name em { color: #a4781f; }
+body .opt-name, body .opt-sub { color: var(--ink); }
+
+/* 进度条 */
+body .progress-track { background: rgba(74, 52, 24, .22); box-shadow: inset 0 1px 3px rgba(40, 26, 8, .4); }
+body .progress-fill { background: linear-gradient(90deg, #8a6520, #e6cf8c, #8a6520); box-shadow: 0 0 10px rgba(201, 162, 77, .6); }
+body .step-link:hover, body .step-link.active { color: #a4781f; }
+
+/* ---------- 14c. 门禁弹窗（pw-* 系列，各页内联样式）---------- */
+body .pw-wrap { background: radial-gradient(90% 80% at 50% 30%, rgba(58, 42, 21, .92), rgba(12, 8, 3, .97)), url('../img/wow/leather.jpg'); background-size: cover, 460px 460px; }
+body .pw-card {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .95), rgba(238, 226, 198, .97)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border: 10px solid transparent;
+  border-image: var(--wow-frame) 20 / 10px stretch;
+  border-radius: 0;
+  color: var(--ink);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .6), 0 0 40px rgba(201, 162, 77, .2);
+}
+body .pw-title {
+  font-family: var(--font-display);
+  color: #3a2a12;
+  letter-spacing: .06em;
+  text-shadow: 0 1px 0 rgba(255, 250, 235, .6);
+}
+body .pw-title::after {
+  content: "";
+  display: block;
+  width: 180px; height: 16px; margin: 12px auto 0;
+  background: var(--wow-divider) center/contain no-repeat;
+}
+body .pw-text { color: var(--ink-2); }
+body .pw-input {
+  background: rgba(255, 252, 242, .95);
+  border: 1px solid rgba(138, 101, 32, .5);
+  border-radius: 2px;
+  color: var(--ink);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .16);
+}
+body .pw-input:focus { border-color: var(--wow-gold); box-shadow: inset 0 2px 6px rgba(120, 92, 46, .16), 0 0 0 3px rgba(201, 162, 77, .3); }
+body .pw-btn {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border: 1px solid var(--wow-gold);
+  border-radius: 2px;
+  color: var(--wow-gold-lt);
+  font-family: var(--font-display);
+  letter-spacing: .14em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .18), 0 6px 16px rgba(0, 0, 0, .3);
+}
+body .pw-btn:hover { background: linear-gradient(180deg, #6b4d20, #402d12); border-color: var(--wow-gold-lt); box-shadow: 0 0 18px rgba(201, 162, 77, .6); }
+body .pw-icon { filter: sepia(.7) saturate(1.6) hue-rotate(-12deg); }
+body .pw-err { color: #a5341f; }
+
+/* ---------- 14d. 业余时间提示弹窗（uc-* 系列，子工具页内联样式）---------- */
+body .uc-wrap { background: radial-gradient(90% 80% at 50% 30%, rgba(58, 42, 21, .78), rgba(12, 8, 3, .92)), url('../img/wow/leather.jpg'); background-size: cover, 460px 460px; }
+body .uc-card {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .95), rgba(238, 226, 198, .97)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border: 10px solid transparent;
+  border-image: var(--wow-frame) 20 / 10px stretch;
+  border-radius: 0;
+  color: var(--ink);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .6), 0 0 40px rgba(201, 162, 77, .2);
+}
+body .uc-title {
+  font-family: var(--font-display);
+  color: #3a2a12;
+  letter-spacing: .06em;
+}
+body .uc-title::after {
+  content: "";
+  display: block;
+  width: 180px; height: 16px; margin: 12px auto 0;
+  background: var(--wow-divider) center/contain no-repeat;
+}
+body .uc-text { color: var(--ink-2); }
+body .uc-text b { color: #a4781f; }
+body .uc-icon { filter: sepia(.6) saturate(1.4); }
+body .uc-btn {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border: 1px solid var(--wow-gold);
+  border-radius: 2px;
+  color: var(--wow-gold-lt);
+  font-family: var(--font-display);
+  letter-spacing: .14em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .18), 0 6px 16px rgba(0, 0, 0, .3);
+}
+body .uc-btn:hover { background: linear-gradient(180deg, #6b4d20, #402d12); border-color: var(--wow-gold-lt); box-shadow: 0 0 18px rgba(201, 162, 77, .6); }
+
+/* ---------- 15. 响应式 ---------- */
+@media (max-width: 900px) {
+  .page-hero { background-size: 0 0, cover, cover, 480px 480px; }
+  .hero { background-size: 0 0, cover, cover, 480px 480px; }
+  .sec-head .sec-title::after, .page-hero .sec-title::after { width: 170px; height: 15px; }
+}
+@media (max-width: 680px) {
+  .index-item, .product-card, .case-card, .sys-card, .select-card, .form-card, .lb-card, .pano-card,
+  body .base-card, body .ref-box, body .rate-box, body .sum-box, body .dl-box, body .opt-block,
+  body .pw-card, body .uc-card, body .doc-card, body .elfd-card, body .survey-doc {
+    border-width: 7px;
+    border-image-width: 7px;
+  }
+  .wowmap-tip { min-width: 92vw; padding: 12px 16px 14px; }
+  .wowmap-tip b { font-size: 17px; }
+}
+
+/* ---------- 16. 打印保护（survey 导出 PDF 等，保持白底不渗纹理）---------- */
+@media print {
+  html, body { background: #fff !important; background-image: none !important; }
+  .site-header, .site-footer, .wowmap { display: none !important; }
+  .survey-doc, .doc-header, .doc-section, .doc-footer { background: #fff !important; box-shadow: none !important; }
+}
+/* ===== 首页门头浮层（地图左上角） ===== */
+.wowmap-brand {
+  position: absolute; left: clamp(18px, 3.2vw, 56px); top: clamp(16px, 3vh, 44px); z-index: 6;
+  display: flex; align-items: baseline; gap: 10px; text-decoration: none;
+  font-family: var(--font-display); color: var(--wow-gold-lt, #f4e3ac);
+  font-size: clamp(17px, 2.1vw, 30px); letter-spacing: .18em;
+  text-shadow: 0 2px 7px rgba(0, 0, 0, .88), 0 0 28px rgba(201, 162, 77, .55);
+  transition: filter .3s ease, transform .3s ease;
+}
+.wowmap-brand small {
+  font-family: 'Cinzel', serif; font-size: .42em; letter-spacing: .34em;
+  color: rgba(244, 227, 172, .72);
+}
+.wowmap-brand:hover { filter: drop-shadow(0 0 16px rgba(255, 200, 110, .8)); transform: translateY(-1px); }
+
+/* ===== 点地图不要出现任何方框（焦点框 / 点击高亮） ===== */
+.region, .region *, .wowmap-brand, .wowmap-brand *,
+.wowmap-stage svg a, .wowmap-stage svg a * {
+  outline: none !important; -webkit-tap-highlight-color: transparent;
+}
+.region:focus, .region:focus-visible, .region:active,
+svg a:focus, svg a:focus-visible, svg a:active,
+.wowmap-stage svg *:focus, .wowmap-stage svg *:focus-visible {
+  outline: none !important; outline-width: 0 !important; box-shadow: none !important;
+}

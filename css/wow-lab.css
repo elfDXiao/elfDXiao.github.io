@@ -1,0 +1,150 @@
+/* =========================================================
+   仿真系统页（airflow.html / xinfeng-sim.html）魔兽风主题
+   ---------------------------------------------------------
+   这两个页面是自成一体的单文件应用，样式写在自己的 <style> 里，
+   本文件必须放在它们的 <style> 之后引入才能覆盖。
+   ========================================================= */
+
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../assets/fonts/cinzel-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../assets/fonts/cinzel-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'MaShanZheng';
+  src: url('../assets/fonts/mashanzheng-site.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+  unicode-range: U+0020-007E, U+00A0-00FF, U+2000-206F, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF;
+}
+
+:root {
+  --paper: #f0e4c8;
+  --paper2: #e6d7b6;
+  --paper3: #dbc9a2;
+  --bg: #efe3c6;
+  --panel: rgba(246, 236, 214, .88);
+  --panel2: rgba(250, 242, 224, .82);
+  --line: rgba(138, 101, 32, .42);
+  --txt: #2b2014;
+  --mut: #57432a;
+  --mut2: #8d7448;
+  --acc: #9d7430;
+  --amb: #9d7430;
+  --serif: 'Cinzel', 'MaShanZheng', 'STKaiti', '华文楷体', 'KaiTi', '楷体', serif;
+}
+
+body {
+  font-family: 'Cinzel', 'MaShanZheng', 'STKaiti', '华文楷体', 'KaiTi', '楷体', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--txt);
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 250, 232, .45), rgba(190, 160, 105, .28) 58%, rgba(92, 68, 32, .38) 100%),
+    url('../img/wow/parchment.jpg');
+  background-size: cover, 620px 620px;
+  background-attachment: scroll, scroll;
+}
+
+/* ---------- 浮动面板 ---------- */
+.panel {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .90), rgba(238, 226, 198, .92)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border: 1px solid rgba(201, 162, 77, .75);
+  border-radius: 3px;
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  box-shadow: 0 12px 30px rgba(50, 32, 10, .32), inset 0 0 0 1px rgba(255, 250, 235, .5), inset 0 0 30px rgba(160, 128, 72, .12);
+}
+.panel::-webkit-scrollbar-thumb { background: #b99a5e; border-radius: 2px; }
+
+#logo b {
+  font-family: var(--serif);
+  background: linear-gradient(90deg, #8a6520, #e6cf8c, #8a6520);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.dotlogo { background: linear-gradient(135deg, #8a6520, #f0dda4); box-shadow: 0 0 10px rgba(201, 162, 77, .65); }
+
+h2 { color: #8a6520; font-family: var(--serif); letter-spacing: .22em; }
+
+/* ---------- 按钮 ---------- */
+button { border-radius: 2px; color: var(--txt); font-family: inherit; }
+button:hover { background: rgba(201, 162, 77, .18); }
+button.on {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border: 1px solid var(--wow-gold, #c9a24d);
+  color: #f4e3ac; font-weight: 600;
+  box-shadow: 0 0 12px rgba(201, 162, 77, .45);
+}
+button svg { stroke: #8d7448; }
+button.on svg { stroke: #f0dda4; }
+button.pri {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border: 1px solid #c9a24d; color: #f7e7b4;
+  box-shadow: inset 0 1px 0 rgba(244, 227, 172, .2), 0 6px 16px rgba(30, 20, 8, .3);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+button.pri:hover { filter: brightness(1.2); box-shadow: 0 0 18px rgba(201, 162, 77, .55); }
+
+label { color: var(--mut); }
+input, select {
+  background: rgba(255, 252, 242, .95);
+  border: 1px solid rgba(138, 101, 32, .45);
+  border-radius: 2px; color: var(--txt);
+  box-shadow: inset 0 2px 6px rgba(120, 92, 46, .14);
+}
+input:focus, select:focus { border-color: #c9a24d; box-shadow: inset 0 2px 6px rgba(120, 92, 46, .14), 0 0 0 3px rgba(201, 162, 77, .3); }
+input[type=range], input[type=checkbox] { accent-color: #9d7430; }
+
+/* ---------- 右栏卡片 ---------- */
+.card {
+  background: linear-gradient(180deg, rgba(255, 252, 242, .85), rgba(243, 232, 208, .88));
+  border: 1px solid rgba(138, 101, 32, .4);
+  border-radius: 2px;
+}
+.card h3 { color: #8a6520; font-family: var(--serif); }
+.big { font-family: var(--serif); color: #3a2a12; }
+.bar { background: rgba(74, 52, 24, .22); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(40, 26, 8, .35); }
+.bar i { background: linear-gradient(90deg, #8a6520, #f0dda4, #8a6520); box-shadow: 0 0 10px rgba(201, 162, 77, .55); }
+.bar.warn i { background: linear-gradient(90deg, #b3492f, #e79b5c); }
+.chip { background: rgba(255, 252, 242, .8); border: 1px solid rgba(138, 101, 32, .4); border-radius: 2px; color: var(--mut); }
+.chip b { color: #3a2a12; }
+.brow { border-bottom-color: rgba(138, 101, 32, .25); }
+.brow .nm { color: #3a2a12; }
+
+/* ---------- HUD ---------- */
+#wfbar, #hint, #legend, #scalechip {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .92), rgba(238, 226, 198, .94));
+  border: 1px solid rgba(201, 162, 77, .7);
+  border-radius: 3px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(50, 32, 10, .28), inset 0 0 0 1px rgba(255, 250, 235, .5);
+  color: var(--mut);
+}
+#wfbar .wchip { color: var(--mut2); }
+#wfbar .wchip.cur {
+  background: linear-gradient(180deg, #4a3519, #2a1c0b);
+  border-color: #c9a24d; color: #f4e3ac;
+}
+#wfbar .wchip.done { color: #4e7d52; }
+#wfbar button { border: 1px solid rgba(138, 101, 32, .45); background: rgba(255, 252, 242, .7); color: #57432a; border-radius: 2px; }
+#wfbar button.pri2 { background: linear-gradient(180deg, #4a3519, #2a1c0b); border-color: #c9a24d; color: #f7e7b4; }
+#brand { color: #8a6520; font-family: var(--serif); text-shadow: 0 1px 0 rgba(255, 250, 235, .6); }
+
+/* ---------- 模态 ---------- */
+#modal { background: rgba(12, 8, 3, .72); }
+#modal .box {
+  background: linear-gradient(180deg, rgba(255, 250, 236, .96), rgba(238, 226, 198, .98)), url('../img/wow/parchment.jpg');
+  background-size: cover, 520px 520px;
+  border: 1px solid rgba(201, 162, 77, .8);
+  border-radius: 3px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 0 30px rgba(160, 128, 72, .14);
+}
+#modal h3 { font-family: var(--serif); color: #3a2a12; }
+.mbtns .sec { border: 1px solid rgba(138, 101, 32, .5) !important; background: rgba(255, 252, 242, .7); color: #57432a; }
+
+/* 3D 视图保持深色不动 */
+#v3d { background: #0b1220; }
