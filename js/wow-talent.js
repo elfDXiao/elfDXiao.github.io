@@ -50,9 +50,9 @@
     {
       id: 'elec', name: '电器设备', en: 'ELECTRICAL', icon: 'elec',
       talents: [
-        { n: '公共烟道仿真',   ic: 'flue',  st: 'todo', pips: [0, 3], row: 0, col: 0,
+        { n: '公共烟道仿真',   ic: 'flue',  st: 'live', pips: [1, 3], row: 0, col: 0, href: '老肖公共烟道仿真V1.0.html',
           d: '整栋楼共用一个烟道时，楼层压差、止逆阀开度与邻居开机状况如何互相影响，倒灌多少。' },
-        { n: '油烟机排烟仿真', ic: 'hood',  st: 'todo', pips: [0, 2], row: 0, col: 2,
+        { n: '油烟机排烟仿真', ic: 'hood',  st: 'live', pips: [1, 2], row: 0, col: 2, href: '老肖油烟机排烟仿真.html',
           d: '不同机型、锅位、墙距与风量下的捕集率：油烟到底抓没抓住，看得见。' },
         { n: '视听环境仿真',   ic: 'av',    st: 'todo', pips: [0, 2], row: 1, col: 1, par: 0,
           d: '音箱摆位、听音位与房间比例，先算一遍再决定沙发和插座在哪。' },
