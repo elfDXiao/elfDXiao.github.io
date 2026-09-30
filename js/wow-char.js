@@ -26,11 +26,11 @@
     lab: 'M9.4 3.6h5.2v5.1l4.2 8.7a2.2 2.2 0 0 1-2 3.1H7.2a2.2 2.2 0 0 1-2-3.1l4.2-8.7zM7.2 14.8h9.6'
   };
   var SKILLS = [
+    { id: 'st',   n: '设计案例', m: '等级 4/5 · 被动', d: '按省份与城市看真实落地项目：现场照片、面积与造价，带 360° 的可转着看。', cd: '施法时间：即时 · 冷却：无', href: 'studio.html' },
+    { id: 'wh',   n: '定制案例',   m: '等级 5/5 · 被动', d: '从户型到每一格柜体：木作、柜体、门窗、五金，按各地施工习惯出图。', cd: '施法时间：即时 · 冷却：无', href: 'furniture.html' },
+    { id: 'bath', n: '浴室案例',   m: '等级 5/5 · 被动', d: '日系整体浴室的落位、给排水与电气点位一次说完，实拍全景对照。', cd: '施法时间：即时 · 冷却：无', href: 'bathroom.html' },
     { id: 'db',   n: '产品资料库', m: '等级 5/5 · 被动', d: '系统厨房、整体卫浴等产品资料，按分类检索可查。', cd: '施法时间：即时 · 冷却：无', href: 'database.html' },
-    { id: 'wh',   n: '全屋定制',   m: '等级 5/5 · 被动', d: '从户型到每一格柜体：木作、柜体、门窗、五金，按各地施工习惯出图。', cd: '施法时间：即时 · 冷却：无', href: 'furniture.html' },
     { id: 'kt',   n: '选型系统',   m: '等级 5/5 · 主动', d: '日系厨房与整体浴室在线选型，中日双语对照，选完直接出全含报价。', cd: '施法时间：1 个工作日 · 冷却：无', href: 'kitchen.html' },
-    { id: 'st',   n: '工作室案例', m: '等级 4/5 · 被动', d: '按省份与城市看真实落地项目：现场照片、面积与造价，带 360° 的可转着看。', cd: '施法时间：即时 · 冷却：无', href: 'studio.html' },
-    { id: 'bath', n: '整体浴室案例',   m: '等级 5/5 · 被动', d: '日系整体浴室的落位、给排水与电气点位一次说完，实拍全景对照。', cd: '施法时间：即时 · 冷却：无', href: 'bathroom.html' },
     { id: 'doc',  n: '卡拉赞图书馆',   m: '等级 5/5 · 被动', d: '需求调查 → 测量 → 方案 → 报价 → 施工 → 验收，成套文档在线确认可导出。', cd: '施法时间：即时 · 冷却：无', href: 'docs.html' },
     { id: 'lab',  n: '地精实验室', m: '等级 3/5 · 主动', d: '自研小工具与仿真：新风走向、公共烟道止逆阀与倒灌，先在浏览器里跑一遍。', cd: '施法时间：即时 · 冷却：无', href: 'lab.html' }
   ];
@@ -38,16 +38,16 @@
   /* ---------- 各页角色卡文案 ---------- */
   var SECT = {
     home:      { face: 'img/wow/portraits/lab.jpg', name: 'elf_D老肖的世界', sub: 'ELF D. XIAO · DESIGN WORKSHOP', now: 'db',
-                 role: '产品资料库 · 全屋定制 · 选型系统 · 工作室案例 · 整体浴室案例 · 卡拉赞图书馆 · 地精实验室' },
+                 role: '设计案例 · 定制案例 · 浴室案例 · 产品资料库 · 选型系统 · 卡拉赞图书馆 · 地精实验室' },
     database:  { face: 'img/wow/portraits/database.jpg', name: '日系产品资料库', sub: 'PRODUCT ARCHIVE', now: 'db',
                  role: '系统厨房，整体卫浴等检索可查' },
-    furniture: { face: 'img/wow/portraits/furniture.jpg', name: '全屋定制', sub: 'WHOLE-HOUSE CUSTOM', now: 'wh',
+    furniture: { face: 'img/wow/portraits/furniture.jpg', name: '定制案例', sub: 'WHOLE-HOUSE CUSTOM', now: 'wh',
                  role: '把户型图变成能施工的图：每一面墙、每一格柜都有交代' },
     kitchen:   { face: 'img/wow/portraits/kitchen.jpg', name: '选型系统', sub: 'SELECTOR', now: 'kt',
                  role: '日系厨房 / 整体浴室在线选型：中日双语，选完直接出全含报价' },
-    studio:    { face: 'img/wow/portraits/studio.jpg', name: '工作室案例', sub: 'STUDIO CASES', now: 'st',
+    studio:    { face: 'img/wow/portraits/studio.jpg', name: '设计案例', sub: 'STUDIO CASES', now: 'st',
                  role: '真实项目实景与造价：看得见做过的房子，也看得见花过的钱' },
-    bathroom:  { face: 'img/wow/portraits/bathroom.jpg', name: '整体浴室案例', sub: 'UNIT BATHROOM · CHINA', now: 'bath',
+    bathroom:  { face: 'img/wow/portraits/bathroom.jpg', name: '浴室案例', sub: 'UNIT BATHROOM · CHINA', now: 'bath',
                  role: '日式整体浴室在中国的落地：360° 全景、型号尺寸与全含报价' },
     docs:      { face: 'img/wow/portraits/docs.jpg', name: '麦迪文', sub: 'KARAZHAN LIBRARY', now: 'doc',
                  role: '成套文档：从需求调查到施工交底，可在线逐项确认与导出' },
