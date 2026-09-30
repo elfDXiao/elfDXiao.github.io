@@ -41,7 +41,7 @@ body{font:13px/1.6 "Microsoft YaHei","Noto Sans SC","PingFang SC",sans-serif;
 #logo b{font-family:var(--serif);font-size:15px;letter-spacing:.10em;
   background:linear-gradient(90deg,#f0d68a,#c8a548);-webkit-background-clip:text;background-clip:text;
   color:transparent;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-#logo small{color:var(--w-mut2);font-size:11.5px}
+#logo small{color:var(--w-mut2);font-size:10.5px}
 .dotlogo{width:12px;height:12px;border-radius:3px;flex:none;
   background:linear-gradient(135deg,#f0d68a,#8a6d2f);box-shadow:0 0 12px rgba(232,201,106,.55),inset 0 0 3px rgba(0,0,0,.4)}
 h2{font-family:var(--serif);font-size:10.5px;color:var(--w-gold);letter-spacing:.24em;margin:14px 6px 7px;
@@ -110,11 +110,11 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
   text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .big{font-family:var(--serif);font-size:26px;line-height:1.15;font-weight:500;color:var(--w-gold-l);
   font-variant-numeric:tabular-nums;text-shadow:0 2px 4px rgba(0,0,0,.6)}
-.big small{font-size:12px;color:var(--w-mut);font-weight:400}
+.big small{font-size:11px;color:var(--w-mut);font-weight:400}
 .brow{display:flex;align-items:center;gap:8px;padding:5.5px 2px;border-bottom:1px dashed rgba(200,165,72,.14)}
 .brow:last-child{border:none}
 .brow .nm{flex:1;color:var(--w-mut);font-size:12px}
-.brow .nm small{color:var(--w-mut2);font-size:11px}
+.brow .nm small{color:var(--w-mut2);font-size:10px}
 .brow .v{color:var(--w-mut);font-variant-numeric:tabular-nums;font-size:12px}
 .brow .v b{color:var(--w-txt)}
 .pbar{display:inline-block;width:74px;height:7px;border-radius:4px;background:rgba(0,0,0,.45);
@@ -165,16 +165,16 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
   border:1px solid var(--w-gold);border-radius:6px;padding:22px 24px;
   box-shadow:0 0 0 1px rgba(0,0,0,.7), inset 0 0 0 1px rgba(200,165,72,.25),
     0 30px 80px rgba(0,0,0,.7), 0 0 60px rgba(200,165,72,.12)}
-#modal h3{font-family:var(--serif);font-size:19px;margin-bottom:12px;color:var(--w-gold-l);
+#modal h3{font-family:var(--serif);font-size:15px;margin-bottom:12px;color:var(--w-gold-l);
   letter-spacing:.12em;text-shadow:0 2px 6px rgba(0,0,0,.7), 0 0 20px rgba(200,165,72,.35);
   text-align:center}
-#modal .mb{font-size:13px;color:var(--w-txt);line-height:1.95}
+#modal .mb{font-size:12.5px;color:var(--w-txt);line-height:1.95}
 #modal .mb b{color:var(--w-gold-l)}
 #modal .mb .k{color:var(--w-gold);font-weight:600}
 #modal .box::-webkit-scrollbar{width:9px}
 #modal .box::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8a6d2f,#5c4a1c);border-radius:5px}
 .mbtns{display:flex;gap:10px;margin-top:16px}
-.mbtns button{justify-content:center;margin:0;font-family:var(--serif);font-size:13.5px;letter-spacing:.2em}
+.mbtns button{justify-content:center;margin:0;font-family:var(--serif);font-size:12.5px;letter-spacing:.2em}
 .mbtns .pri{background:linear-gradient(180deg,#8a6d2f,#5c4a1c);border:1px solid var(--w-gold-l);
   color:#ffe9a8;font-weight:700;box-shadow:0 0 16px rgba(200,165,72,.4)}
 .mbtns .pri:hover{background:linear-gradient(180deg,#c8a548,#8a6d2f);color:#fff8e0}
@@ -190,7 +190,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 <body>
 <canvas id="v3c"></canvas>
 <div id="lbls"></div>
-<div id="brand">公共烟道 · 六层六户 · 任意焦点层</div>
+<div id="brand">公共烟道 · 五层五户 · 任意焦点层</div>
 
 <div id="topbar">
   <span class="sc">场景</span>
@@ -258,7 +258,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 "use strict";
 /* ============================================================
    老肖的公共烟道仿真 V1.0
-   六层住宅（1F–6F）· 公共烟道 · 3F 焦点
+   五层住宅（跳 4F）· 公共烟道 · 任意焦点层
    ============================================================ */
 const $ = id => document.getElementById(id);
 
@@ -266,11 +266,11 @@ const $ = id => document.getElementById(id);
 const G = 9.81, R_AIR = 287.05;
 const FLOOR_H = 3.0;          // 层高 m
 const NODE_Z = 2.45;          // 支管接入烟道高度（层内）
-const TOP_EXIT_Z = 6 * FLOOR_H + 1.6; // 烟道出屋面总高 19.6m
+const TOP_EXIT_Z = 5 * FLOOR_H + 1.6; // 烟道出屋面总高 16.6m
 const BR_A = Math.PI * 0.075 * 0.075; // DN150 支管截面积
 const BR_ZETA = 1.3;          // 支管综合局部阻力（弯头+沿程+阀全开）
 const EXIT_ZETA = 0.6;        // 出口（变径+伞形风帽）
-const FLOOR_IDS = [1, 2, 3, 4, 5, 6]; // 物理层0..5
+const FLOOR_IDS = [1, 2, 3, 5, 6]; // 物理层0..4（跳 4F）
 const F3 = 2;                 // 3F 物理序号
 
 const RISER_KINDS = {
@@ -306,19 +306,19 @@ function solve() {
   const K = BR_ZETA * 0.5 * rs / (BR_A * BR_A) / (3600 * 3600); // Pa/(m³/h)² 总
   const KD = 0.8 * 0.5 * rs / (BR_A * BR_A) / (3600 * 3600);    // 管段部分(弯头+沿程)
   // KV = K-KD 为阀本体局部阻力
-  const P = new Array(6).fill(0);
+  const P = new Array(5).fill(0);
   const Q = ST.units.map(u => u.on ? u.qMax * 0.7 : 0);
-  const segQ = new Array(6).fill(0); // segQ[k]: 物理层k上方竖井段流量
+  const segQ = new Array(5).fill(0); // segQ[k]: 物理层k上方竖井段流量
   for (let it = 0; it < 400; it++) {
     // 节点压力（从出口向下）
     { // 顶部段：6F 节点 → 出口
       const Qtot = Q.reduce((a, b) => a + b, 0) - ST.units.reduce((a, u) => a + u.leakQ, 0);
-      segQ[5] = Qtot;
+      segQ[4] = Qtot;
       const v = Qtot / 3600 / RG.A;
-      const L = TOP_EXIT_Z - nodeZ(5);
-      P[5] = EXIT_ZETA * 0.5 * rs * v * v + RG.lambda / RG.Dh * 0.5 * rs * v * v * L - (ra - rs) * G * L;
+      const L = TOP_EXIT_Z - nodeZ(4);
+      P[4] = EXIT_ZETA * 0.5 * rs * v * v + RG.lambda / RG.Dh * 0.5 * rs * v * v * L - (ra - rs) * G * L;
     }
-    for (let k = 4; k >= 0; k--) {
+    for (let k = 3; k >= 0; k--) {
       const Qseg = Q.slice(0, k + 1).reduce((a, b) => a + b, 0)
         - ST.units.slice(0, k + 1).reduce((a, u) => a + u.leakQ, 0);
       segQ[k] = Qseg;
@@ -475,7 +475,7 @@ function refreshRight() {
    <div style="font-size:10.5px;color:var(--mut2);margin-top:6px;line-height:1.7">${st.d}</div>`;
   // 烟道压力分布
   let html = "";
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 4; i >= 0; i--) {
     const p = R.P[i], w = Math.min(Math.abs(p) / 300, 1) * 100;
     const col = p > 0 ? "#b3492f" : "#4a7ba6";
     html += `<div class="brow"><span class="nm" style="font-family:var(--serif)">${FLOOR_IDS[i]}F 节点</span>
@@ -516,11 +516,11 @@ function applyPreset(p) {
     case "jpChoke": reset([1600, 1000]); U[ST.focus].kind = "JP"; U[ST.focus].qMax = 280; U[ST.focus].pMax = 200; riser = RISER_KINDS.old; break;
     case "backflow": reset([1600, 1000]); U[ST.focus].kind = "JP"; U[ST.focus].qMax = 280; U[ST.focus].pMax = 200; U[ST.focus].on = false; U[ST.focus].leak = 15e-4; riser = RISER_KINDS.old; break;
     case "solo": reset(); U.forEach((u, i) => u.on = i === ST.focus); riser = RISER_KINDS.std; break;
-    case "morning": reset([750, 420]); U.forEach((u, i) => u.on = i === 5); riser = RISER_KINDS.std; break;
+    case "morning": reset([750, 420]); U.forEach((u, i) => u.on = i === 4); riser = RISER_KINDS.std; break;
   }
   syncAllUI(); solve(); markPreset(p);
   const tips = {
-    peak: "晚高峰：六户中式机齐开，烟道正压叠加，看各户风量同时衰减",
+    peak: "晚高峰：五户中式机齐开，烟道正压叠加，看各户风量同时衰减",
     jpPeak: "3F 装日式机（4.7 m³/min·200Pa）：邻居全开时看它的工况点被背压压到多少",
     jpChoke: "老楼细烟道(240×240)+邻居猛机：烟道压力超过日式机最大静压→憋停",
     backflow: "3F 停机且止逆阀失效：邻居油烟经烟道正压渗入 3F 厨房（串味）",
@@ -566,7 +566,7 @@ function showHelp(brief) {
     $("m_title").textContent = "地精科技 震撼人心";
     $("m_body").innerHTML = `<div style="text-align:center">
       <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖公共烟道仿真 · 地精实验室出品</div>
-      六层住宅 · 公共烟道 · 任意焦点层<br>
+      五层住宅（跳 4F）· 公共烟道 · 任意焦点层<br>
       <b class="k">拖鼠标转视角 · WASD 移动 · 滚轮缩放</b><br><br>
       <span style="font-size:11.5px;color:#8b8478">完整说明点顶栏「说明」</span></div>`;
     $("modal").style.display = "flex";
@@ -574,7 +574,7 @@ function showHelp(brief) {
   }
   $("m_title").textContent = "老肖的公共烟道仿真 · 使用说明";
   $("m_body").innerHTML = `
-   <b>这是一栋六层住宅</b>（楼层编号 <span class="k">1F·2F·3F·4F·5F·6F</span>），六户共用一条竖向<b>公共烟道</b>排烟；点任意户卡的<b>「设为焦点」</b>可切换观察层（监测面板/预设场景随之作用于该层）。<br><br>
+   <b>这是一栋五层住宅</b>（楼层编号 <span class="k">1F·2F·3F·5F·6F</span>，按习俗跳过 4F），五户共用一条竖向<b>公共烟道</b>排烟；点任意户卡的<b>「设为焦点」</b>可切换观察层（监测面板/预设场景随之作用于该层）。<br><br>
    <b>① 设定油烟机：</b>左侧每户卡片可独立开关、设定<b>额定风量</b>与<b>最大静压</b>（风机曲线按 P=Pmax·(1−(Q/Qmax)²) 建模）。<br>
    <b>② 3F 换机型：</b>3F 卡片可一键切换 <span class="k">🇨🇳中式机 / 🇯🇵日式机</span>（国旗皮肤+机身造型都会换），并可选止逆阀状态（完好/老化/失效）。<br>
    <b>③ 看什么：</b>右栏实时显示 <span class="k">3F 止逆阀前后压力、压差、阀片开度、实际排量与倒灌渗入量</span>。烟道旁的彩色压柱：红=正压(背压)，蓝=负压(抽吸)。<br>
@@ -660,9 +660,9 @@ function init3D() {
   V3.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   V3.scene = new THREE.Scene();
   V3.scene.background = new THREE.Color(0x1a1209);
-  V3.scene.fog = new THREE.Fog(0x1a1209, 26, 88);
+  V3.scene.fog = new THREE.Fog(0x1a1209, 22, 78);
   V3.camera = new THREE.PerspectiveCamera(52, 1, 0.1, 220);
-  V3.orb = { th: 1.28, ph: 1.04, dist: 20, tx: 0.8, ty: 9.4, tz: 0, auto: true };
+  V3.orb = { th: 1.28, ph: 1.04, dist: 17.5, tx: 0.8, ty: 8.0, tz: 0, auto: true };
   V3.scene.add(new THREE.HemisphereLight(0xffe8c0, 0x2a2114, 0.66));
   const dl = new THREE.DirectionalLight(0xffffff, 0.42); dl.position.set(10, 20, 9); V3.scene.add(dl);
   const dl2 = new THREE.DirectionalLight(0xffe8d0, 0.12); dl2.position.set(-8, 6, -10); V3.scene.add(dl2);
@@ -678,11 +678,11 @@ function buildGround() {
   grid.position.y = 0.01; grid.material.transparent = true; grid.material.opacity = 0.55; V3.group.add(grid);
 }
 
-/* 建筑：6 个物理层 1F–6F */
+/* 建筑：5 个物理层 1F/2F/3F/5F/6F（跳 4F）*/
 function buildStatic() {
   if (V3.building) { V3.group.remove(V3.building); disposeGroup(V3.building); }
   const B = new THREE.Group(); V3.building = B;
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 5; i++) {
     const y0 = i * FLOOR_H;
     const fl = new THREE.Group();
     const slab = new THREE.Mesh(new THREE.BoxGeometry(10, 0.14, 7), M.slab());
@@ -708,7 +708,7 @@ function buildStatic() {
     B.add(fl);
   }
   const roof = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.2, 7.5), M.slab());
-  roof.position.set(0, 18.0 + 0.24, 0); B.add(roof);
+  roof.position.set(0, 15.0 + 0.24, 0); B.add(roof);
   const roofEdge = new THREE.LineSegments(new THREE.EdgesGeometry(roof.geometry), M.floorEdge());
   roofEdge.position.copy(roof.position); B.add(roofEdge);
   V3.group.add(B);
@@ -718,13 +718,13 @@ function buildStatic() {
 function buildRiser() {
   if (V3.riserG) { V3.group.remove(V3.riserG); disposeGroup(V3.riserG); }
   const G_ = new THREE.Group(); V3.riserG = G_;
-  const H = 19.6 - 0.14;
+  const H = 16.6 - 0.14;
   const body = new THREE.Mesh(new THREE.BoxGeometry(riser.h, H, riser.w), M.riserMat());
   body.position.set(RX, 0.14 + H / 2, RZ); G_.add(body);
   const edges = new THREE.LineSegments(new THREE.EdgesGeometry(body.geometry), new THREE.LineBasicMaterial({ color: 0xa89f8e }));
   edges.position.copy(body.position); G_.add(edges);
   // 分层环线
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= 5; i++) {
     const y = i * 3;
     const ring = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(riser.h + 0.02, 0.02, riser.w + 0.02)),
       new THREE.LineBasicMaterial({ color: 0xb5ac99 }));
@@ -732,9 +732,9 @@ function buildRiser() {
   }
   // 伞形风帽
   const cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.3, 20), new THREE.MeshLambertMaterial({ color: 0x8f8878 }));
-  cap.position.set(RX, 19.92, RZ); G_.add(cap);
+  cap.position.set(RX, 16.92, RZ); G_.add(cap);
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.34, 8), M.duct());
-  stem.position.set(RX, 19.72, RZ); G_.add(stem);
+  stem.position.set(RX, 16.72, RZ); G_.add(stem);
   V3.group.add(G_);
 }
 
@@ -742,7 +742,7 @@ function buildRiser() {
 function buildGauges() {
   if (V3.gauges) { V3.group.remove(V3.gauges); disposeGroup(V3.gauges); }
   const G_ = new THREE.Group(); V3.gauges = G_; V3.gaugeArr = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 5; i++) {
     const g = new THREE.Group();
     const gy = i * FLOOR_H + NODE_Z;
     const axis = new THREE.Mesh(new THREE.BoxGeometry(0.026, 2.3, 0.026), new THREE.MeshLambertMaterial({ color: 0x8b8478 }));
@@ -883,11 +883,10 @@ const UCOL = [ // 各层荧光油烟色（高饱和，竖井中一眼分辨"哪�
   [1.00, 0.92, 0.00], // 1F 荧光金
   [1.00, 0.56, 0.00], // 2F 亮橙
   [1.00, 0.20, 0.05], // 3F 霓虹红（焦点层）
-  [1.00, 0.20, 0.85], // 4F 荧光品红
-  [0.62, 0.25, 1.00], // 5F 电紫
-  [0.00, 0.92, 1.00], // 6F 荧光青
+  [1.00, 0.20, 0.85], // 5F 荧光品红
+  [0.62, 0.25, 1.00], // 6F 电紫
 ];
-let spawnAcc = [0, 0, 0, 0, 0, 0], bfAcc = 0;
+let spawnAcc = [0, 0, 0, 0, 0], bfAcc = 0;
 function initParticles() {
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.BufferAttribute(PPOS, 3));
@@ -909,7 +908,7 @@ function initParticles() {
 }
 function segFlowV(y) { // 烟道内 y 处的段流速（视觉前先得真实值）
   if (!R) return 0;
-  const k = Math.max(0, Math.min(5, Math.floor((y - 2.45) / 3)));
+  const k = Math.max(0, Math.min(4, Math.floor((y - 2.45) / 3)));
   return R.segQ[k] / 3600 / riserGeom().A;
 }
 function spawnKitchen(i) {
@@ -989,7 +988,7 @@ function updateParticles(dt) {
       const v = Math.max(0.45, Math.min(3.4, segFlowV(PPOS[i3 + 1]) * 0.34));
       PPOS[i3 + 1] += v * dt;
       PPOS[i3] += (Math.random() - .5) * .015;
-      if (PPOS[i3 + 1] >= 19.55) { PSTG[i] = STG.PLUME; PLT[i] = Math.min(PLT[i], AGE[i] + 3.4); PVX[i] = wind; PVY[i] = 0.85; PVZ[i] = 0.12; }
+      if (PPOS[i3 + 1] >= 16.55) { PSTG[i] = STG.PLUME; PLT[i] = Math.min(PLT[i], AGE[i] + 3.4); PVX[i] = wind; PVY[i] = 0.85; PVZ[i] = 0.12; }
     } else if (st === STG.PLUME) {
       PVY[i] = Math.max(0.32, PVY[i] - 0.22 * dt);
       PPOS[i3] += PVX[i] * dt + Math.sin(AGE[i] * 1.7 + i) * 0.1 * dt;
@@ -1097,7 +1096,7 @@ function bindCam() {
   });
   addEventListener("keyup", e => { const k = e.key.toLowerCase(); if ("wasd".includes(k)) V3KEYS[k] = false; });
   addEventListener("blur", () => V3KEYS = {});
-  $("b_iso").onclick = () => { Object.assign(V3.orb, { th: 1.28, ph: 1.04, dist: 20, tx: 0.8, ty: 9.4, tz: 0, auto: true }); $("b_rot").classList.add("on"); $("b_f3").classList.remove("on"); };
+  $("b_iso").onclick = () => { Object.assign(V3.orb, { th: 1.28, ph: 1.04, dist: 17.5, tx: 0.8, ty: 8.0, tz: 0, auto: true }); $("b_rot").classList.add("on"); $("b_f3").classList.remove("on"); };
   $("b_f3").onclick = () => { Object.assign(V3.orb, { th: 1.15, ph: 1.38, dist: 7.5, tx: 3.2, ty: ST.focus * FLOOR_H + 1.55, tz: -2.3, auto: false }); $("b_rot").classList.remove("on"); $("b_f3").classList.add("on"); };
   $("b_rot").onclick = e => { e.target.classList.toggle("on"); V3.orb.auto = e.target.classList.contains("on"); };
   $("b_pt").onclick = e => e.target.classList.toggle("on");
