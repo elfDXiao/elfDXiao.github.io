@@ -5,62 +5,62 @@
 <title>老肖的简易新风仿真系统 V1.0</title>
 <style>
 :root{
-  --paper:#f6f4ef;--paper2:#efece4;--paper3:#e7e2d7;
-  --bg:#f6f4ef;--panel:rgba(249,247,241,.88);--panel2:rgba(251,249,244,.72);
-  --line:#d8d2c6;--txt:#211f1b;--mut:#5c564c;--mut2:#8b8478;
-  --acc:#a65b33;--blue:#4a7ba6;--teal:#3d8f8f;--cyan:#4a7ba6;--amb:#a65b33;--red:#b3492f;--ok:#4e7d52;
+  --void:#0a0618;--void2:#130a2e;--void3:#1a0f3a;--paper:#0a0618;--paper2:#130a2e;--paper3:#1a0f3a;
+  --bg:#0a0618;--panel:rgba(14,8,30,.92);--panel2:rgba(18,10,40,.85);
+  --line:#3a2a5c;--txt:#d4c8e8;--mut:#a89ec4;--mut2:#7870a0;
+  --acc:#9944ff;--blue:#00d4aa;--teal:#00d4aa;--cyan:#00d4aa;--amb:#c9a24d;--red:#ff4488;--ok:#00d4aa;
   --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun","Microsoft YaHei",serif;
 }
 *{box-sizing:border-box;user-select:none;margin:0}
 html,body{height:100%;overflow:hidden}
 body{font:13px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
   color:var(--txt);background:
-  radial-gradient(1100px 700px at 85% -5%,rgba(166,91,51,.10),transparent 60%),
-  radial-gradient(800px 600px at 5% 20%,rgba(122,162,247,.12),transparent 60%),
-  radial-gradient(900px 620px at 95% 45%,rgba(214,133,180,.08),transparent 62%),
-  radial-gradient(820px 640px at 10% 85%,rgba(126,201,186,.10),transparent 62%),
-  linear-gradient(178deg,#f7f5ef,#efece4);background-attachment:fixed}
+  radial-gradient(1100px 700px at 85% -5%,rgba(153,68,255,.18),transparent 55%),
+  radial-gradient(800px 600px at 15%,rgba(0,212,170,.10),transparent 55%),
+  radial-gradient(900px 700px at 90%,rgba(201,162,77,.06),transparent 60%),
+  radial-gradient(600px 500px at 40%,rgba(123,47,190,.12),transparent 55%),
+  linear-gradient(180deg,#0a0618,#0d0820 40%,#0a0618);background-attachment:fixed}
 #mid{position:absolute;inset:0}
 #cv,#fx{position:absolute;inset:0}
 #fx{z-index:2}
 /* ---------- 浮动面板 ---------- */
 .panel{position:absolute;z-index:5;background:var(--panel);border:1px solid var(--line);
   border-radius:16px;backdrop-filter:blur(16px) saturate(150%);
-  box-shadow:0 10px 34px rgba(33,31,27,.10)}
+  box-shadow:0 0 30px rgba(153,68,255,.15),0 10px 30px #0008;border:1px solid rgba(153,68,255,.25)!important}
 #left{left:14px;top:14px;bottom:14px;width:218px;padding:14px 12px;overflow-y:auto}
 #right{right:14px;top:14px;bottom:14px;width:308px;padding:14px;overflow-y:auto}
 .panel::-webkit-scrollbar{width:4px}.panel::-webkit-scrollbar-thumb{background:#d8d2c6;border-radius:2px}
 #logo{display:flex;align-items:center;gap:8px;margin:2px 4px 12px}
-#logo b{font-family:var(--serif);font-size:15px;letter-spacing:.14em;background:linear-gradient(90deg,#a65b33,#c07a4f);-webkit-background-clip:text;background-clip:text;color:transparent}
+#logo b{font-family:var(--serif);font-size:15px;letter-spacing:.14em;background:linear-gradient(90deg,#7b2fbe,#00d4aa);-webkit-background-clip:text;background-clip:text;color:transparent}
 #logo small{color:var(--mut);font-size:10.5px}
-.dotlogo{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#a65b33,#c07a4f);box-shadow:0 0 10px rgba(166,91,51,.4)}
+.dotlogo{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#9944ff,#00d4aa);box-shadow:0 0 10px rgba(153,68,255,.6)}
 h2{font-size:10.5px;color:var(--mut2);letter-spacing:.18em;margin:14px 6px 6px;font-weight:600}
 button{display:flex;align-items:center;gap:8px;width:100%;margin:3px 0;padding:8px 10px;
   border:1px solid transparent;border-radius:10px;background:transparent;color:var(--txt);
   cursor:pointer;font:12.5px/1 inherit;transition:background .15s,border .15s,box-shadow .15s}
 button{border:1px solid transparent}
-button:hover{background:rgba(33,31,27,.05)}
-button.on{background:rgba(166,91,51,.10);border:1px solid rgba(166,91,51,.45);color:#a65b33;font-weight:600}
-button svg{width:15px;height:15px;flex:none;stroke:#8b8478;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-button.on svg{stroke:#a65b33}
-button.pri{background:var(--acc);border:1px solid var(--acc);color:#fff;justify-content:center;font-weight:600;box-shadow:0 6px 18px rgba(166,91,51,.32)}
+button:hover{background:rgba(153,68,255,.12)}
+button.on{background:rgba(153,68,255,.18);border:1px solid rgba(153,68,255,.6);color:#cc88ff;font-weight:600;box-shadow:0 0 12px rgba(153,68,255,.3)}
+button svg{width:15px;height:15px;flex:none;stroke:#7870a0;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+button.on svg{stroke:#cc88ff}
+button.pri{background:linear-gradient(135deg,#7b2fbe,#9944ff);border:1px solid #9944ff;color:#fff;justify-content:center;font-weight:600;box-shadow:0 0 20px rgba(153,68,255,.4)}
 button.pri:hover{filter:brightness(1.12)}
 label{display:block;margin:8px 2px 3px;font-size:11px;color:var(--mut)}
-input,select{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fbf9f4;color:var(--txt);font:inherit}
-input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(166,91,51,.15)}
+input,select{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#0d0820;color:var(--txt);font:inherit}
+input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(153,68,255,.25)}
 input[type=range]{padding:0;border:none;background:none;accent-color:var(--acc)}
 input[type=checkbox]{width:auto;accent-color:var(--acc)}
 .row2{display:flex;gap:8px}.row2>div{flex:1}
 /* ---------- 右栏卡片 ---------- */
 .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:10px}
 .card h3{font-size:11px;color:var(--mut2);letter-spacing:.22em;font-weight:500;margin-bottom:7px}
-.big{font-family:var(--serif);font-size:24px;font-weight:500;color:#211f1b}
+.big{font-family:var(--serif);font-size:24px;font-weight:500;color:#f4e3ac;text-shadow:0 0 12px rgba(201,162,77,.3)}
 .big small{font-size:11px;color:var(--mut);font-weight:400}
-.bar{height:7px;border-radius:4px;background:#e7e2d7;overflow:hidden}
-.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#a65b33,#c07a4f);transition:width .3s}
+.bar{height:7px;border-radius:4px;background:#1a0f3a;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#7b2fbe,#00d4aa);transition:width .3s}
 .bar.warn i{background:linear-gradient(90deg,#c98a5e,#a65b33)}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-.chip{font-size:11px;color:var(--mut);background:rgba(33,31,27,.04);border:1px solid var(--line);border-radius:7px;padding:3px 8px}
+.chip{font-size:11px;color:var(--mut);background:rgba(153,68,255,.08);border:1px solid var(--line);border-radius:7px;padding:3px 8px}
 .chip b{color:#211f1b;font-weight:600}
 .brow{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px dashed rgba(33,31,27,.10)}
 .brow:last-child{border:none}
@@ -70,27 +70,27 @@ input[type=checkbox]{width:auto;accent-color:var(--acc)}
 .cir{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
 /* ---------- HUD ---------- */
 #wfbar{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:7;
-  background:rgba(249,247,241,.9);border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(14px) saturate(150%);
-  padding:7px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 26px rgba(33,31,27,.12);max-width:94%}
+  background:rgba(10,6,24,.9);border:1px solid rgba(153,68,255,.3);border-radius:14px;backdrop-filter:blur(14px) saturate(150%);
+  padding:7px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 26px rgba(153,68,255,.25);max-width:94%}
 #wfbar .wchip{font-size:11px;color:var(--mut2);padding:3px 8px;border-radius:8px;white-space:nowrap;border:1px solid transparent}
-#wfbar .wchip.cur{color:#a65b33;border-color:rgba(166,91,51,.45);background:rgba(166,91,51,.10);font-weight:600}
+#wfbar .wchip.cur{color:#cc88ff;border-color:rgba(153,68,255,.5);background:rgba(153,68,255,.15);font-weight:600}
 #wfbar .wchip.done{color:var(--ok)}
 #wfbar .wtip{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px}
 #wfbar button{width:auto;margin:0;padding:4px 11px;font-size:11px;border-radius:8px;flex:none;
   border:1px solid var(--line);background:rgba(33,31,27,.03);color:var(--mut)}
-#wfbar button.pri2{background:#a65b33;border-color:#a65b33;color:#fff;font-weight:600}
+#wfbar button.pri2{background:linear-gradient(135deg,#7b2fbe,#9944ff);border-color:#a65b33;color:#fff;font-weight:600}
 #wfbar button:hover{filter:brightness(1.25)}
 #hint{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:6;
-  background:rgba(249,247,241,.88);border:1px solid var(--line);color:var(--mut);padding:7px 16px;border-radius:20px;
+  background:rgba(10,6,24,.85);border:1px solid var(--line);color:var(--mut);padding:7px 16px;border-radius:20px;
   font-size:12px;backdrop-filter:blur(10px);box-shadow:0 4px 16px rgba(33,31,27,.10);pointer-events:none;transition:opacity .3s}
-#brand{position:absolute;left:250px;top:18px;z-index:6;font-size:11px;color:#8b8478;letter-spacing:.25em}
-#legend{position:absolute;right:340px;bottom:18px;z-index:6;background:rgba(249,247,241,.88);border:1px solid var(--line);
+#brand{position:absolute;left:250px;top:18px;z-index:6;font-size:11px;color:#7870a0;letter-spacing:.25em}
+#legend{position:absolute;right:340px;bottom:18px;z-index:6;background:rgba(10,6,24,.85);border:1px solid var(--line);
   border-radius:10px;padding:8px 10px;font-size:10px;color:var(--mut2);backdrop-filter:blur(10px);text-align:center}
 #scalechip{position:absolute;left:250px;bottom:18px;z-index:6;font-size:10.5px;color:var(--mut2);
-  background:rgba(249,247,241,.88);border:1px solid var(--line);border-radius:8px;padding:4px 9px}
+  background:rgba(10,6,24,.85);border:1px solid var(--line);border-radius:8px;padding:4px 9px}
 /* ---------- 模态 ---------- */
 #modal{position:fixed;inset:0;z-index:20;background:#0008;display:none;align-items:center;justify-content:center}
-#modal .box{width:330px;background:#f9f7f1;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 24px 60px rgba(33,31,27,.22)}
+#modal .box{width:330px;background:#0d0820;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 24px 60px rgba(153,68,255,.2),0 24px 60px #000a}
 #modal h3{font-family:var(--serif);font-size:15px;margin-bottom:12px;color:#211f1b}
 .mbtns{display:flex;gap:10px;margin-top:16px}
 .mbtns .pri{margin:0}.mbtns .sec{margin:0;justify-content:center;border:1px solid var(--line)}
@@ -100,8 +100,8 @@ input[type=checkbox]{width:auto;accent-color:var(--acc)}
 #v3d{position:absolute;inset:0;z-index:8;display:none;background:#0b1220}
 #v3d.on{display:block}
 #v3d canvas{position:absolute;inset:0}
-#v3d .vhud{position:absolute;background:rgba(249,247,241,.9);border:1px solid var(--line);border-radius:12px;
-  backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(33,31,27,.12)}
+#v3d .vhud{position:absolute;background:rgba(10,6,24,.88);border:1px solid rgba(153,68,255,.3);border-radius:12px;
+  backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(153,68,255,.25)}
 #v3bar{top:14px;left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:5px}
 #v3bar button{width:auto;margin:0;padding:5px 11px;font-size:11.5px;border-radius:8px;flex:none}
 #v3bar button.on{background:rgba(166,91,51,.12);border-color:rgba(166,91,51,.5);color:#a65b33;font-weight:600}
@@ -114,7 +114,7 @@ input[type=checkbox]{width:auto;accent-color:var(--acc)}
 #v3hint{bottom:16px;left:16px;font-size:10.5px;color:var(--mut2);padding:6px 10px}
 
 /* ---------- 仿真运行 ---------- */
-.console{font:10.5px Consolas,"Microsoft YaHei",monospace;background:#fbf9f4;border:1px solid var(--line);
+.console{font:10.5px Consolas,"Microsoft YaHei",monospace;background:#0d0820;border:1px solid var(--line);
   border-radius:8px;padding:6px 8px;height:104px;overflow-y:auto;white-space:pre-wrap;color:var(--mut);margin-top:8px}
 .console::-webkit-scrollbar{width:4px}.console::-webkit-scrollbar-thumb{background:#d8d2c6}
 .st-run{color:#4a7ba6;font-weight:600;animation:blink 1.2s infinite}
@@ -128,7 +128,6 @@ input[type=checkbox]{width:auto;accent-color:var(--acc)}
 #v3u:hover{color:#bcd6ff}
 #v3ticks{font:9.5px Consolas,monospace;color:#8b94a7;text-align:right;margin-top:2px}
 </style>
-<link rel="stylesheet" href="css/wow-lab.css">
 </head>
 <body>
 <div id="mid"><canvas id="cv"></canvas><canvas id="fx"></canvas></div>
@@ -442,7 +441,7 @@ function renderLists(){const el=$("lists");
     </select></span></div>`).join("");
   if(S.mach)h+=`<div class="brow"><span class="cir" style="background:#4d8dff;color:#4d8dff"></span>
    <span class="nm">主机</span><span class="v">φ${$("in_md").value} · ${$("b_ml").value}m</span></div>`;
-  S.out.forEach(o=>h+=`<div class="brow"><span class="cir" style="background:${o.type==="新风口"?"#4a7ba6":"#a65b33"};color:${o.type==="新风口"?"#4a7ba6":"#a65b33"}"></span>
+  S.out.forEach(o=>h+=`<div class="brow"><span class="cir" style="background:${o.type==="新风口"?"#00d4aa":"#cc88ff"};color:${o.type==="新风口"?"#00d4aa":"#cc88ff"}"></span>
    <span class="nm">${o.name} ${o.type}</span><span class="v"></span></div>`);
   el.innerHTML=h||"<small style='color:var(--mut)'>尚无物件</small>";}
 /* ================= 交互 ================= */
@@ -767,15 +766,15 @@ $("b_help").onclick=()=>modal("六步上手",[{k:"x",label:"①上传户型图�
 $("pn").addEventListener("input",e=>$("pn_v").textContent=e.target.value);
 /* ================= 速度配色 ================= */
 const ROOM_COLORS=[
-    {fill:"rgba(74,123,166,.18)",stroke:"rgba(74,123,166,.6)",label:"#4a7ba6"},
-    {fill:"rgba(166,91,51,.18)",stroke:"rgba(166,91,51,.6)",label:"#a65b33"},
-    {fill:"rgba(61,143,143,.18)",stroke:"rgba(61,143,143,.6)",label:"#3d8f8f"},
-    {fill:"rgba(180,120,60,.18)",stroke:"rgba(180,120,60,.6)",label:"#b4783c"},
-    {fill:"rgba(120,100,160,.18)",stroke:"rgba(120,100,160,.6)",label:"#7864a0"},
-    {fill:"rgba(160,100,100,.18)",stroke:"rgba(160,100,100,.6)",label:"#a06464"},
-    {fill:"rgba(100,140,100,.18)",stroke:"rgba(100,140,100,.6)",label:"#648c64"}];
+    {fill:"rgba(0,212,170,.15)",stroke:"rgba(0,212,170,.5)",label:"#00d4aa"},
+    {fill:"rgba(153,68,255,.15)",stroke:"rgba(153,68,255,.5)",label:"#cc88ff"},
+    {fill:"rgba(0,180,255,.15)",stroke:"rgba(0,180,255,.5)",label:"#00b4ff"},
+    {fill:"rgba(255,215,0,.12)",stroke:"rgba(255,215,0,.4)",label:"#ffd700"},
+    {fill:"rgba(123,47,190,.15)",stroke:"rgba(123,47,190,.5)",label:"#7b2fbe"},
+    {fill:"rgba(255,68,136,.12)",stroke:"rgba(255,68,136,.4)",label:"#ff4488"},
+    {fill:"rgba(0,255,200,.10)",stroke:"rgba(0,255,200,.4)",label:"#00ffca"}];
 const STOPS=[[0,[33,150,243]],[.3,[0,188,212]],[.65,[255,152,0]],[1,[211,84,40]]];
-const AGE_STOPS=[[0,[33,150,243]],[.3,[0,188,212]],[.6,[255,152,0]],[1,[211,84,40]]];
+const AGE_STOPS=[[0,[0,180,255]],[.35,[0,212,170]],[.7,[153,68,255]],[1,[255,215,0]]];
 const AGE_MAX=60;
 function ageCol(age,out){
   const tt=Math.min(age/AGE_MAX,1);let i=0;
@@ -810,9 +809,9 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
   /* ---- 背景层 ---- */
   ctx.clearRect(0,0,cv.width,cv.height);
   const bg=ctx.createRadialGradient(cv.width/2,cv.height/2,80,cv.width/2,cv.height/2,cv.width*.7);
-  bg.addColorStop(0,"#faf8f2");bg.addColorStop(.55,"#f3f0e9");bg.addColorStop(1,"#eae5da");
+  bg.addColorStop(0,"#100a28");bg.addColorStop(.55,"#0a0618");bg.addColorStop(1,"#060310");
   ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.fillStyle="rgba(33,31,27,.06)";
+  ctx.fillStyle="rgba(153,68,255,.06)";
   for(let x=0;x<cv.width;x+=26)for(let y=0;y<cv.height;y+=26)ctx.fillRect(x,y,1,1);
   if(S.img)ctx.drawImage(S.img,S.imgX,S.imgY,S.imgW,S.imgH);
   const poly=S.outline.length?S.outline:S.outlineTmp;
@@ -822,7 +821,7 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     const b=bboxPx(),rg=ctx.createLinearGradient(b.x0,b.y0,b.x0,b.y1);
     rg.addColorStop(0,"rgba(244,241,234,.25)");rg.addColorStop(1,"rgba(236,231,220,.25)");
     ctx.fillStyle=S.outline.length?rg:"rgba(236,231,220,.25)";ctx.fill();
-    ctx.strokeStyle="#211f1b";ctx.lineWidth=2.5;ctx.stroke();
+    ctx.strokeStyle="#9944ff";ctx.lineWidth=2.5;ctx.stroke();
   }else if(S.outlineTmp.length){ctx.beginPath();S.outlineTmp.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
     ctx.strokeStyle="#8b8478";ctx.lineWidth=2;ctx.stroke();}
   /* ---- 管道: 折线路径+流向动画+途经点 ---- */
@@ -831,13 +830,13 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     const fwd=p.kind==="return"?pts.slice().reverse():pts;
     const trace=()=>{ctx.beginPath();ctx.moveTo(fwd[0].x,fwd[0].y);
       for(let i=1;i<fwd.length;i++)ctx.lineTo(fwd[i].x,fwd[i].y);};
-    trace();ctx.strokeStyle="rgba(92,86,76,.38)";ctx.lineWidth=4;ctx.setLineDash([]);ctx.stroke();
-    trace();ctx.strokeStyle=p._Q?"rgba(74,123,166,.65)":"rgba(74,123,166,.22)";
+    trace();ctx.strokeStyle="rgba(153,68,255,.3)";ctx.lineWidth=4;ctx.setLineDash([]);ctx.stroke();
+    trace();ctx.strokeStyle=p._Q?"rgba(0,212,170,.6)":"rgba(0,212,170,.2)";
     ctx.lineWidth=1.6;ctx.setLineDash([9,11]);ctx.lineDashOffset=-(now/1000*36)%20;ctx.stroke();
     ctx.setLineDash([]);
     (p.pts||[]).forEach(w=>{ctx.fillStyle="#fbf9f4";
       ctx.beginPath();ctx.arc(w.x,w.y,4.5,0,7);ctx.fill();
-      ctx.strokeStyle="#5c564c";ctx.lineWidth=1.2;ctx.stroke();});});
+      ctx.strokeStyle="#a89ec4";ctx.lineWidth=1.2;ctx.stroke();});});
   if(S.pipeFrom&&S.mode==="pipe"){ // 布管预览(跟随鼠标)
     const pts=[S.pipeFrom.p,...S.pipePts,S.mp].filter(Boolean);
     if(pts.length>1){ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
@@ -849,29 +848,29 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     const mx=(a.x+b0.x)/2,my=(a.y+b0.y)/2,dx=b0.x-a.x,dy=b0.y-a.y,L=Math.hypot(dx,dy)||1;
     const cx=mx-dy/L*L*.12,cy=my+dx/L*L*.12;
     const seg=()=>{ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.quadraticCurveTo(cx,cy,b0.x,b0.y);};
-    seg();ctx.strokeStyle="rgba(92,86,76,.38)";ctx.lineWidth=5;ctx.setLineDash([]);ctx.stroke();
+    seg();ctx.strokeStyle="rgba(153,68,255,.3)";ctx.lineWidth=5;ctx.setLineDash([]);ctx.stroke();
     seg();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([10,12]);
     ctx.lineDashOffset=-(now/1000*44)%22;ctx.stroke();ctx.setLineDash([]);};
   if(S.mach){const sb=S.box.find(b=>(b.kind||"supply")==="supply");
-    if(sb)mainDuct(sb,"rgba(74,123,166,.75)");
+    if(sb)mainDuct(sb,"rgba(0,212,170,.75)");
     const rb=S.box.find(b=>b.kind==="return");
-    if(rb)mainDuct(rb,"rgba(166,91,51,.75)");}
+    if(rb)mainDuct(rb,"rgba(153,68,255,.75)");}
   /* ---- 主机 ---- */
   if(S.mach){const m=S.mach.p;
     ctx.save();ctx.shadowColor="rgba(74,123,166,.45)";ctx.shadowBlur=12;
-    ctx.fillStyle="#dfe8ef";rr(m.x-17,m.y-17,34,34,10);ctx.fill();ctx.restore();
-    ctx.strokeStyle="#4a7ba6";ctx.lineWidth=1.8;rr(m.x-17,m.y-17,34,34,10);ctx.stroke();
+    ctx.fillStyle="#1a0f3a";rr(m.x-17,m.y-17,34,34,10);ctx.fill();ctx.restore();
+    ctx.strokeStyle="#00d4aa";ctx.lineWidth=1.8;rr(m.x-17,m.y-17,34,34,10);ctx.stroke();
     const ang=now/900;
-    ctx.strokeStyle="#4a7ba6";ctx.lineWidth=2.2;ctx.lineCap="round";
+    ctx.strokeStyle="#00d4aa";ctx.lineWidth=2.2;ctx.lineCap="round";
     for(let k=0;k<3;k++){ctx.beginPath();
       ctx.arc(m.x,m.y,7,ang+k*2.094,ang+k*2.094+1.15);ctx.stroke();}
-    ctx.beginPath();ctx.arc(m.x,m.y,2.4,0,7);ctx.fillStyle="#4a7ba6";ctx.fill();
+    ctx.beginPath();ctx.arc(m.x,m.y,2.4,0,7);ctx.fillStyle="#00d4aa";ctx.fill();
     ctx.font="11px Inter";const txt="主机 · "+$("in_q").value+"m³/h",tw=ctx.measureText(txt).width+14;
-    rr(m.x+22,m.y-10,tw,19,6);ctx.fillStyle="rgba(251,249,244,.92)";ctx.fill();
-    ctx.strokeStyle="rgba(33,31,27,.14)";ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle="#4a7ba6";ctx.fillText(txt,m.x+29,m.y+3);}
+    rr(m.x+22,m.y-10,tw,19,6);ctx.fillStyle="rgba(10,6,24,.85)";ctx.fill();
+    ctx.strokeStyle="rgba(153,68,255,.3)";ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle="#00d4aa";ctx.fillText(txt,m.x+29,m.y+3);}
   /* ---- 外墙风口 ---- */
-  S.out.forEach(o=>{const c=o.type==="新风口"?"#4a7ba6":"#a65b33";
+  S.out.forEach(o=>{const c=o.type==="新风口"?"#00d4aa":"#cc88ff";
     if(S.mach){ctx.setLineDash([3,5]);ctx.strokeStyle=c+"99";ctx.lineWidth=1.2;
       ctx.beginPath();ctx.moveTo(o.p.x,o.p.y);ctx.lineTo(S.mach.p.x,S.mach.p.y);ctx.stroke();ctx.setLineDash([]);}
     ctx.save();ctx.shadowColor=c;ctx.shadowBlur=12;
@@ -880,8 +879,8 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     const s=o.type==="新风口"?1:-1;
     ctx.beginPath();ctx.moveTo(o.p.x-4*s,o.p.y-4);ctx.lineTo(o.p.x+4*s,o.p.y);ctx.lineTo(o.p.x-4*s,o.p.y+4);ctx.stroke();
     ctx.font="11px Inter";const txt=o.name+" "+o.type,tw=ctx.measureText(txt).width+12;
-    rr(o.p.x+13,o.p.y-9,tw,18,6);ctx.fillStyle="rgba(251,249,244,.92)";ctx.fill();
-    ctx.strokeStyle="rgba(33,31,27,.14)";ctx.lineWidth=1;ctx.stroke();
+    rr(o.p.x+13,o.p.y-9,tw,18,6);ctx.fillStyle="rgba(10,6,24,.85)";ctx.fill();
+    ctx.strokeStyle="rgba(153,68,255,.3)";ctx.lineWidth=1;ctx.stroke();
     ctx.fillStyle=c;ctx.fillText(txt,o.p.x+19,o.p.y+3);});
   /* ---- 房间分区 ---- */
   const roomRect=(a,b)=>{ctx.setLineDash([7,6]);ctx.lineWidth=1.5;
@@ -899,15 +898,15 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     ctx.font="11px Inter";
     const bb=polyBBox(r.pts||[]);
     const txt=(r.name||"?")+" · "+area.toFixed(1)+"㎡",w=ctx.measureText(txt).width+14;
-    rr(bb.x0+4,bb.y0+4,w,19,6);ctx.fillStyle="rgba(251,249,244,.92)";ctx.fill();
+    rr(bb.x0+4,bb.y0+4,w,19,6);ctx.fillStyle="rgba(10,6,24,.85)";ctx.fill();
     ctx.strokeStyle="rgba(166,91,51,.35)";ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle=rc?rc.label:"#5c564c";ctx.fillText(txt,bb.x0+11,bb.y0+17);});
+    ctx.fillStyle=rc?rc.label:"#a89ec4";ctx.fillText(txt,bb.x0+11,bb.y0+17);});
   if(S.roomPrev&&S.roomPrev.pts){ctx.setLineDash([4,4]);ctx.strokeStyle="rgba(166,91,51,.4)";ctx.lineWidth=1.5;
     ctx.beginPath();S.roomPrev.pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));
     ctx.lineTo(S.roomPrev.cur.x,S.roomPrev.cur.y);ctx.stroke();ctx.setLineDash([]);}
   /* ---- 门/窗洞: 矩形色块 ---- */
   S.openings.forEach(op=>{
-    const c=op.kind==="door"?"#a65b33":"#4a7ba6";
+    const c=op.kind==="door"?"#cc88ff":"#00d4aa";
     const w=op.x1-op.x0,h=op.y1-op.y0;
     ctx.fillStyle=op.kind==="door"?"rgba(166,91,51,.30)":"rgba(74,123,166,.30)";
     ctx.fillRect(op.x0,op.y0,w,h);
@@ -921,14 +920,14 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
     const mx=(op.x0+op.x1)/2,my=(op.y0+op.y1)/2;
     const tw=ctx.measureText(txt).width+12;
     rr(mx-tw/2,my-9,tw,17,5);
-    ctx.fillStyle="rgba(251,249,244,.94)";ctx.fill();
+    ctx.fillStyle="rgba(10,6,24,.88)";ctx.fill();
     ctx.strokeStyle=c+"88";ctx.lineWidth=1;ctx.stroke();
     ctx.fillStyle=c;ctx.fillText(txt,mx-tw/2+6,my+4);});
   if(S.opTmp){
     const mp=S.mp||{x:S.opTmp.x,y:S.opTmp.y};
     const bx0=Math.min(S.opTmp.x,mp.x),bx1=Math.max(S.opTmp.x,mp.x);
     const by0=Math.min(S.opTmp.y,mp.y),by1=Math.max(S.opTmp.y,mp.y);
-    ctx.strokeStyle=S.opTmp.kind==="door"?"#a65b33":"#4a7ba6";
+    ctx.strokeStyle=S.opTmp.kind==="door"?"#cc88ff":"#00d4aa";
     ctx.fillStyle=S.opTmp.kind==="door"?"rgba(166,91,51,.15)":"rgba(74,123,166,.15)";
     ctx.lineWidth=2;ctx.setLineDash([4,4]);
     ctx.fillRect(bx0,by0,bx1-bx0,by1-by0);
@@ -953,8 +952,8 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
   S.box.forEach(b0=>{const ret=b0.kind==="return";
     ctx.save();ctx.shadowColor=ret?"rgba(166,91,51,.4)":"rgba(33,31,27,.25)";ctx.shadowBlur=ret?10:8;
     ctx.fillStyle=ret?"#e8d9ca":"#e2ddd2";rr(b0.p.x-12,b0.p.y-12,24,24,7);ctx.fill();ctx.restore();
-    ctx.strokeStyle=ret?"#a65b33":"#5c564c";ctx.lineWidth=1.5;rr(b0.p.x-12,b0.p.y-12,24,24,7);ctx.stroke();
-    ctx.fillStyle="#211f1b";ctx.font="600 10px Inter";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.strokeStyle=ret?"#cc88ff":"#a89ec4";ctx.lineWidth=1.5;rr(b0.p.x-12,b0.p.y-12,24,24,7);ctx.stroke();
+    ctx.fillStyle="#9944ff";ctx.font="600 10px Inter";ctx.textAlign="center";ctx.textBaseline="middle";
     ctx.fillText(b0.name,b0.p.x,b0.p.y+1);ctx.textAlign="left";ctx.textBaseline="alphabetic";});
   /* hover/drag 光圈 */
   const hi=S.hover||S.drag&&S.drag.it;
@@ -972,15 +971,15 @@ function loop(now){const dt=Math.min((now-t0)/1000,.05);t0=now;
   /* ---- 标签芯片 ---- */
   if($("ck_lab").checked){
     const chip=(it,txt,c)=>{ctx.font="11px Inter";const w=ctx.measureText(txt).width+14;
-      rr(it.p.x+13,it.p.y-11,w,19,7);ctx.fillStyle="rgba(251,249,244,.92)";ctx.fill();
-      ctx.strokeStyle="rgba(33,31,27,.14)";ctx.lineWidth=1;ctx.stroke();
+      rr(it.p.x+13,it.p.y-11,w,19,7);ctx.fillStyle="rgba(10,6,24,.85)";ctx.fill();
+      ctx.strokeStyle="rgba(153,68,255,.3)";ctx.lineWidth=1;ctx.stroke();
       ctx.fillStyle=c;ctx.fillText(txt,it.p.x+20,it.p.y+3);};
     S.sup.forEach(s=>chip(s,s.Q?`${s.name} · ${s.Q.toFixed(0)}m³/h${s.v>4?" ⚠"+s.v.toFixed(1):""}`:s.name,"#bcd6ff"));
     S.ret.forEach(r0=>chip(r0,r0.Q?`${r0.name} · ${r0.Q.toFixed(0)}m³/h`:r0.name,"#ffe0b0"));}
   /* ---- 粒子层(拖尾) ---- */
   fx.globalCompositeOperation="destination-out";
   fx.fillStyle="rgba(0,0,0,.11)";fx.fillRect(0,0,fxc.width,fxc.height);
-  fx.globalCompositeOperation="source-over";
+  fx.globalCompositeOperation="lighter";
   const want=+$("pn").value;
   while(P.length<want){const np=respawn();
     if(np){np.age=Math.random()*(np.lt||9);P.push(np);}else P.push(null);}
@@ -1041,7 +1040,7 @@ function rptPage(){const c=document.createElement("canvas");c.width=RPT.W;c.heig
 function rptHeader(g,ctx2,no,total){
   g.fillStyle="rgba(255,255,255,.04)";g.fillRect(0,0,RPT.W,86);
   g.beginPath();g.moveTo(0,86);g.lineTo(RPT.W,86);g.strokeStyle="rgba(255,255,255,.08)";g.stroke();
-  const lg=g.createLinearGradient(40,34,180,34);lg.addColorStop(0,"#8ab8ff");lg.addColorStop(1,"#4a7ba6");
+  const lg=g.createLinearGradient(40,34,180,34);lg.addColorStop(0,"#8ab8ff");lg.addColorStop(1,"#00d4aa");
   g.fillStyle=lg;g.beginPath();g.roundRect(40,28,10,28,3);g.fill();
   g.font="700 22px Inter,'Microsoft YaHei'";g.fillStyle="#c9d6ea";g.fillText("老肖的简易新风仿真系统 V1.0",64,50);
   g.font="11px Inter";g.fillStyle="#5f6a80";g.textAlign="right";
@@ -1055,7 +1054,7 @@ function rptChip(g,x,y,txt,val,w){
   g.fillStyle="#e6ebf2";g.fillText(val,x+11+g.measureText(txt).width+5,y+21);
   return x+tw+10;}
 function rptCard(g,x,y,w,h){g.beginPath();g.roundRect(x,y,w,h,14);
-  g.fillStyle="rgba(255,255,255,.045)";g.fill();g.strokeStyle="rgba(33,31,27,.14)";g.stroke();}
+  g.fillStyle="rgba(255,255,255,.045)";g.fill();g.strokeStyle="rgba(153,68,255,.3)";g.stroke();}
 function snapCanvas(){const c=document.createElement("canvas");c.width=cv.width;c.height=cv.height;
   const g=c.getContext("2d");g.drawImage(cv,0,0);g.drawImage(fxc,0,0);return c;}
 function roomList(){if(S.rooms.length)return S.rooms.slice();
@@ -1067,7 +1066,7 @@ function exportPDF(){
   {const[c,g]=rptPage();
    g.font="700 58px 'Microsoft YaHei'";g.fillStyle="#eef4fc";
    g.fillText("老肖的简易新风仿真报告",80,320);
-   g.font="26px 'Microsoft YaHei'";g.fillStyle="#4a7ba6";g.fillText("elf_D 老肖",82,378);
+   g.font="26px 'Microsoft YaHei'";g.fillStyle="#00d4aa";g.fillText("elf_D 老肖",82,378);
    g.font="13px Inter";g.fillStyle="#5f6a80";g.fillText("老肖新风仿真 V1.0  ·  "+new Date().toLocaleString("zh-CN"),82,420);
    rptCard(g,80,480,540,150);
    g.font="600 13px 'Microsoft YaHei'";g.fillStyle="#8b94a7";g.fillText("主 机 参 数",104,516);
@@ -1208,8 +1207,8 @@ function v3Init(){
   V3.renderer=new THREE.WebGLRenderer({canvas:v3c,antialias:true,preserveDrawingBuffer:true});
   V3.renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   V3.scene=new THREE.Scene();
-  V3.scene.background=new THREE.Color(0xf3f0e9);
-  V3.scene.fog=new THREE.Fog(0xf3f0e9,20,46);
+  V3.scene.background=new THREE.Color(0x0a0618);
+  V3.scene.fog=new THREE.Fog(0x0a0618,20,46);
   V3.camera=new THREE.PerspectiveCamera(45,1,.1,120);
   V3.orb={th:1.95,ph:1.02,dist:10,tx:0,ty:1.3,tz:0,auto:true};
   V3.keys={};
@@ -1231,7 +1230,7 @@ function v3Init(){
     gr.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=gr;x.fillRect(0,0,64,64);
     return new THREE.CanvasTexture(c);})();
   V3.pts=new THREE.Points(g,new THREE.PointsMaterial({size:.055,map:sprite,
-    vertexColors:true,transparent:true,opacity:1,blending:THREE.NormalBlending,
+    vertexColors:true,transparent:true,opacity:1,blending:THREE.AdditiveBlending,
     depthWrite:false,sizeAttenuation:true}));
   V3.pts.frustumCulled=false;
   V3.scene.add(V3.pts);
@@ -1260,7 +1259,7 @@ function v3Build(){ // 房间/风口重建
   // 地板
   const shape=new THREE.Shape(rel.map(p=>new THREE.Vector2(p[0],p[1])));
   const floor=new THREE.Mesh(new THREE.ShapeGeometry(shape),
-    new THREE.MeshBasicMaterial({color:0xe7e2d7,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false}));
+    new THREE.MeshBasicMaterial({color:0x130a2e,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false}));
   floor.rotation.x=-Math.PI/2;V3.group.add(floor);
   // 外墙(带用户门窗洞)
   const v3WallPieces=(a,b,holes,op)=>{
@@ -1286,7 +1285,7 @@ function v3Build(){ // 房间/风口重建
     rects.forEach(rc=>{const len=rc.u1-rc.u0,hgt=rc.v1-rc.v0;
       if(len<.04||hgt<.04)return;
       const m=new THREE.Mesh(new THREE.PlaneGeometry(len,hgt),
-        new THREE.MeshBasicMaterial({color:0x8b8478,transparent:true,opacity:op,
+        new THREE.MeshBasicMaterial({color:0x9944ff,transparent:true,opacity:op,
           side:THREE.DoubleSide,depthWrite:false}));
       const c0=at(rc.u0);
       m.position.set(c0[0]+ux*len/2,(rc.v0+rc.v1)/2,c0[1]+uz*len/2);
@@ -1296,7 +1295,7 @@ function v3Build(){ // 房间/风口重建
       new THREE.Vector3(b[0],H,b[1]),new THREE.Vector3(b[0],0,b[1]),
       new THREE.Vector3(a[0],0,a[1])]);
     V3.group.add(new THREE.Line(lg,
-      new THREE.LineBasicMaterial({color:0x8b8478,transparent:true,opacity:.75})));};
+      new THREE.LineBasicMaterial({color:0x9944ff,transparent:true,opacity:.75})));};
   const outHoles=edge=>holesOnWall({a:w2px(edge[0][0],edge[0][1]),b:w2px(edge[1][0],edge[1][1])});
   for(let i=0;i<rel.length;i++){const a=rel[i],b=rel[(i+1)%rel.length];
     v3WallPieces(a,b,outHoles([a,b]),.05);}
@@ -1308,7 +1307,7 @@ function v3Build(){ // 房间/风口重建
     const mkWall=(q0,q1)=>{
       const len=Math.hypot(q1[0]-q0[0],q1[1]-q0[1]);if(len<.05)return;
       const m=new THREE.Mesh(new THREE.PlaneGeometry(len,H),
-        new THREE.MeshBasicMaterial({color:0x8b8478,transparent:true,opacity:.13,
+        new THREE.MeshBasicMaterial({color:0x9944ff,transparent:true,opacity:.13,
           side:THREE.DoubleSide,depthWrite:false}));
       m.position.set((q0[0]+q1[0])/2,H/2,(q0[1]+q1[1])/2);
       m.rotation.y=-Math.atan2(q1[1]-q0[1],q1[0]-q0[0]);
@@ -1318,7 +1317,7 @@ function v3Build(){ // 房间/风口重建
         new THREE.Vector3(q1[0],H,q1[1]),new THREE.Vector3(q1[0],0,q1[1]),
         new THREE.Vector3(q0[0],0,q0[1])]);
       V3.group.add(new THREE.Line(lg,
-        new THREE.LineBasicMaterial({color:0x8b8478,transparent:true,opacity:.55})));};
+        new THREE.LineBasicMaterial({color:0x9944ff,transparent:true,opacity:.55})));};
     S.rooms.forEach(r=>{
       const wpts=(r.pts||[]).map(pt=>m2w(px2m(pt)));
       if(wpts.length<3)return;
@@ -1332,7 +1331,7 @@ function v3Build(){ // 房间/风口重建
       cx2.font="600 44px 'Noto Serif SC','Microsoft YaHei'";
       cx2.fillStyle="rgba(251,249,244,.85)";cx2.beginPath();cx2.roundRect(0,0,tw,76,16);cx2.fill();
       cx2.strokeStyle="rgba(74,123,166,.4)";cx2.lineWidth=2;cx2.stroke();
-      cx2.fillStyle=ROOM_COLORS[S.rooms.indexOf(r)%ROOM_COLORS.length]?ROOM_COLORS[S.rooms.indexOf(r)%ROOM_COLORS.length].label:"#4a7ba6";cx2.textBaseline="middle";cx2.fillText(r.name,22,40);
+      cx2.fillStyle=ROOM_COLORS[S.rooms.indexOf(r)%ROOM_COLORS.length]?ROOM_COLORS[S.rooms.indexOf(r)%ROOM_COLORS.length].label:"#00d4aa";cx2.textBaseline="middle";cx2.fillText(r.name,22,40);
       const sp=new THREE.Sprite(new THREE.SpriteMaterial({
         map:new THREE.CanvasTexture(cnv),transparent:true,depthWrite:false}));
       sp.scale.set(tw/240,76/240,1);sp.position.set(roomC[0],H-.3,roomC[1]);
@@ -1354,7 +1353,7 @@ function v3Build(){ // 房间/风口重建
   for(let i=0;i<rel.length;i++){const a=rel[i],b=rel[(i+1)%rel.length];
     V3.walls.push({a:{x:a[0],y:a[1]},b:{x:b[0],y:b[1]},holes:[]});}
   // 地面网格
-  const g=new THREE.GridHelper(8,16,0xd8d2c6,0xe7e2d7);
+  const g=new THREE.GridHelper(8,16,0x2a1a4c,0x130a2e);
   g.position.y=-0.002;V3.group.add(g);
   // 风口/箱/主机
   const disc=(m,r,c,z)=>{const d=new THREE.Mesh(new THREE.CircleGeometry(r,24),
@@ -1376,14 +1375,14 @@ function v3Build(){ // 房间/风口重建
       new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.6}));
     b.position.set(m[0],cy,m[1]);V3.group.add(b);
     const e=new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry),
-      new THREE.LineBasicMaterial({color:0x5c564c,transparent:true,opacity:.8}));
+      new THREE.LineBasicMaterial({color:0x3a2a5c,transparent:true,opacity:.8}));
     e.position.copy(b.position);V3.group.add(e);
     // 吊杆(细线连到天花板)
     const rod=new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(m[0]-s*.3,H,m[1]),new THREE.Vector3(m[0]-s*.3,cy+s*.4,m[1]),
       new THREE.Vector3(m[0]+s*.3,H,m[1]),new THREE.Vector3(m[0]+s*.3,cy+s*.4,m[1])]);
     V3.group.add(new THREE.Line(rod,
-      new THREE.LineBasicMaterial({color:0x8b8478,transparent:true,opacity:.4})));
+      new THREE.LineBasicMaterial({color:0x9944ff,transparent:true,opacity:.4})));
     // 标签
     if(label){
       const cnv=document.createElement("canvas"),cx2=cnv.getContext("2d");
@@ -1393,12 +1392,12 @@ function v3Build(){ // 房间/风口重建
       cx2.font="600 36px 'Microsoft YaHei'";
       cx2.fillStyle="rgba(251,249,244,.85)";cx2.beginPath();cx2.roundRect(0,0,tw,52,12);cx2.fill();
       cx2.strokeStyle="rgba(33,31,27,.2)";cx2.lineWidth=1.5;cx2.stroke();
-      cx2.fillStyle="#5c564c";cx2.textBaseline="middle";cx2.fillText(label,14,27);
+      cx2.fillStyle="#a89ec4";cx2.textBaseline="middle";cx2.fillText(label,14,27);
       const sp=new THREE.Sprite(new THREE.SpriteMaterial({
         map:new THREE.CanvasTexture(cnv),transparent:true,depthWrite:false}));
       sp.scale.set(tw/200,52/200,1);sp.position.set(m[0],cy-s*.7,m[1]);
       V3.group.add(sp);}};
-  S.box.forEach(b=>cube(b,b.kind==="return"?0xe4d3c6:0xd8d2c6,.3,b.name));
+  S.box.forEach(b=>cube(b,b.kind==="return"?0xe4d3c6:0x2a1a4c,.3,b.name));
   if(S.mach)cube(S.mach,0xdfe8ef,.35,"主机");
   // 世界边界(墙回流用)
   const xs=rel.map(p=>p[0]),ys=rel.map(p=>p[1]);
@@ -1692,7 +1691,7 @@ function drawResid(h){
   const c=document.getElementById("resid"),x=c.getContext("2d");
   x.clearRect(0,0,c.width,c.height);
   x.fillStyle="#0a0f1a";x.fillRect(0,0,c.width,c.height);
-  const cols={U:"#4a7ba6",p:"#4d8dff",k:"#4e7d52",om:"#ffab4d"};
+  const cols={U:"#00d4aa",p:"#4d8dff",k:"#4e7d52",om:"#ffab4d"};
   for(let d=0;d<=5;d++){const y=8+d*(c.height-24)/5;
     x.strokeStyle="#1c2740";x.beginPath();x.moveTo(24,y);x.lineTo(c.width-6,y);x.stroke();
     x.fillStyle="#5f6a80";x.font="8.5px Consolas";x.fillText("1e-"+(d),2,y+3);}
