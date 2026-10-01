@@ -9,8 +9,32 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/glass.css">
   <link rel="stylesheet" href="css/wow.css">
+  <style>
+    /* ===== 定制案例 · 冬泉谷实景做背景 ===== */
+    body.furniture-page {
+      background: #0d0903 url('img/wow/furniture-bg.jpg') center top / cover no-repeat fixed;
+    }
+    body.furniture-page .page-hero {
+      background: linear-gradient(180deg, rgba(10, 7, 3, .12), rgba(10, 7, 3, .58) 78%, rgba(10, 7, 3, .74)) !important;
+      border-bottom: 1px solid rgba(201, 162, 77, .28);
+    }
+    body.furniture-page .page-hero::after { opacity: .35; }
+    body.furniture-page .section-tight { background: transparent !important; }
+    body.furniture-page .site-footer { background: rgba(10, 7, 3, .84) !important; }
+    /* 背景图上的小节标题/说明改成浅色，保证可读 */
+    body.furniture-page .section-tight .sec-head .sec-label { color: rgba(201, 162, 77, .95); }
+    body.furniture-page .section-tight .sec-head .sec-title {
+      color: var(--wow-gold-lt);
+      text-shadow: 0 2px 0 rgba(0, 0, 0, .75), 0 0 22px rgba(0, 0, 0, .55);
+    }
+    body.furniture-page .section-tight .sec-head .sec-sub {
+      color: rgba(238, 228, 205, .92);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+    }
+    body.furniture-page .section-tight .sec-head .sec-sub em { color: #e8d9ad; border-bottom-color: rgba(232, 217, 173, .45); }
+  </style>
 </head>
-<body class="page">
+<body class="page furniture-page">
 
   <header class="site-header on-page" id="siteHeader">
     <nav class="nav container">
