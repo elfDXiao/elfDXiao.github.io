@@ -23,7 +23,7 @@ body{font:13px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",
   box-shadow:0 10px 34px rgba(33,31,27,.10)}
 #left{left:14px;top:14px;bottom:14px;width:242px;padding:14px 12px;overflow-y:auto}
 #right{right:14px;top:14px;bottom:14px;width:322px;padding:14px;overflow-y:auto}
-#center{left:268px;right:348px;top:14px;bottom:14px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+#center{left:268px;right:348px;top:14px;bottom:14px;padding:0;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:none}
 #ctools{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);flex:none;min-height:44px}
 #ctools #brand{flex:1;font-size:10.5px;letter-spacing:.16em;color:#8d7a54;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ctools .grp{display:flex;gap:5px;flex:none;align-items:center}
@@ -218,7 +218,7 @@ input[type=range]{accent-color:#c9a24d}
 <body>
 
 <div class="panel" id="left">
- <div id="logo"><div class="dotlogo"></div><b>老肖油烟机排烟仿真</b><small>V1.2</small></div>
+ <div id="logo"><div class="dotlogo"></div><b>老肖油烟机排烟仿真</b><small>V1.3</small></div>
 
  <h2>烹饪类型</h2>
  <div id="cookBtns"></div>
@@ -1295,19 +1295,11 @@ recomputeHood();
 init3D();
 buildUIButtons();
 refreshHUD();
-showModal("地精科技 震撼人心",
-  `<div class="mb">
-  <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:8px">老肖油烟机排烟仿真 · 地精实验室出品</div>
-  日本厨房的常见做法：灶具一侧<b class="k">砌一堵墙</b>，油烟机挂墙，墙体+后墙+罩体围出半封闭的<b class="k">拢烟腔</b>——
-  烟气横向扩散被墙折返，只能向上走罩口，于是 <b>12m³/min 的小风量也能高捕获</b>。<br><br>
-  中国路线相反：不砌墙，靠 <b class="k">19m³/min 大风量</b>硬吸。<br><br>
-  本仿真把两条路线放进同一个厨房：随时砌墙/拆墙、换结构（平板/侧吸/侧顶双吸）、换菜，看烟往哪跑。<br>
-  默认场景已就位——<b>日式天妇罗 × 侧吸 × 拢烟墙</b>。
-  <div style="color:#e8564a;font-weight:600;margin-top:12px;line-height:1.85">
-   ⚠ 公共烟道下，邻居的高静压油烟机会降低本层的实际排风量。<br>
-   请移步<a href="老肖公共烟道仿真V1.0.html" target="_blank" style="color:#f0cf7a;text-decoration:underline">地精实验室另一仿真系统</a>模拟，获得实际排风量。
-  </div>
-  </div>`, "开 始");
+showModal("地精科技 震撼人心", `<div style="text-align:center">
+      <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖油烟机排烟仿真 · 地精实验室出品</div>
+      灶 × 罩 × 墙 · 单厨房拢烟腔捕获率仿真
+      <div style="color:#e8564a;font-size:11.5px;margin-top:12px;line-height:1.8">⚠ 公共烟道下邻居高静压机会降低本层实际排风量<br>→ <a href="老肖公共烟道仿真V1.0.html" target="_blank" style="color:#f0cf7a;text-decoration:underline">地精实验室 · 公共烟道仿真</a></div>
+      </div>`, "开 始");
 $("m_title").className = "big";   // 大号红色居中标题
 requestAnimationFrame(t => { tPrev = t; tick(t); });
 
