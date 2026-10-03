@@ -221,7 +221,7 @@ input[type=range]{accent-color:#c9a24d}
 </div>
 
 <div class="panel" id="left">
- <div id="logo"><div class="dotlogo"></div><b>老肖油烟机排烟仿真</b><small>V1.0</small></div>
+ <div id="logo"><div class="dotlogo"></div><b>老肖油烟机排烟仿真</b><small>V1.1</small></div>
 
  <h2>烹饪类型</h2>
  <div id="cookBtns"></div>
@@ -1031,19 +1031,17 @@ function bindPanelDrag() {
 }
 
 /* ---------- 相机（锁定正前方视角，不可移动/变换） ---------- */
-const CAM = { th: 0, ph: 1.42, dist: 3.3, tx: -0.435, ty: 1.35, tz: -0.85 };   // 正对灶台的固定机位
+/* 固定机位：整个取景框（相机+视线目标）同步右移 0.11m——视线方向不变、无斜视；
+   使灶具+油烟机在"左右浮动面板之间"的可视区里居中（面板不对称偏移 -40px）。 */
+const CAM = { camX: -0.325, camY: 1.912, camZ: 2.413, tx: -0.325, ty: 1.42, tz: -0.85 };
 function bindCam() {
   addEventListener("keydown", e => {          // 仅保留空格暂停
     if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); }
   });
 }
 function updateCam() {
-  const o = CAM, sp = Math.sin(o.ph), cp = Math.cos(o.ph);
-  V3.camera.position.set(
-    o.tx + o.dist * sp * Math.sin(o.th),
-    o.ty + o.dist * cp,
-    o.tz + o.dist * sp * Math.cos(o.th));
-  V3.camera.lookAt(o.tx, o.ty, o.tz);
+  V3.camera.position.set(CAM.camX, CAM.camY, CAM.camZ);
+  V3.camera.lookAt(CAM.tx, CAM.ty, CAM.tz);
 }
 /* ---------- 颠锅（顶栏红按钮启动：真实中厨"前推→上抛→后拉" + 实时抛烟） ---------- */
 const WOK = { on: false, t: 0, lastCyc: -1, clickT: 0, flushes: 0 };
