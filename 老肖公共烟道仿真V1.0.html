@@ -24,13 +24,17 @@ body{font:13px/1.6 "Microsoft YaHei","Noto Sans SC","PingFang SC",sans-serif;
   background:linear-gradient(180deg,rgba(26,20,12,.94),rgba(17,13,8,.95));
   border:1px solid var(--w-gold-d);border-radius:6px;
   box-shadow:0 0 0 1px rgba(0,0,0,.65), inset 0 0 0 1px rgba(200,165,72,.20),
-    inset 0 18px 40px rgba(0,0,0,.35), 0 16px 44px rgba(0,0,0,.50);
-  cursor:grab}
-.panel *{cursor:auto}
-.panel.dragging{cursor:grabbing;box-shadow:0 0 0 1px rgba(0,0,0,.65), inset 0 0 0 1px rgba(232,201,106,.45),
-  0 22px 60px rgba(0,0,0,.62), 0 0 30px rgba(200,165,72,.18)}
-#left{left:14px;top:14px;width:242px;max-height:calc(100vh - 28px);padding:14px 12px;overflow-y:auto;overflow-x:hidden}
-#right{right:14px;top:96px;width:322px;max-height:calc(100vh - 110px);padding:14px;overflow-y:auto;overflow-x:hidden}
+    inset 0 18px 40px rgba(0,0,0,.35), 0 16px 44px rgba(0,0,0,.50)}
+#left{left:14px;top:14px;bottom:14px;width:242px;padding:14px 12px;overflow-y:auto;overflow-x:hidden}
+#right{right:14px;top:14px;bottom:14px;width:322px;padding:14px;overflow-y:auto;overflow-x:hidden}
+#center{left:268px;right:348px;top:14px;bottom:14px;display:flex;flex-direction:column;padding:0;overflow:hidden}
+#ctools{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid rgba(110,90,38,.55);flex:none;
+  box-shadow:0 1px 0 rgba(200,165,72,.14)}
+#ctools .cbrand{font-family:var(--serif);font-size:12.5px;color:var(--w-gold);letter-spacing:.18em;white-space:nowrap}
+#ctools .csp{flex:1}
+#cview{flex:1;position:relative;overflow:hidden}
+#v3c{position:absolute;inset:0;display:block;width:100%;height:100%}
+#cview #v3hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:6}
 .panel::-webkit-scrollbar{width:9px}
 .panel::-webkit-scrollbar-track{background:rgba(0,0,0,.35);border-radius:5px}
 .panel::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8a6d2f,#5c4a1c);border-radius:5px;border:1px solid #2a2110}
@@ -132,21 +136,13 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 @keyframes blink{50%{opacity:.5}}
 
 /* ---------- 顶栏（动作条风） ---------- */
-#topbar{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:7;
-  background:linear-gradient(180deg,rgba(26,20,12,.95),rgba(17,13,8,.96));
-  border:1px solid var(--w-gold-d);border-radius:6px;
-  box-shadow:0 0 0 1px rgba(0,0,0,.65), inset 0 0 0 1px rgba(200,165,72,.20), 0 10px 30px rgba(0,0,0,.5);
-  padding:8px 11px;display:flex;gap:5px;align-items:center;max-width:96%;flex-wrap:wrap;justify-content:center}
-#topbar .sc{font-size:12px;color:var(--w-gold);padding:0 5px;white-space:nowrap;letter-spacing:.08em}
-#topbar button{width:auto;margin:0;padding:6px 14px;font-size:13px;border-radius:4px;flex:none;
+#topbar{display:none}
+
+#ctools button{width:auto;margin:0;padding:5px 13px;font-size:13px;border-radius:4px;flex:none;
   border:1px solid #4a3c1c;background:linear-gradient(180deg,#3a2f16,#261e0d);color:#d9c68e}
-#topbar button:hover{filter:brightness(1.3);border-color:var(--w-gold)}
-#topbar button.on{background:linear-gradient(180deg,#5c4a1c,#3a2f10);border-color:var(--w-gold-l);
-  color:var(--w-gold-l);font-weight:700;box-shadow:0 0 12px rgba(200,165,72,.35)}
-#topbar select{width:auto;padding:5px 8px;font-size:13px;border-radius:4px}
-#topbar .grp{display:flex;gap:4px;align-items:center;padding:0 4px;border-left:1px solid rgba(110,90,38,.5);margin-left:4px}
-#smokeT{width:92px}
-#brand{position:absolute;left:270px;top:19px;z-index:6;font-size:11px;color:var(--w-mut2);letter-spacing:.22em}
+#ctools button:hover{filter:brightness(1.3);border-color:var(--w-gold)}
+#ctools select{width:auto;padding:5px 8px;font-size:13px;border-radius:4px}
+
 
 /* ---------- 3D DOM 标签（保留结构；当前未启用） ---------- */
 #lbls{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
@@ -155,7 +151,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
   padding:2px 8px;color:var(--w-txt);font-variant-numeric:tabular-nums}
 
 /* ---------- 提示/模态（魔兽任务框风） ---------- */
-#v3hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:6;
+#v3hint{
   background:linear-gradient(180deg,rgba(26,20,12,.92),rgba(17,13,8,.94));
   border:1px solid var(--w-gold-d);border-radius:5px;color:var(--w-mut);padding:7px 18px;
   font-size:12.5px;box-shadow:0 0 0 1px rgba(0,0,0,.6), inset 0 0 0 1px rgba(200,165,72,.15);
@@ -190,17 +186,22 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--w-gol
 </style>
 </head>
 <body>
-<canvas id="v3c"></canvas>
-<div id="lbls"></div>
-<div id="brand">公共烟道 · 五层五户 · 任意焦点层</div>
-
-<div id="topbar">
-  <select id="riserSel">
-    <option value="std">标准烟道 320×420</option>
-    <option value="old">老旧烟道 240×240</option>
-    <option value="big">大截面 350×450</option>
-  </select>
-  <button id="b_help2">说 明</button>
+<div class="panel" id="center">
+  <div id="ctools">
+    <span class="cbrand">公共烟道 · 五层五户 · 任意焦点层</span>
+    <span class="csp"></span>
+    <select id="riserSel">
+      <option value="std">标准烟道 320×420</option>
+      <option value="old">老旧烟道 240×240</option>
+      <option value="big">大截面 350×450</option>
+    </select>
+    <button id="b_help2">说 明</button>
+  </div>
+  <div id="cview">
+    <canvas id="v3c"></canvas>
+    <div id="lbls"></div>
+    <div id="v3hint">左/右键拖动转视角 · 滚轮缩放 · W/S 前进后退 · A/D 左右平移</div>
+  </div>
 </div>
 
 <div class="panel" id="left">
@@ -417,9 +418,11 @@ function buildCards() {
 function layoutUcards() { // 左工具箱一列放不下 → 自动切两列并加宽
   const L = $("left"), U = $("ucards");
   if (!L || !U) return;
-  U.classList.remove("two"); L.style.width = "";
+  const C = $("center");
+  U.classList.remove("two"); L.style.width = ""; if (C) C.style.left = "";
   if (U.scrollHeight > Math.max(120, L.clientHeight - 120)) {
     U.classList.add("two"); L.style.width = "474px";
+    if (C) C.style.left = "500px"; // 中间栏让位，避免与两列工具箱重叠
   }
 }
 addEventListener("resize", () => setTimeout(layoutUcards, 60));
@@ -571,7 +574,7 @@ function showHelp(brief) {
    <b>② 3F 换机型：</b>3F 卡片可一键切换 <span class="k">🇨🇳中式机 / 🇯🇵日式机</span>（国旗皮肤+机身造型都会换），并可选止逆阀状态（完好/老化/失效）。<br>
    <b>③ 看什么：</b>右栏实时显示 <span class="k">3F 止逆阀前后压力、压差、阀片开度、实际排量与倒灌渗入量</span>。烟道旁的彩色压柱：红=正压(背压)，蓝=负压(抽吸)。<br>
    <b>④ 物理要点：</b>邻居开机越多，烟道内正压越大（低楼层背压最大）；日式机静压低，在公共烟道里会被压到风量骤减甚至憋停；停机+阀失效时会出现<b>倒灌串味</b>。<br><br>
-   <b>⑤ 视角：</b>正立面（正前方）锁定视图，五层楼与各户油烟机以合适大小居中呈现，不可旋转/缩放/移动；左右工具箱可拖动摆放。<br><br>
+   <b>⑤ 视角（魔兽世界式）：</b><span class="k">按住鼠标左键/右键拖动</span>=转视角，<span class="k">滚轮</span>=放大/缩小，<span class="k">W/S</span>=前进/后退，<span class="k">A/D</span>=左右平移。<br><br>
    <span style="color:#8b8478;font-size:11.5px">模型：等截面竖井网络 + 沿程/局部阻力 + 出口动压损失 + 热浮力（烟囱效应）+ 止逆阀孔口渗漏。粒子动画速度为示意缩放，压力/流量为稳态解。</span>`;
   $("modal").style.display = "flex";
 }
@@ -659,7 +662,7 @@ function init3D() {
   const dl = new THREE.DirectionalLight(0xfff4e0, 0.65); dl.position.set(10, 20, 9); V3.scene.add(dl);
   const dl2 = new THREE.DirectionalLight(0xffe0c0, 0.22); dl2.position.set(-8, 6, -10); V3.scene.add(dl2);
   V3.group = new THREE.Group(); V3.scene.add(V3.group);
-  buildGround(); buildStatic(); buildRiser(); buildGauges(); buildUnits(); initParticles(); initLabels(); bindPanelDrag();
+  buildGround(); buildStatic(); buildRiser(); buildGauges(); buildUnits(); initParticles(); initLabels();
   bindCam(); v3Resize();
 }
 
@@ -1026,48 +1029,47 @@ let lblTxtT = 0;
 function updateLabels(now) { /* DOM 标签已移除，保留空实现 */ }
 
 /* ---------- 相机交互 ---------- */
-function bindPanelDrag() { // 左右工具箱可拖动（参考油烟机仿真）
-  ["left", "right"].forEach(id => {
-    const el = $(id);
-    if (!el) return;
-    let drag = null;
-    el.addEventListener("mousedown", e => {
-      if (e.target.closest("input,button,select,textarea,a,.sw")) return;
-      const r = el.getBoundingClientRect();
-      drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };
-      el.style.left = r.left + "px"; el.style.top = r.top + "px";
-      el.style.right = "auto"; el.style.bottom = "auto";
-      el.style.height = r.height + "px";
-      el.style.cursor = "grabbing";
-      e.preventDefault();
-    });
-    addEventListener("mousemove", e => {
-      if (!drag) return;
-      const w = innerWidth, h = innerHeight;
-      const x = Math.max(4, Math.min(w - 60, e.clientX - drag.dx));
-      const y = Math.max(4, Math.min(h - 44, e.clientY - drag.dy));
-      el.style.left = x + "px"; el.style.top = y + "px";
-    });
-    addEventListener("mouseup", () => { if (drag) { drag = null; el.style.cursor = "grab"; } });
+function bindCam() { // 魔兽世界式操作
+  v3c.addEventListener("mousedown", e => {
+    V3.orb.auto = false;
+    v3drag = (e.button === 2 || e.button === 0) && !e.shiftKey ? { t: "rot" } : { t: "pan" };
+    v3drag.x = e.clientX; v3drag.y = e.clientY;
+    e.preventDefault();
   });
-}
-function bindCam() {
-  // 视角锁定：正立面（正前方）视图，不可旋转/缩放/平移/WASD
+  addEventListener("mousemove", e => {
+    if (!v3drag || !V3) return;
+    const dx = e.clientX - v3drag.x, dy = e.clientY - v3drag.y;
+    v3drag.x = e.clientX; v3drag.y = e.clientY;
+    const o = V3.orb;
+    if (v3drag.t === "rot") { o.th += dx * 0.006; o.ph = Math.min(1.52, Math.max(0.06, o.ph - dy * 0.005)); }
+    else {
+      const s = o.dist * 0.0016;
+      o.tx += -dx * s * Math.cos(o.th) + dy * s * Math.cos(o.ph) * Math.sin(o.th) * 0.8;
+      o.tz += -dx * s * Math.sin(o.th) - dy * s * Math.cos(o.ph) * Math.cos(o.th) * 0.8;
+      o.ty += dy * s * Math.sin(o.ph) * 0.8;
+    }
+  });
+  addEventListener("mouseup", () => v3drag = null);
   v3c.addEventListener("contextmenu", e => e.preventDefault());
-  v3c.addEventListener("wheel", e => e.preventDefault(), { passive: false });
-}
-function fitLockView() { // 按视口宽高比自适应距离，保证全楼入画
-  if (!V3) return;
-  const asp = innerWidth / Math.max(1, innerHeight);
-  const t26 = Math.tan(0.4538); // fov52 半角
-  const need = Math.max(17.95, 4.4 / (t26 * asp)); // 垂直需 17.5m 视高(全楼含帽) / 水平需 ±4.4(厨房列)
-  V3.orb.dist = need + 0.45;
+  v3c.addEventListener("wheel", e => { // 滚轮=放大/缩小
+    e.preventDefault();
+    V3.orb.auto = false;
+    V3.orb.dist = Math.min(46, Math.max(3.5, V3.orb.dist * (e.deltaY > 0 ? 1.09 : 0.92)));
+  }, { passive: false });
+  addEventListener("keydown", e => { // W/S 前进后退 · A/D 左右平移
+    const el = document.activeElement;
+    if (el && /INPUT|SELECT|TEXTAREA/.test(el.tagName)) return;
+    const k = { w: "w", a: "a", s: "s", d: "d", arrowup: "w", arrowleft: "a", arrowdown: "s", arrowright: "d" }[e.key.toLowerCase()];
+    if (k) { V3KEYS[k] = true; e.preventDefault(); }
+  });
+  addEventListener("keyup", e => { const k = e.key.toLowerCase(); if ("wasd".includes(k)) V3KEYS[k] = false; });
+  addEventListener("blur", () => V3KEYS = {});
 }
 function v3Resize() {
-  const w = innerWidth, h = innerHeight;
+  const cv = $("cview");
+  const w = Math.max(2, cv.clientWidth), h = Math.max(2, cv.clientHeight);
   V3.renderer.setSize(w, h, false);
   V3.camera.aspect = w / h; V3.camera.updateProjectionMatrix();
-  fitLockView();
 }
 addEventListener("resize", () => { if (V3) v3Resize(); });
 
@@ -1117,6 +1119,10 @@ function loop(now) {
     o.ty + o.dist * Math.cos(o.ph),
     o.tz + o.dist * Math.sin(o.ph) * Math.sin(o.th));
   V3.camera.lookAt(o.tx, o.ty, o.tz);
+  const mv = o.dist * 0.9 * dt;
+  // 魔兽世界式移动：W/S 沿视线水平前/后，A/D 左右平移
+  if (V3KEYS.w || V3KEYS.s) { const f = V3KEYS.w ? 1 : -1; o.tx += f * -Math.cos(o.th) * mv; o.tz += f * -Math.sin(o.th) * mv; }
+  if (V3KEYS.a || V3KEYS.d) { const g = V3KEYS.d ? 1 : -1; o.tx += g * Math.sin(o.th) * mv; o.tz += g * -Math.cos(o.th) * mv; }
   // 数值平滑（粒子/显示用）
   ST.units.forEach(u => u.Qdisp += (u.Q - u.Qdisp) * Math.min(1, dt * 3.5));
   updateParticles(dt);
