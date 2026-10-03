@@ -383,9 +383,9 @@ function buildCards() {
         <button class="kbtn ${u.kind === "CN" ? "on" : ""}" data-k="CN" id="kcn${i}">🇨🇳 中式机</button>
         <button class="kbtn ${u.kind === "JP" ? "on" : ""}" data-k="JP" id="kjp${i}">🇯🇵 日式机</button>
       </div>` : ""}
-      <label>额定风量 <span id="qtv${i}" style="color:#211f1b"></span> m³/min</label>
+      <label>额定风量 <span id="qtv${i}" style="color:#f0d68a;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums"></span> m³/min</label>
       <input type="range" min="2" max="27" step="0.5" value="${(u.qMax / 60).toFixed(1)}" id="qi${i}">
-      <label>最大静压 <span id="ptv${i}" style="color:#211f1b"></span> Pa</label>
+      <label>最大静压 <span id="ptv${i}" style="color:#f0d68a;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums"></span> Pa</label>
       <input type="range" min="200" max="2000" step="10" value="${u.pMax}" id="pi${i}">
       <div class="qbar" id="qb${i}"><i></i></div>
       <div class="qread"><span>实际 <b id="qv${i}">0</b> m³/min</span><span id="qr${i}"></span></div>
