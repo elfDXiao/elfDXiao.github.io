@@ -134,17 +134,28 @@ input[type=range], input[type=checkbox] { accent-color: #9d7430; }
 #wfbar button.pri2 { background: linear-gradient(180deg, #4a3519, #2a1c0b); border-color: #c9a24d; color: #f7e7b4; }
 #brand { color: #8a6520; font-family: var(--serif); text-shadow: 0 1px 0 rgba(255, 250, 235, .6); }
 
-/* ---------- 模态 ---------- */
-#modal { background: rgba(12, 8, 3, .72); }
+/* ---------- 模态（地精实验室统一规范：深金框 · 见 lab-modal-spec） ---------- */
+#modal { background: rgba(0, 0, 0, .55); }
 #modal .box {
-  background: linear-gradient(180deg, rgba(255, 250, 236, .96), rgba(238, 226, 198, .98)), url('../img/wow/parchment.jpg');
-  background-size: cover, 520px 520px;
-  border: 1px solid rgba(201, 162, 77, .8);
-  border-radius: 3px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 0 30px rgba(160, 128, 72, .14);
+  width: 460px; max-height: 82vh; overflow-y: auto; padding: 22px 24px;
+  background: linear-gradient(180deg, rgba(30, 23, 14, .97), rgba(18, 14, 9, .98));
+  border: 1px solid #c8a548;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), inset 0 0 0 1px rgba(200, 165, 72, .25),
+    0 30px 80px rgba(0, 0, 0, .7), 0 0 60px rgba(200, 165, 72, .12);
 }
-#modal h3 { font-family: var(--serif); color: #3a2a12; }
-.mbtns .sec { border: 1px solid rgba(138, 101, 32, .5) !important; background: rgba(255, 252, 242, .7); color: #57432a; }
+#modal h3 { font-family: var(--serif); font-size: 15px; color: #e8c96a; letter-spacing: .12em;
+  text-align: center; text-shadow: 0 2px 6px rgba(0, 0, 0, .7), 0 0 20px rgba(200, 165, 72, .35); }
+#modal #m_body, #modal .mb { font-size: 12.5px; color: #f2e6c8; line-height: 1.95; }
+#modal .mb b { color: #e8c96a; }
+#modal .mb .k { color: #c8a548; font-weight: 600; }
+#modal label { color: #b5a886; font-size: 12.5px; }
+#modal input, #modal select { background: rgba(0, 0, 0, .35); border: 1px solid #4a3c1c; color: #f2e6c8; border-radius: 5px; padding: 6px 9px; }
+#modal .mbtns .pri { background: linear-gradient(180deg, #8a6d2f, #5c4a1c) !important; border: 1px solid #e8c96a !important;
+  color: #ffe9a8 !important; font-weight: 700 !important; font-family: var(--serif) !important;
+  letter-spacing: .2em; box-shadow: 0 0 16px rgba(200, 165, 72, .4); }
+#modal .mbtns .pri:hover { background: linear-gradient(180deg, #c8a548, #8a6d2f) !important; color: #fff8e0 !important; }
+.mbtns .sec { border: 1px solid #4a3c1c !important; background: linear-gradient(180deg, #3a2f16, #261e0d) !important; color: #d9c68e !important; }
 
 /* 3D 视图保持深色不动 */
 #v3d { background: #0b1220; }

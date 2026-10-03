@@ -127,6 +127,17 @@ input[type=checkbox]{width:auto;accent-color:var(--acc)}
 #v3u{cursor:pointer;color:#8b94a7;font-size:10px;margin-top:3px;user-select:none}
 #v3u:hover{color:#bcd6ff}
 #v3ticks{font:9.5px Consolas,monospace;color:#8b94a7;text-align:right;margin-top:2px}
+
+/* ===== 地精实验室弹框规范（深金框·统一） ===== */
+#modal{background:rgba(0,0,0,.55)}
+#modal .box{width:460px;max-height:82vh;overflow-y:auto;background:linear-gradient(180deg,rgba(30,23,14,.97),rgba(18,14,9,.98));border:1px solid #c8a548;border-radius:6px;padding:22px 24px;box-shadow:0 0 0 1px rgba(0,0,0,.7),inset 0 0 0 1px rgba(200,165,72,.25),0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(200,165,72,.12)}
+#modal h3{font-family:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;font-size:15px;margin-bottom:12px;color:#e8c96a;letter-spacing:.12em;text-align:center;text-shadow:0 2px 6px rgba(0,0,0,.7),0 0 20px rgba(200,165,72,.35)}
+#modal #m_body{font-size:12.5px;color:#f2e6c8;line-height:1.95}
+#modal label{color:#b5a886;font-size:12.5px}
+#modal input,#modal select{background:rgba(0,0,0,.35);border:1px solid #4a3c1c;color:#f2e6c8;border-radius:5px;padding:6px 9px}
+#modal .mbtns .pri{background:linear-gradient(180deg,#8a6d2f,#5c4a1c);border:1px solid #e8c96a;color:#ffe9a8;font-weight:700;font-family:serif;letter-spacing:.2em;box-shadow:0 0 16px rgba(200,165,72,.4)}
+#modal .mbtns .pri:hover{background:linear-gradient(180deg,#c8a548,#8a6d2f);color:#fff8e0}
+#modal .mbtns .sec{border:1px solid #4a3c1c;background:linear-gradient(180deg,#3a2f16,#261e0d);color:#d9c68e}
 </style>
 <link rel="stylesheet" href="css/wow-lab.css">
 </head>
@@ -1852,6 +1863,19 @@ v3c.addEventListener("mouseup",e=>{
     tick.textContent="空气龄 "+bestAge.toFixed(1)+"s";
   }else tick.textContent="v = "+sp.toFixed(3)+" m/s";
   clearTimeout(tick._t);tick._t=setTimeout(()=>tick.style.display="none",2600);});
+
+/* ===== 地精实验室启动弹框（统一规范） ===== */
+(function(){
+  const m = $("modal");
+  $("m_title").textContent = "地精科技 震撼人心";
+  $("m_body").innerHTML = `<div style="text-align:center">
+      <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖新风仿真 · 地精实验室出品</div>
+      画户型 · 布风口 · 3D 粒子流演示</div>`;
+  const ok = $("m_ok"), no = $("m_no");
+  ok.textContent = "开 始"; ok.onclick = () => { m.style.display = "none"; no.style.display = ""; }; // 关闭时恢复取消按钮（输入对话框用）
+  no.style.display = "none";
+  m.style.display = "flex";
+})();
 window.APPSIM={simStart,simCancel,drawResid};
 </script>
 </body>
