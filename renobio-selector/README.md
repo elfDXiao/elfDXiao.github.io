@@ -15,10 +15,10 @@ lidea-renobio/
 └── web/
     ├── index.html             页面结构（15 步向导 + 报价单 tab；命名空间 window.RENOBIO）
     ├── css/style.css          设计系统（沿用规范配色/组件 + dim-group-title/size-alt/opt-card.small）
-    ├── js/price.js            价格解析（priceDiff / price / priceByType / pricesBySize / photoSet 套装价）
-    ├── js/quote.js            维度配置 DIMS(38) + 计价引擎 + 壁パネル两段式 + 约束 + 品番 BKS/BLKS + 漢数字 + CSV
+    ├── js/price.js            价格解析（priceDiff / price / priceByType / pricesBySize）
+    ├── js/quote.js            维度配置 DIMS(37) + 计价引擎 + 壁パネル两段式 + 约束 + 品番 BKS/BLKS + 漢数字 + CSV
     ├── js/wizard.js           UI：radio/multi 渲染 + 壁柄分组 + 合计 + 报价单 + 双语 + 事件委托
-    ├── data/products.js       主数据 window.RENOBIO_DATA（由 test/gen-products.js 生成，92KB）
+    ├── data/products.js       主数据 window.RENOBIO_DATA（由 test/gen-products.js 生成，39 分类 281 选项；photo_set 写真セット模块已删除）
     └── test/
         ├── gen-products.js    数据转换脚本（renobio-data.json → products.js）
         ├── smoke-test.js      核心逻辑自测（Node vm）—— 全部通过
@@ -29,7 +29,7 @@ lidea-renobio/
 
 | # | ID | 日文标题 | 中文标题 | DIMS 维度 |
 | :--- | :--- | :--- | :--- | :--- |
-| 0 | SIZE·TYPE | サイズ・タイプ・地域 | 尺寸·型号·地域 | size（卡片 4：1216/1116/1115/1014）、type（N/T/C/B）、region（一般 H/寒冷地 C＋¥5,000）、photo_set（6 プラン） |
+| 0 | SIZE·TYPE | サイズ・タイプ・地域 | 尺寸·型号·地域 | size（卡片 4：1216/1116/1115/1014）、type（N/T/C/B）、region（一般 H/寒冷地 C＋¥5,000） |
 | 1 | DOORPOS | ドア位置 | 门位置 | door_position（8：RL/LR/RC/LC＋100mm移動） |
 | 2 | FLOOR | 床 | 地板 | floor（3：4E 標準/4C/4A 岩肌調単色） |
 | 3 | WALL | 壁パネル | 壁面 | wall（0 全面/1 ACC B面/2 ACC C面）＋ wall_pattern（13 柄，ハイ/ベーシック分组）＋ wall_base（LE301/HN301/HN986） |
@@ -53,11 +53,9 @@ lidea-renobio/
    - 全面張り：LE301（マットホワイト）= 標準（0）、其他可全面張り柄 = ＋¥70,000；fullWallCode=null 的柄不可（HN662/HN985/HT614/HT615/HT611/HT612）。
    - アクセント：ベース LE301（ベーシック）= ＋¥10,000／HN301・HN986（ハイクラス）= ＋¥70,000；花纹×ベース组合由 accentCodeByBase 校验（fullwall = 全面張り扱い不可）。
    - 花纹注文コード：全面張り = fullWallCode（如 H2/H1/81）；アクセント = accentCodeByBase[ベース]（如 NJ/L2/K6）。
-4. **写真セット**（photo_set，6 プラン）：BK93A〜BK98A，photoSetPriceBySize[尺寸]（= 標準仕様 + オプション合計，BK93A N1216=¥1,071,040 实证 ✓）。
-5. **税込** = 本体 × 1.10；**人民币含安装价** = 税込 × 汇率 × rmbRate（**0.8**，系数仅存在于 quote.js 计算内部，页面任何位置不显示算式）。
-6. **本体品番**：`BKS-{サイズ}LB{タイプ}-B+H(C){ドア位置}`（B タイプ=BLKS 洗面器付き），例 BKS-1216LBN-B+H(C)RL / BLKS-1116LBB-B+H(C)RL。
-
-7. **寒冷地オプション差額**：手册青字寒冷地品番有单独价格的项（现：浴槽侧水栓 BS ＋¥67,200／BU ＋¥114,100，较一般地 ＋3,300）以 `coldPriceByType` 建模，region=C 时引擎直接计寒冷地价；选项 `partNumber` 的「（寒冷地: …）」注记在报价单/CSV 中按地域解析（一般地去括注、寒冷地取括内）。
+4. **税込** = 本体 × 1.10；**人民币含安装价** = 税込 × 汇率 × rmbRate（**0.8**，系数仅存在于 quote.js 计算内部，页面任何位置不显示算式）。
+5. **本体品番**：`BKS-{サイズ}LB{タイプ}-B+H(C){ドア位置}`（B タイプ=BLKS 洗面器付き），例 BKS-1216LBN-B+H(C)RL / BLKS-1116LBB-B+H(C)RL。
+6. **寒冷地オプション差額**：手册青字寒冷地品番有单独价格的项（现：浴槽侧水栓 BS ＋¥67,200／BU ＋¥114,100，较一般地 ＋3,300）以 `coldPriceByType` 建模，region=C 时引擎直接计寒冷地价；选项 `partNumber` 的「（寒冷地: …）」注记在报价单/CSV 中按地域解析（一般地去括注、寒冷地取括内）。
 
 ## 四、组合约束（§5 关键互斥，已全量实现）
 

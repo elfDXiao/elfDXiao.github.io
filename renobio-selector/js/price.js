@@ -156,11 +156,6 @@
     }
     if (typeof option.price === 'number') return { text: '￥' + option.price.toLocaleString('ja-JP'), type: 'num' };
     if (option.isBasic === true) return { text: '基本仕様', type: 'basic' };
-    // 写真セット：套装价（photoSetPriceBySize[尺寸]）
-    if (option.photoSetPriceBySize && size) {
-      var psv = option.photoSetPriceBySize[size];
-      if (typeof psv === 'number') return { text: '￥' + psv.toLocaleString('ja-JP'), type: 'num' };
-    }
     return { text: '—', type: 'empty' };
   }
 

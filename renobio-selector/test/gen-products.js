@@ -2,7 +2,7 @@
 // 用法：node test/gen-products.js
 // 转换：meta.basePriceTable → size 分类 options 的 pricesByType；priceBySize → pricesBySize（引擎键名）；
 //       availability/availabilityBySize → sizes 数组；availabilityByType → types 数组；
-//       wallPanel priceByClass/priceByCombo、wallPattern class/fullWallCode/accentCodeByBase、photoSet 套装价 原样保留；
+//       wallPanel priceByClass/priceByCombo、wallPattern class/fullWallCode/accentCodeByBase 原样保留；
 //       无价格字段补 priceDiff:0（type/size 除外）；oidaki 2C/3C 补 price 15000（与 1C 同额，手册未明记→推定）。
 'use strict';
 const fs = require('fs');
@@ -19,6 +19,7 @@ function convertOption(o, catId) {
   if (o.priceDiff != null) out.priceDiff = o.priceDiff;
   if (o.price != null) out.price = o.price;
   if (o.priceByType) out.priceByType = o.priceByType;
+  if (o.coldPriceByType) out.coldPriceByType = o.coldPriceByType;   // 寒冷地差額（现：浴槽側水栓 BS/BU）
   if (o.priceBySize) out.pricesBySize = o.priceBySize;       // 引擎键名
   if (o.priceByClass) out.priceByClass = o.priceByClass;     // wall 全面張り ハイ/ベーシック
   if (o.priceByCombo) out.priceByCombo = o.priceByCombo;     // wall アクセント baseHigh/baseBasic
@@ -42,13 +43,6 @@ function convertOption(o, catId) {
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
   if (o.default) out.default = true;
-  // photoSet 专用
-  if (o.photoSetPriceBySize) out.photoSetPriceBySize = o.photoSetPriceBySize;
-  if (o.optionTotalBySize) out.optionTotalBySize = o.optionTotalBySize;
-  if (o.doorPosition) out.doorPosition = o.doorPosition;
-  if (o.baseType) out.baseType = o.baseType;
-  if (o.baseSize) out.baseSize = o.baseSize;
-  if (o.items) out.items = o.items;
   // 窗框加固件（reinforcePrice/reinforcePart 原样保留）
   if (o.reinforcePrice != null) out.reinforcePrice = o.reinforcePrice;
   if (o.reinforcePart) out.reinforcePart = o.reinforcePart;
@@ -60,7 +54,7 @@ function convertOption(o, catId) {
   }
 
   const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize ||
-    out.priceByClass || out.priceByCombo || out.photoSetPriceBySize;
+    out.priceByClass || out.priceByCombo;
   if (!hasPrice && catId !== 'type' && catId !== 'size' && catId !== 'wallPattern' && catId !== 'washbasin') {
     out.priceDiff = 0;
   }
@@ -91,7 +85,8 @@ categories.push({
 });
 
 d.categories.forEach(c => {
-  if (c.id === 'size') return;   // size 重建
+  if (c.id === 'size') return;          // size 重建
+  if (c.id === 'photo_set') return;     // 写真セット（基准套装）模块已删除，不再输出到选型系统
   categories.push({
     id: c.id, name_ja: c.name_ja || c.id, name_zh: c.name_zh || c.id,
     step: 0, pages: c.pages || [],
@@ -129,10 +124,10 @@ const meta = {
     { code: 'HN986', name_ja: 'クルムホワイト', name_zh: '云纹白', cls: 'high', priceDiff: 70000 },
     { code: 'LE301', name_ja: 'マットホワイト', name_zh: '哑光白', cls: 'basic', priceDiff: 10000, default: true }
   ],
-  photoSetFormula: d.meta.photoSetFormula || '写真セット価格 = 標準仕様価格 + オプション合計価格（税別・取付費別途）',
   generatedBy: 'gen-products.js (engineer, AgentTeams 浴室选型系统专家团) — t23 数据接入',
   method: '从 data/renobio-data.json（data-analyst 提取）转换；不确定项见 数据提取说明.md',
-  quoteNote: d.meta.quoteNote || '標準仕様価格（4 タイプ×4 サイズ）基準のセレクト差額方式。寒冷地 +¥5,000。',
+  // quoteNote 原文含「写真セットに写っていない…」注记 —— 模块已删除，过滤掉含写真セット的句子
+  quoteNote: String(d.meta.quoteNote || '標準仕様価格（4 タイプ×4 サイズ）基準のセレクト差額方式。寒冷地 +¥5,000。').replace(/写真セット[^。]*。/g, '').trim(),
   coldRegionPatterns: d.meta.coldRegionPatterns || {},
   _stats: d.meta._stats || {}
 };
@@ -140,7 +135,7 @@ const meta = {
 const out = { meta, categories };
 const header = '/* LIXIL Renobio Fit（リノビオフィット）选型报价系统数据（由 gen-products.js 从 renobio-data.json 生成，请勿手改）\n' +
   ' * 命名空间：window.RENOBIO_DATA\n' +
-  ' * 价格字段：priceDiff / price / priceByType（タイプ键 N|T|C|B）/ pricesBySize / priceByClass / priceByCombo / photoSetPriceBySize\n' +
+  ' * 价格字段：priceDiff / price / priceByType（タイプ键 N|T|C|B）/ pricesBySize / priceByClass / priceByCombo\n' +
   ' * 壁パネル两段：wall（0 全面張り/1 アクセントB面/2 アクセントC面，priceByClass/priceByCombo）+ wallPattern（class/fullWallCode/accentCodeByBase）\n' +
   ' * 人民币系数 rmbRate=0.8 仅存在于 meta（页面不显示算式）\n' +
   ' */\n';

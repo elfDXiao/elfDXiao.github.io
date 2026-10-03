@@ -43,7 +43,6 @@ function waitFor(win, check, ms) {
   assert('1216 卡片选中', (function () { var c = doc.querySelector('#wizBody .size-card.on'); return c && c.getAttribute('data-size') === '1216'; })());
   assert('タイプ 4 个', doc.querySelectorAll('#wizBody input[name="dim_type"]').length === 4);
   assert('地域 2 项（一般地基本+C 寒冷地）', doc.querySelectorAll('#wizBody input[name="dim_region"]').length === 2, doc.querySelectorAll('#wizBody input[name="dim_region"]').length);
-  assert('照片套餐 6 项', doc.querySelectorAll('#wizBody input[name="dim_photo_set"]').length === 6, doc.querySelectorAll('#wizBody input[name="dim_photo_set"]').length);
   assert('默认日元合计(税抜) = ￥841,500', doc.querySelector('#sumJPY').textContent.indexOf('841,500') >= 0, doc.querySelector('#sumJPY').textContent);
   // 无「无该型号」：所有尺寸卡片显示价格
   let noPrice = 0;

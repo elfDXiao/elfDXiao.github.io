@@ -8,7 +8,6 @@
  *   本体価格（税抜）= 標準仕様価格（meta.typeBasePrices[タイプ][サイズ]）＋Σ选项差价（寒冷地 +¥5,000）
  *   税込 = 本体 × 1.10（消費税10%，四舍五入到日元）
  *   人民币含安装价 = 税込 × 汇率 × meta.rmbRate（0.8）—— 系数仅在计算代码中，页面不显示算式
- *   写真セット価格 = 標準仕様価格 + オプション合計価格（photo_set 维度参考）
  *
  * 壁パネル两段式：wall（0 全面張り／1 アクセントB面／2 アクセントC面）→ wall_pattern（花纹 13 柄）
  *   - 全面張り：花纹 LE301（マットホワイト）= 標準（0）、其他可全面張り柄 = +¥70,000；fullWallCode=null 的柄不可
@@ -23,7 +22,7 @@
 
   /* ---------------- 步骤元数据（15 步：0-14，参考手册 Select Guide 顺序）noteZh=中文说明 / note=日文说明 ---------------- */
   var STEPS = [
-    { n: 0, title: 'サイズ・タイプ・地域', titleZh: '尺寸·型号·地域', noteZh: '选择尺寸（4 种内寸）与型号（N/T/C/B）＋地域区分（一般/寒冷地＋¥5,000），决定标准规格价（型号×尺寸矩阵）。另提供 6 种基准套装供参考。', note: 'サイズ（4種内寸）とタイプ（N/T/C/B）＋地域区分（一般/寒冷地＋¥5,000）を選択、標準仕様価格を決定（タイプ×サイズマトリクス）。写真セット（6種）参考。' },
+    { n: 0, title: 'サイズ・タイプ・地域', titleZh: '尺寸·型号·地域', noteZh: '选择尺寸（4 种内寸）与型号（N/T/C/B）＋地域区分（一般/寒冷地＋¥5,000），决定标准规格价（型号×尺寸矩阵）。', note: 'サイズ（4種内寸）とタイプ（N/T/C/B）＋地域区分（一般/寒冷地＋¥5,000）を選択、標準仕様価格を決定（タイプ×サイズマトリクス）。' },
     { n: 1, title: 'ドア位置', titleZh: '门位置', noteZh: '门位置（RL/LR/RC/LC 标准／RLS/LRS/RCS/LCS 移动100mm ＋¥9,000）。', note: 'ドア位置（RL/LR/RC/LC 標準／RLS/LRS/RCS/LCS 100mm移動 ＋¥9,000）。' },
     { n: 2, title: '床', titleZh: '地板', noteZh: '岩石肌理单色（白/N86 标准·米/Y71·灰/U61 ±¥0）。裙板与地板同色。', note: '岩肌調 単色（ホワイト/N86 標準・ベージュ/Y71・グレー/U61 ±¥0）。エプロンは床と同色。' },
     { n: 3, title: '壁パネル', titleZh: '壁面', noteZh: '四面同色全贴（哑光白标准／其他花纹 ＋¥70,000）／局部跳色 B面·C面（四面墙板 基础 ＋¥10,000·高级 ＋¥70,000）→ 花纹 13 柄。', note: '全面張り（マットホワイト標準／他柄 ＋¥70,000）／アクセント張り B面・C面（ベース ベーシック ＋¥10,000・ハイクラス ＋¥70,000）→ 壁柄 13 種。' },
@@ -40,14 +39,13 @@
     { n: 14, title: 'オプション', titleZh: '附加选项', noteZh: '追加磁吸配件（无禁忌）·扶手·自由尺寸门框·窗框套件·梁对应·顶检修口移动·工厂壁孔加工。', note: '追加マグネットアイテム（禁則なし）・握りバー・フリーサイズドア額縁・窓額縁キット・梁対応・天井点検口移動・工場壁穴加工。' }
   ];
 
-  /* ---------------- 维度配置（40 分类映射） ---------------- */
+  /* ---------------- 维度配置（39 分类映射；size 独立卡片） ---------------- */
   var DIMS = [
     // step 0
     { id: 'type', step: 0, cat: 'type', kind: 'radio', codes: ['N', 'T', 'C', 'B'], titleJa: 'タイプ', titleZh: '型号' },
     { id: 'region', step: 0, cat: 'region', kind: 'radio',
       basic: { code: 'REGION_H', nameJa: '一般地仕様（H）', nameZh: '一般地区（H）' },
       codes: ['C'], titleJa: '地域区分', titleZh: '地域' },
-    { id: 'photo_set', step: 0, cat: 'photo_set', kind: 'radio', codes: 'ALL', titleJa: '写真セット（基準セット）', titleZh: '照片组合（基准套装）' },
     // step 1
     { id: 'door_position', step: 1, cat: 'door_position', kind: 'radio', codes: 'ALL', titleJa: 'ドア位置', titleZh: '门位置' },
     // step 2
@@ -300,13 +298,6 @@
   function radioContribution(dimId, code) {
     if (isVirtualBasic(code)) return 0;
     if (dimId === 'wall') return wallContribution();
-    if (dimId === 'photo_set') {
-      var o = opt(dimId, code);
-      if (!o || !o.photoSetPriceBySize) return null;
-      var ps = o.photoSetPriceBySize[sizeCode()];
-      if (typeof ps !== 'number') return null;
-      return ps - basePrice();                 // 套装价 − 标准规格价 = 基准套装差额
-    }
     if (dimId === 'door_towel_bar') {
       // 门外毛巾架：价格按当前门宽（door 选项名 800W/700W/600W）
       var o2 = opt(dimId, code);
@@ -394,11 +385,6 @@
             }
           }
         }
-        // 写真セット：显示套装价
-        if (dimId === 'photo_set' && o.photoSetPriceBySize) {
-          var ps = o.photoSetPriceBySize[sizeCode()];
-          if (typeof ps === 'number') out.extra = '写真セット価格 ' + P.yen(ps);
-        }
         out.diff = contributionFor(dimId);
         return out;
       }
@@ -440,7 +426,7 @@
       diff: 0, base: true
     });
     DIMS.forEach(function (d) {
-      if (d.step === 0 && d.id !== 'photo_set') return;
+      if (d.step === 0) return;          // step 0（サイズ・タイプ・地域）已并入首行標準仕様
       var desc = describe(d.id);
       if (!desc.nameZh && !desc.nameJa) return;
       var diff = desc.diff;
@@ -581,8 +567,6 @@
     if (dimId === 'wall' && code === '0') {
       // 全面張り：始终可选（花纹层控制）；无额外禁用
     }
-    // ---- 写真セット：所有尺寸均有价，不禁 ----
-
     // ---- タイプ別 禁则（C/B カウンター不可、B のみ化粧棚/洗面器） ----
     if (dimId === 'counter' && typeIs(['C', 'B'])) return 'C・Bタイプではカウンター選択不可';
     if (dimId === 'vanity_shelf' && !typeIs('B')) return 'アクリル化粧棚はBタイプのみ選択可';

@@ -274,7 +274,7 @@
     if (els.dlRow) els.dlRow.hidden = (st.n !== lastStep);
   }
 
-  /* 步骤 0：尺寸卡片 + タイプ选项 + 地域 + 写真セット（套装价 = タイプ×サイズ矩阵） */
+  /* 步骤 0：尺寸卡片 + タイプ选项 + 地域 */
   function step0Info() {
     var html = '<div class="opt-block" style="margin-bottom:0;">' +
       '<div class="dim-title">' + t('標準仕様価格（税抜・タイプ×サイズ・取付費別途）', '標準仕様価格（税抜・タイプ×サイズ・取付費別途）') + '</div>' +
@@ -318,9 +318,6 @@
     // 地域区分（step 0 的其他维度）
     var rd = Q.dim('region');
     if (rd) html += dimensionHtml(rd);
-    // 写真セット（step 0 参考基准套装）
-    var ps = Q.dim('photo_set');
-    if (ps) html += dimensionHtml(ps);
 
     return html;
   }
@@ -448,10 +445,6 @@
       var dw = currentDoorWidth();
       var v = (o && o.pricesByDoorWidth && dw) ? o.pricesByDoorWidth[dw] : null;
       return typeof v === 'number' ? v : null;
-    }
-    if (d.id === 'photo_set') {
-      var ps = o && o.photoSetPriceBySize ? o.photoSetPriceBySize[Q.sizeCode()] : null;
-      return typeof ps === 'number' ? ps - Q.basePrice() : null;
     }
     if (o.priceByType) {
       var src = (Q.isCold() && o.coldPriceByType) ? { priceByType: o.coldPriceByType } : o;

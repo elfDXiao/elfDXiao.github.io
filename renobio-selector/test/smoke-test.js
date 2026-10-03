@@ -29,13 +29,12 @@ function assert(name, cond, extra) {
 }
 
 console.log('== 数据加载 ==');
-assert('categories = 40', DATA.categories.length === 40, DATA.categories.length);
+assert('categories = 39', DATA.categories.length === 39, DATA.categories.length);
 assert('size options = 4', Q.cat('size').options.length === 4);
 assert('type options = 4（N/T/C/B）', Q.cat('type').options.length === 4);
 assert('meta.rmbRate = 0.8', DATA.meta.rmbRate === 0.8, DATA.meta.rmbRate);
 assert('壁柄 13（wall_pattern）', Q.wallPatterns().length === 13, Q.wallPatterns().length);
-assert('写真セット 6（photo_set）', Q.cat('photo_set').options.length === 6);
-assert('总选项 = 287', DATA.categories.reduce((n, c) => n + c.options.length, 0) === 287, DATA.categories.reduce((n, c) => n + c.options.length, 0));
+assert('总选项 = 281', DATA.categories.reduce((n, c) => n + c.options.length, 0) === 281, DATA.categories.reduce((n, c) => n + c.options.length, 0));
 
 console.log('== 標準仕様価格矩阵（16 组合全断言） ==');
 const PRICES = {
@@ -156,18 +155,6 @@ console.log('== multi 叠加（磁吸配件） ==');
 Q.state.multi.magnet_items = { A72: true, A96: true };
 r = Q.computeQuote();
 assert('A72(6,900)+A96(19,000) → 867,400', r.totalEx === 867400, r.totalEx);
-Q.reset();
-
-console.log('== 写真セット ==');
-Q.state.sel.photo_set = 'BK93A';
-r = Q.computeQuote();
-assert('BK93A N1216 → 1,071,040（= 841,500 + 229,540）', r.totalEx === 1071040, r.totalEx);
-Q.reset();
-Q.state.sel.photo_set = 'BK98A';
-Q.state.sel.type = 'B';
-Q.setSize('1116');
-r = Q.computeQuote();
-assert('BK98A B1116 → 955,300（= 818,500 + 136,800）', r.totalEx === 955300, r.totalEx);
 Q.reset();
 
 console.log('== 约束 ==');
