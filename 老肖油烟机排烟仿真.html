@@ -212,7 +212,6 @@ input[type=range]{accent-color:#c9a24d}
 
 <div id="topbar">
   <span class="grp" style="border-left:none;margin-left:0">
-    <button id="b_iso">复位视角</button>
     <button id="b_pt" class="on">烟流</button>
     <button id="b_help2">说明</button>
     <button id="b_wok">颠锅</button>
@@ -292,7 +291,7 @@ input[type=range]{accent-color:#c9a24d}
  <div class="card"><h3>运行状态</h3><div id="sysinfo"></div></div>
 </div>
 
-<div id="v3hint">左键旋转 · 滚轮缩放 · 右键平移 · 空格暂停烟流</div>
+<div id="v3hint">空格 暂停 / 恢复烟流 · 面板可拖动</div>
 <div id="modal"><div class="box"><h3 id="m_title"></h3><div class="mb" id="m_body"></div>
  <div class="mbtns"><button id="m_ok" class="pri">开 始</button><button id="m_more" style="display:none">看原理</button></div></div></div>
 <div id="toast"></div>
@@ -762,7 +761,6 @@ function init3D() {
   V3.scene.background = new THREE.Color(0x1a1209);
   V3.scene.fog = new THREE.Fog(0x1a1209, 10, 34);
   V3.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 90);
-  V3.orb = { th: 1.08, ph: 1.22, dist: 4.3, tx: -0.25, ty: 1.30, tz: -0.45, auto: false };
   V3.scene.add(new THREE.HemisphereLight(0xffe2ac, 0x33261a, 0.80));
   const dl = new THREE.DirectionalLight(0xffd9a0, 0.70); dl.position.set(6, 12, 6); V3.scene.add(dl);
   const dl2 = new THREE.DirectionalLight(0xffb060, 0.24); dl2.position.set(-6, 4, -6); V3.scene.add(dl2);
@@ -1032,67 +1030,22 @@ function bindPanelDrag() {
   });
 }
 
-/* ---------- 相机（魔兽式手感：目标值 + 平滑跟随） ---------- */
-const KEY = {};
-const clampT = (v, a, b) => Math.min(b, Math.max(a, v));
+/* ---------- 相机（锁定正前方视角，不可移动/变换） ---------- */
+const CAM = { th: 0, ph: 1.42, dist: 3.3, tx: -0.435, ty: 1.35, tz: -0.85 };   // 正对灶台的固定机位
 function bindCam() {
-  let drag = null;
-  v3c.addEventListener("contextmenu", e => e.preventDefault());
-  v3c.addEventListener("mousedown", e => {
-    drag = { btn: e.button, x: e.clientX, y: e.clientY, th: V3.orb.th, ph: V3.orb.ph, tx: V3.orb.tx, ty: V3.orb.ty, tz: V3.orb.tz };
+  addEventListener("keydown", e => {          // 仅保留空格暂停
+    if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); }
   });
-  addEventListener("mousemove", e => {
-    if (!drag) return;
-    if (drag.btn === 0) {                       // 左键拖拽：旋转视角
-      V3.orb.th = drag.th - (e.clientX - drag.x) * 0.0085;
-      V3.orb.ph = Math.min(3.08, Math.max(0.06, drag.ph - (e.clientY - drag.y) * 0.007));
-    } else {                                     // 右键/中键拖拽：平移观察点
-      const k = V3.orb.dist * 0.0016, st = Math.sin(drag.th), ct = Math.cos(drag.th);
-      const mx = (e.clientX - drag.x) * k, my = (e.clientY - drag.y) * k;
-      V3.orb.tx = clampT(drag.tx + mx * ct, -6, 6);
-      V3.orb.tz = clampT(drag.tz - mx * st, -6, 6);
-      V3.orb.ty = clampT(drag.ty + my, 0.25, 2.85);
-    }
-  });
-  addEventListener("mouseup", () => drag = null);
-  v3c.addEventListener("wheel", e => {
-    e.preventDefault();
-    V3.orb.dist = Math.min(12, Math.max(1.2, V3.orb.dist * (e.deltaY > 0 ? 1.12 : 0.89)));
-  }, { passive: false });
-  addEventListener("keydown", e => {
-    if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); return; }
-    KEY[e.code] = true;
-  });
-  addEventListener("keyup", e => { KEY[e.code] = false; });
-  addEventListener("blur", () => { for (const k in KEY) KEY[k] = false; });
 }
-function updateCam(dt) {
-  const o = V3.orb, c = V3.orbC || (V3.orbC = { th: o.th, ph: o.ph, dist: o.dist, tx: o.tx, ty: o.ty, tz: o.tz }), d = dt || 1 / 60;
-  if (o.auto) o.th += 0.0035;
-  // WASD/方向键平移观察点（沿视线水平投影），Q/E 升降
-  const f = (KEY.KeyW || KEY.ArrowUp ? 1 : 0) - (KEY.KeyS || KEY.ArrowDown ? 1 : 0);
-  const h = (KEY.KeyD || KEY.ArrowRight ? 1 : 0) - (KEY.KeyA || KEY.ArrowLeft ? 1 : 0);
-  const u = (KEY.KeyE ? 1 : 0) - (KEY.KeyQ ? 1 : 0);
-  if (f || h || u) {
-    const sp = 1.8 * Math.max(0.8, o.dist / 4) * d;
-    o.tx = clampT(o.tx + (-Math.sin(o.th) * f + Math.cos(o.th) * h) * sp, -6, 6);
-    o.tz = clampT(o.tz + (-Math.cos(o.th) * f - Math.sin(o.th) * h) * sp, -6, 6);
-    o.ty = clampT(o.ty + u * sp, 0.25, 2.85);
-  }
-  // 平滑跟随（帧率无关）
-  const k = 1 - Math.exp(-d * 9);
-  c.th += (o.th - c.th) * k; c.ph += (o.ph - c.ph) * k; c.dist += (o.dist - c.dist) * k;
-  c.tx += (o.tx - c.tx) * k; c.ty += (o.ty - c.ty) * k; c.tz += (o.tz - c.tz) * k;
-  const sp = Math.sin(c.ph), cp = Math.cos(c.ph);
-  let cy = c.ty + c.dist * cp;
-  if (cy < 0.14) cy = 0.14;                    // 相机不穿地
+function updateCam() {
+  const o = CAM, sp = Math.sin(o.ph), cp = Math.cos(o.ph);
   V3.camera.position.set(
-    c.tx + c.dist * sp * Math.sin(c.th),
-    cy,
-    c.tz + c.dist * sp * Math.cos(c.th));
-  V3.camera.lookAt(c.tx, c.ty, c.tz);
+    o.tx + o.dist * sp * Math.sin(o.th),
+    o.ty + o.dist * cp,
+    o.tz + o.dist * sp * Math.cos(o.th));
+  V3.camera.lookAt(o.tx, o.ty, o.tz);
 }
-/* ---------- 颠锅（点击 3D 红按钮启动：锅上下颠动 + 实时抛烟） ---------- */
+/* ---------- 颠锅（顶栏红按钮启动：真实中厨"前推→上抛→后拉" + 实时抛烟） ---------- */
 const WOK = { on: false, t: 0, lastCyc: -1, clickT: 0, flushes: 0 };
 function toggleWok() {
   WOK.on = !WOK.on; WOK.t = 0; WOK.lastCyc = -1; WOK.clickT = 0.35; WOK.flushes = 0;
@@ -1110,18 +1063,18 @@ function resetWok() {
 function updateWok(dt) {
   if (!WOK.on || CFG.paused || FAST.busy) return;
   WOK.t += dt;
-  // —— 真实中厨颠锅："前推 → 上抛 → 后拉"（锅底不离灶圈，前后推拉 + 俯仰摆动） ——
+  // —— 前推 → 上抛 → 后拉（锅底不离灶圈：前后推拉 + 俯仰摆动） ——
   const CYC = 0.60;
   const cycN = Math.floor(WOK.t / CYC), ph = (WOK.t % CYC) / CYC;
-  const dz = Math.sin(ph * Math.PI * 2) * 0.055;            // 前后推送 ±5.5cm（+z 为前）
-  const pitch = Math.sin(ph * Math.PI * 2) * 0.20;          // 俯仰 ±11.5°（前推时前压含锅壁上扬）
-  const lift = Math.max(0, Math.sin(ph * Math.PI)) * 0.012; // 锅底微离灶圈 ≤1.2cm
+  const dz = Math.sin(ph * Math.PI * 2) * 0.055;            // 前后推送 ±5.5cm
+  const pitch = Math.sin(ph * Math.PI * 2) * 0.20;          // 俯仰 ±11.5°
+  const lift = Math.max(0, Math.sin(ph * Math.PI)) * 0.012; // 锅底微离灶圈
   const b = potPos();
   V3.potG.position.set(b[0], 0.925 + lift, b[1] + dz);
   V3.potG.rotation.x = pitch;
-  V3.potG.rotation.z = Math.sin(ph * Math.PI) * 0.05;        // 手腕微微侧转
+  V3.potG.rotation.z = Math.sin(ph * Math.PI) * 0.05;
   V3.food.position.set(b[0], 0.965 + lift, b[1] + dz + 0.015 * Math.sin(ph * Math.PI * 2));
-  if (cycN !== WOK.lastCyc && ph > 0.42) {                   // 上抛相位：食材沿弧壁飞出，烟同步抛出
+  if (cycN !== WOK.lastCyc && ph > 0.42) {                   // 上抛相位：抛一波烟
     WOK.lastCyc = cycN;
     wokFlush(Math.min(70, Math.round(COOKS[CFG.cook].rate * 0.30)));
     WOK.flushes++;
@@ -1218,7 +1171,6 @@ function movePot() {
 
 /* ---------- 视角/开关 ---------- */
 $("b_wok").onclick = () => toggleWok();
-$("b_iso").onclick = () => { Object.assign(V3.orb, { th: 0, ph: 1.42, dist: 3.3, tx: -0.30, ty: 1.30, tz: -0.85 }); };   // 正面视角：正对灶台
 $("b_pt").onclick = e => { V3.pts.visible = !V3.pts.visible; e.currentTarget.classList.toggle("on", V3.pts.visible); };
 
 /* ---------- 测试中心 ---------- */
