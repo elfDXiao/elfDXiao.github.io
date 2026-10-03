@@ -760,7 +760,7 @@ function init3D() {
   V3.scene = new THREE.Scene();
   V3.scene.background = new THREE.Color(0x1a1209);
   V3.scene.fog = new THREE.Fog(0x1a1209, 10, 34);
-  V3.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 90);
+  V3.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
   V3.scene.add(new THREE.HemisphereLight(0xffe2ac, 0x33261a, 0.80));
   const dl = new THREE.DirectionalLight(0xffd9a0, 0.70); dl.position.set(6, 12, 6); V3.scene.add(dl);
   const dl2 = new THREE.DirectionalLight(0xffb060, 0.24); dl2.position.set(-6, 4, -6); V3.scene.add(dl2);
@@ -1031,17 +1031,27 @@ function bindPanelDrag() {
 }
 
 /* ---------- 相机（锁定正前方视角，不可移动/变换） ---------- */
-/* 固定机位：整个取景框（相机+视线目标）同步右移 0.11m——视线方向不变、无斜视；
-   使灶具+油烟机在"左右浮动面板之间"的可视区里居中（面板不对称偏移 -40px）。 */
-const CAM = { camX: -0.325, camY: 1.912, camZ: 2.413, tx: -0.325, ty: 1.42, tz: -0.85 };
+/* —— 正交正视图：油烟机+燃气灶死锁在画面正中 ——
+   正交投影与世界坐标线性对应，水平居中不受透视角、DPR、窗口宽高比影响。
+   CAM.hh = 垂直半高（世界米）：决定"画面大小"，灶台(0.88)+罩顶(1.80) 全部入画。 */
+const CAM = { cx: -0.435, cy: 1.31, hh: 0.72, skew: 0 };   // 正交纯正视：机灶居中充满画面（侧墙呈细边，正视图物理必然）
+function camFit() {
+  const aspect = innerWidth / innerHeight;
+  const hh = CAM.hh, hw = hh * aspect;
+  const c = V3.camera;
+  c.left = -hw; c.right = hw; c.top = hh; c.bottom = -hh;
+  c.position.set(CAM.cx - CAM.skew, CAM.cy, 5);
+  c.lookAt(CAM.cx, CAM.cy, 0);
+  c.updateProjectionMatrix();
+}
 function bindCam() {
   addEventListener("keydown", e => {          // 仅保留空格暂停
     if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); }
   });
 }
 function updateCam() {
-  V3.camera.position.set(CAM.camX, CAM.camY, CAM.camZ);
-  V3.camera.lookAt(CAM.tx, CAM.ty, CAM.tz);
+  const c = V3.camera;
+  if (Math.abs((c.right - c.left) / (c.top - c.bottom) - innerWidth / innerHeight) > 0.001) camFit();
 }
 /* ---------- 颠锅（顶栏红按钮启动：真实中厨"前推→上抛→后拉" + 实时抛烟） ---------- */
 const WOK = { on: false, t: 0, lastCyc: -1, clickT: 0, flushes: 0 };
@@ -1082,8 +1092,8 @@ function updateWok(dt) {
 function v3Resize() {
   const w = innerWidth, h = innerHeight;
   V3.renderer.setSize(w, h, false);
-  V3.camera.aspect = w / h; V3.camera.updateProjectionMatrix();
-  if (V3.pts) V3.pts.material.uniforms.uScale.value = h / (2 * Math.tan(V3.camera.fov * Math.PI / 360)) * 0.55;
+  camFit();                                    // 正交视锥随窗口重算（含水平随宽高比）
+  if (V3.pts) V3.pts.material.uniforms.uScale.value = h / (2 * CAM.hh) * 0.25;   // 像素/米（正交；0.25 系数 ≈ 原透视 3.4m 处的粒子视觉大小）
 }
 addEventListener("resize", v3Resize);
 
