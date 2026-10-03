@@ -16,13 +16,18 @@
 html,body{height:100%;overflow:hidden}
 body{font:13px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
   color:var(--txt);background:#e9e4d8}
-#v3c{position:absolute;inset:0;display:block}
+#v3c{position:absolute;inset:0;display:block;width:100%;height:100%}
 /* ---------- 浮动面板 ---------- */
 .panel{position:absolute;z-index:5;background:var(--panel);border:1px solid var(--line);
   border-radius:16px;backdrop-filter:blur(16px) saturate(150%);
   box-shadow:0 10px 34px rgba(33,31,27,.10)}
-#left{left:14px;top:14px;bottom:14px;width:242px;padding:14px 12px;overflow-y:auto;cursor:grab}
-#right{right:14px;top:96px;bottom:14px;width:322px;padding:14px;overflow-y:auto;cursor:grab}
+#left{left:14px;top:14px;bottom:14px;width:242px;padding:14px 12px;overflow-y:auto}
+#right{right:14px;top:14px;bottom:14px;width:322px;padding:14px;overflow-y:auto}
+#center{left:268px;right:348px;top:14px;bottom:14px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+#ctools{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);flex:none;min-height:44px}
+#ctools #brand{flex:1;font-size:10.5px;letter-spacing:.16em;color:#8d7a54;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ctools .grp{display:flex;gap:5px;flex:none;align-items:center}
+#cview{position:relative;flex:1;overflow:hidden;border-radius:0 0 15px 15px}
 .panel::-webkit-scrollbar{width:4px}.panel::-webkit-scrollbar-thumb{background:#d8d2c6;border-radius:2px}
 #logo{display:flex;align-items:center;gap:8px;margin:2px 4px 10px}
 #logo b{font-family:var(--serif);font-size:15px;letter-spacing:.10em;background:linear-gradient(90deg,#a65b33,#c07a4f);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
@@ -96,7 +101,7 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--acc)}
 #v3hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:6;
   background:rgba(249,247,241,.88);border:1px solid var(--line);color:var(--mut);padding:6px 16px;border-radius:20px;
   font-size:11.5px;backdrop-filter:blur(10px);box-shadow:0 4px 16px rgba(33,31,27,.10);pointer-events:none;white-space:nowrap}
-#brand{position:absolute;left:268px;top:19px;z-index:6;font-size:11px;color:#8b8478;letter-spacing:.22em}
+#brand{font-size:11px;color:#8b8478;letter-spacing:.22em}
 #modal{position:fixed;inset:0;z-index:20;background:#0007;display:none;align-items:center;justify-content:center}
 #modal .box{width:560px;max-height:84vh;overflow-y:auto;background:#f9f7f1;border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:0 24px 60px rgba(33,31,27,.22)}
 #modal h3{font-family:var(--serif);font-size:15px;margin-bottom:10px;color:#211f1b}
@@ -171,6 +176,10 @@ input[type=range]{accent-color:#c9a24d}
 #topbar button:hover{background:rgba(201,162,77,.14)}
 #topbar button.on{background:rgba(201,162,77,.2);border-color:rgba(201,162,77,.6);color:#f4e3ac}
 #topbar .grp{border-left:1px solid #5a4520}
+#ctools{background:linear-gradient(180deg,rgba(48,32,17,.85),rgba(30,20,11,.6));border-bottom:1px solid #5a4520}
+#ctools button{width:auto;margin:0;padding:4.5px 11px;font-size:11.5px;border-radius:8px;flex:none;border:1px solid #5a4520;background:rgba(201,162,77,.06);color:#cbb98c}
+#ctools button:hover{background:rgba(201,162,77,.14)}
+#ctools button.on{background:rgba(201,162,77,.2);border-color:rgba(201,162,77,.6);color:#f4e3ac}
 #v3hint{background:rgba(30,20,11,.92);border:1px solid #5a4520;color:#b8a274;box-shadow:0 4px 18px rgba(0,0,0,.5)}
 #brand{color:#a8832f}
 #modal{background:rgba(8,5,2,.72)}
@@ -207,18 +216,6 @@ input[type=range]{accent-color:#c9a24d}
 </style>
 </head>
 <body>
-<canvas id="v3c"></canvas>
-<div id="brand">日式拢烟腔 · 灶 × 罩 × 墙 · 单厨房分析</div>
-
-<div id="topbar">
-  <span class="grp" style="border-left:none;margin-left:0">
-    <button id="b_pt" class="on">烟流</button>
-    <button id="b_help2">说明</button>
-    <button id="b_wok">颠锅</button>
-  </span>
-  <span class="wokhint"><svg width="24" height="15" viewBox="0 0 24 15" aria-hidden="true"><path d="M23 7.5 H4 M10.5 1.2 L3 7.5 L10.5 13.8" stroke="#e8564a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>点击这里 颠起来
-  </span>
-</div>
 
 <div class="panel" id="left">
  <div id="logo"><div class="dotlogo"></div><b>老肖油烟机排烟仿真</b><small>V1.2</small></div>
@@ -250,6 +247,22 @@ input[type=range]{accent-color:#c9a24d}
   <div><span style="color:#3a6a94;font-weight:600">蓝标签</span>＝墙体导流 · <span style="color:#7d421f;font-weight:600">棕标签</span>＝罩口</div>
   <div>右侧/前方开敞＝无墙，烟气自由扩散</div>
  </div>
+</div>
+
+<div class="panel" id="center">
+  <div id="ctools">
+    <span id="brand">日式拢烟腔 · 灶 × 罩 × 墙 · 单厨房分析</span>
+    <span class="grp">
+      <button id="b_pt" class="on">烟流</button>
+      <button id="b_help2">说明</button>
+      <button id="b_wok">颠锅</button>
+    </span>
+    <span class="wokhint"><svg width="24" height="15" viewBox="0 0 24 15" aria-hidden="true"><path d="M23 7.5 H4 M10.5 1.2 L3 7.5 L10.5 13.8" stroke="#e8564a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>点击这里 颠起来
+    </span>
+  </div>
+  <div id="cview"><canvas id="v3c"></canvas>
+    <div id="v3hint">空格 暂停/恢复烟流 · 左键拖拽旋转 · 滚轮缩放 · WASD 移动</div>
+  </div>
 </div>
 
 <div class="panel" id="right">
@@ -291,7 +304,6 @@ input[type=range]{accent-color:#c9a24d}
  <div class="card"><h3>运行状态</h3><div id="sysinfo"></div></div>
 </div>
 
-<div id="v3hint">空格 暂停 / 恢复烟流 · 面板可拖动</div>
 <div id="modal"><div class="box"><h3 id="m_title"></h3><div class="mb" id="m_body"></div>
  <div class="mbtns"><button id="m_ok" class="pri">开 始</button><button id="m_more" style="display:none">看原理</button></div></div></div>
 <div id="toast"></div>
@@ -760,7 +772,7 @@ function init3D() {
   V3.scene = new THREE.Scene();
   V3.scene.background = new THREE.Color(0x1a1209);
   V3.scene.fog = new THREE.Fog(0x1a1209, 10, 34);
-  V3.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
+  V3.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 90);
   V3.scene.add(new THREE.HemisphereLight(0xffe2ac, 0x33261a, 0.80));
   const dl = new THREE.DirectionalLight(0xffd9a0, 0.70); dl.position.set(6, 12, 6); V3.scene.add(dl);
   const dl2 = new THREE.DirectionalLight(0xffb060, 0.24); dl2.position.set(-6, 4, -6); V3.scene.add(dl2);
@@ -1003,55 +1015,57 @@ function updateParticleBuffers() {
   PGRP.attributes.palpha.needsUpdate = true;
 }
 
-/* ---------- 左右面板可自由拖动（交互元素除外） ---------- */
-function bindPanelDrag() {
-  ["left", "right"].forEach(id => {
-    const el = $(id);
-    if (!el) return;
-    let drag = null;
-    el.addEventListener("mousedown", e => {
-      if (e.target.closest("input,button,select,textarea,a,.sw")) return;
-      const r = el.getBoundingClientRect();
-      drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };
-      el.style.left = r.left + "px"; el.style.top = r.top + "px";
-      el.style.right = "auto"; el.style.bottom = "auto";
-      el.style.height = r.height + "px";
-      el.style.cursor = "grabbing";
-      e.preventDefault();
-    });
-    addEventListener("mousemove", e => {
-      if (!drag) return;
-      const w = innerWidth, h = innerHeight;
-      const x = Math.max(4, Math.min(w - 60, e.clientX - drag.dx));
-      const y = Math.max(4, Math.min(h - 44, e.clientY - drag.dy));
-      el.style.left = x + "px"; el.style.top = y + "px";
-    });
-    addEventListener("mouseup", () => { if (drag) { drag = null; el.style.cursor = ""; } });
-  });
-}
-
-/* ---------- 相机（锁定正前方视角，不可移动/变换） ---------- */
-/* —— 正交正视图：油烟机+燃气灶死锁在画面正中 ——
-   正交投影与世界坐标线性对应，水平居中不受透视角、DPR、窗口宽高比影响。
-   CAM.hh = 垂直半高（世界米）：决定"画面大小"，灶台(0.88)+罩顶(1.80) 全部入画。 */
-const CAM = { cx: -0.435, cy: 1.31, hh: 0.72, skew: 0 };   // 正交纯正视：机灶居中充满画面（侧墙呈细边，正视图物理必然）
-function camFit() {
-  const aspect = innerWidth / innerHeight;
-  const hh = CAM.hh, hw = hh * aspect;
-  const c = V3.camera;
-  c.left = -hw; c.right = hw; c.top = hh; c.bottom = -hh;
-  c.position.set(CAM.cx - CAM.skew, CAM.cy, 5);
-  c.lookAt(CAM.cx, CAM.cy, 0);
-  c.updateProjectionMatrix();
-}
+/* ---------- 相机（魔兽世界式操作：左/右键拖拽旋转 · 滚轮缩放 · WASD 移动 · Q/E 升降 · 目标值+平滑） ---------- */
+const orb = { th: 0, ph: 1.44, dist: 4.3, tx: -0.435, ty: 1.32, tz: -0.86 };   // 初始＝正对灶台
+const orbC = { th: 0, ph: 1.44, dist: 4.3, tx: -0.435, ty: 1.32, tz: -0.86 };  // 渲染平滑值
+const KEY = {};
+const clampT = (v, a, b) => Math.min(b, Math.max(a, v));
 function bindCam() {
-  addEventListener("keydown", e => {          // 仅保留空格暂停
-    if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); }
+  let drag = null;
+  v3c.addEventListener("contextmenu", e => e.preventDefault());
+  v3c.addEventListener("mousedown", e => {
+    drag = { btn: e.button, x: e.clientX, y: e.clientY, th: orb.th, ph: orb.ph };
   });
+  addEventListener("mousemove", e => {
+    if (!drag) return;                        // 左键/右键拖拽：旋转视角（魔兽式）
+    orb.th = drag.th - (e.clientX - drag.x) * 0.0085;
+    orb.ph = Math.min(3.05, Math.max(0.08, drag.ph - (e.clientY - drag.y) * 0.007));
+  });
+  addEventListener("mouseup", () => drag = null);
+  v3c.addEventListener("wheel", e => {        // 滚轮：拉近 / 拉远
+    e.preventDefault();
+    orb.dist = Math.min(12, Math.max(1.2, orb.dist * (e.deltaY > 0 ? 1.12 : 0.89)));
+  }, { passive: false });
+  addEventListener("keydown", e => {
+    if (e.code === "Space") { e.preventDefault(); CFG.paused = !CFG.paused; toast(CFG.paused ? "烟流已暂停（空格恢复）" : "烟流恢复"); return; }
+    KEY[e.code] = true;
+  });
+  addEventListener("keyup", e => { KEY[e.code] = false; });
+  addEventListener("blur", () => { for (const k in KEY) KEY[k] = false; });
 }
-function updateCam() {
-  const c = V3.camera;
-  if (Math.abs((c.right - c.left) / (c.top - c.bottom) - innerWidth / innerHeight) > 0.001) camFit();
+function updateCam(dt) {
+  const d = dt || 1 / 60;
+  // WASD/方向键：前进/后退/左平移/右平移（沿视线水平投影）；Q/E：降/升
+  const f = (KEY.KeyW || KEY.ArrowUp ? 1 : 0) - (KEY.KeyS || KEY.ArrowDown ? 1 : 0);
+  const h = (KEY.KeyD || KEY.ArrowRight ? 1 : 0) - (KEY.KeyA || KEY.ArrowLeft ? 1 : 0);
+  const u = (KEY.KeyE ? 1 : 0) - (KEY.KeyQ ? 1 : 0);
+  if (f || h || u) {
+    const sp = 1.8 * Math.max(0.8, orb.dist / 4) * d;
+    orb.tx = clampT(orb.tx + (-Math.sin(orb.th) * f + Math.cos(orb.th) * h) * sp, -6, 6);
+    orb.tz = clampT(orb.tz + (-Math.cos(orb.th) * f - Math.sin(orb.th) * h) * sp, -6, 6);
+    orb.ty = clampT(orb.ty + u * sp, 0.25, 2.85);
+  }
+  const k = 1 - Math.exp(-d * 9);             // 帧率无关平滑（魔兽手感）
+  orbC.th += (orb.th - orbC.th) * k; orbC.ph += (orb.ph - orbC.ph) * k; orbC.dist += (orb.dist - orbC.dist) * k;
+  orbC.tx += (orb.tx - orbC.tx) * k; orbC.ty += (orb.ty - orbC.ty) * k; orbC.tz += (orb.tz - orbC.tz) * k;
+  const sp = Math.sin(orbC.ph), cp = Math.cos(orbC.ph);
+  let cy = orbC.ty + orbC.dist * cp;
+  if (cy < 0.14) cy = 0.14;
+  V3.camera.position.set(
+    orbC.tx + orbC.dist * sp * Math.sin(orbC.th),
+    cy,
+    orbC.tz + orbC.dist * sp * Math.cos(orbC.th));
+  V3.camera.lookAt(orbC.tx, orbC.ty, orbC.tz);
 }
 /* ---------- 颠锅（顶栏红按钮启动：真实中厨"前推→上抛→后拉" + 实时抛烟） ---------- */
 const WOK = { on: false, t: 0, lastCyc: -1, clickT: 0, flushes: 0 };
@@ -1090,10 +1104,11 @@ function updateWok(dt) {
 }
 
 function v3Resize() {
-  const w = innerWidth, h = innerHeight;
+  const cv = $("cview");
+  const w = cv.clientWidth, h = cv.clientHeight;
   V3.renderer.setSize(w, h, false);
-  camFit();                                    // 正交视锥随窗口重算（含水平随宽高比）
-  if (V3.pts) V3.pts.material.uniforms.uScale.value = h / (2 * CAM.hh) * 0.25;   // 像素/米（正交；0.25 系数 ≈ 原透视 3.4m 处的粒子视觉大小）
+  V3.camera.aspect = w / h; V3.camera.updateProjectionMatrix();
+  if (V3.pts) V3.pts.material.uniforms.uScale.value = h / (2 * Math.tan(V3.camera.fov * Math.PI / 360)) * 0.55;
 }
 addEventListener("resize", v3Resize);
 
@@ -1279,7 +1294,6 @@ function modalOpen() { return $("modal").style.display === "flex"; }
 recomputeHood();
 init3D();
 buildUIButtons();
-bindPanelDrag();
 refreshHUD();
 showModal("地精科技 震撼人心",
   `<div class="mb">
