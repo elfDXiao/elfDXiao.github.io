@@ -377,7 +377,7 @@ function buildCards() {
       <div class="hd">
         <b>${u.id}F</b>
         <span class="tag ${u.kind === "JP" ? "jp" : "cn"}" id="tg${i}">${u.kind === "JP" ? "日式机" : "中式机"}</span>
-        ${i === ST.focus ? '<span class="tag" style="background:rgba(166,91,51,.12);color:#a65b33;border-color:rgba(166,91,51,.4)">★焦点</span>' : `<button class="fbtn" id="fb${i}" title="设为观察焦点">设为焦点</button>`}
+        ${i === ST.focus ? '<span class="tag" style="background:rgba(232,176,106,.14);color:#e8b06a;border-color:rgba(232,176,106,.5)">★焦点</span>' : `<button class="fbtn" id="fb${i}" title="设为观察焦点">设为焦点</button>`}
         <div class="sw ${u.on ? "on" : ""}" id="sw${i}" title="开机/停机"></div>
       </div>
       ${i === ST.focus ? `<div style="display:flex;gap:5px;margin:4px 0 2px">
@@ -462,18 +462,18 @@ function refreshRight() {
      <span style="font-size:10.5px;color:var(--mut2)">${FLOOR_IDS[ST.focus]}F · ${flagEmoji(u.kind)} ${u.kind === "JP" ? "日式" : "中式"}油烟机</span>
    </div>
    <div class="brow"><span class="nm">阀前压力 <small>(机侧/户内)</small></span><span class="v"><b>${fmt(R.f3ValveUp, 0)}</b> Pa</span></div>
-   <div class="brow"><span class="nm">阀后压力 <small>(烟道侧)</small></span><span class="v"><b style="color:${R.f3ValveDown > 0 ? "#b3492f" : "#4a7ba6"}">${fmt(R.f3ValveDown, 1)}</b> Pa</span></div>
-   <div class="brow"><span class="nm">阀前后压差</span><span class="v"><b style="color:${dP > 0 ? "#4e7d52" : "#b3492f"}">${fmt(dP, 1)}</b> Pa ${dP > 0 ? "→ 正排" : "← 受阻"}</span></div>
+   <div class="brow"><span class="nm">阀后压力 <small>(烟道侧)</small></span><span class="v"><b style="color:${R.f3ValveDown > 0 ? "#ef8468" : "#7ab3d8"}">${fmt(R.f3ValveDown, 1)}</b> Pa</span></div>
+   <div class="brow"><span class="nm">阀前后压差</span><span class="v"><b style="color:${dP > 0 ? "#8fd08a" : "#ef8468"}">${fmt(dP, 1)}</b> Pa ${dP > 0 ? "→ 正排" : "← 受阻"}</span></div>
    <div class="brow"><span class="nm">阀片开度</span><span class="v"><b>${u.on ? fmt(u.valveTh * 75, 0) : 0}°</b></span></div>
    <div class="brow"><span class="nm">3F 实际排量</span><span class="v"><b>${(u.Q / 60).toFixed(1)}</b> m³/min <small>(额 ${(u.qMax / 60).toFixed(1)})</small></span></div>
-   <div class="brow"><span class="nm">风量保持率</span><span class="v"><b style="color:${u.Q / u.qMax > 0.6 ? "#4e7d52" : "#b3492f"}">${u.on ? fmt(u.Q / u.qMax * 100, 0) : 0}%</b></span></div>
-   <div class="brow"><span class="nm">倒灌渗入量</span><span class="v"><b style="color:${u.leakQ > 0.3 ? "#b3492f" : "#5c564c"}">${(u.leakQ / 60).toFixed(2)}</b> m³/min</span></div>
+   <div class="brow"><span class="nm">风量保持率</span><span class="v"><b style="color:${u.Q / u.qMax > 0.6 ? "#8fd08a" : "#ef8468"}">${u.on ? fmt(u.Q / u.qMax * 100, 0) : 0}%</b></span></div>
+   <div class="brow"><span class="nm">倒灌渗入量</span><span class="v"><b style="color:${u.leakQ > 0.3 ? "#ef8468" : "#c0b092"}">${(u.leakQ / 60).toFixed(2)}</b> m³/min</span></div>
    <div style="font-size:10.5px;color:var(--mut2);margin-top:6px;line-height:1.7">${st.d}</div>`;
   // 烟道压力分布
   let html = "";
   for (let i = 4; i >= 0; i--) {
     const p = R.P[i], w = Math.min(Math.abs(p) / 300, 1) * 100;
-    const col = p > 0 ? "#b3492f" : "#4a7ba6";
+    const col = p > 0 ? "#ef8468" : "#7ab3d8";
     html += `<div class="brow"><span class="nm" style="font-family:var(--serif)">${FLOOR_IDS[i]}F 节点</span>
       <span class="pbar"><i style="width:${w}%;background:${col}"></i></span>
       <span class="v" style="width:56px;text-align:right;color:${col}">${fmt(p, 1)}Pa</span></div>`;
