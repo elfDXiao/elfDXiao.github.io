@@ -25,7 +25,7 @@ body{font:13px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",
 #right{right:14px;top:14px;bottom:14px;width:322px;padding:14px;overflow-y:auto}
 #center{left:268px;right:348px;top:14px;bottom:14px;padding:0;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:none}
 #ctools{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);flex:none;min-height:44px}
-#ctools #brand{flex:1;font-size:10.5px;letter-spacing:.16em;color:#c9b483;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ctools #brand{flex:1;font-size:10.5px;letter-spacing:.16em;color:#8d7a54;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ctools .grp{display:flex;gap:5px;flex:none;align-items:center}
 #cview{position:relative;flex:1;overflow:hidden;border-radius:0 0 15px 15px}
 .panel::-webkit-scrollbar{width:4px}.panel::-webkit-scrollbar-thumb{background:#d8d2c6;border-radius:2px}
@@ -129,13 +129,16 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--acc)}
 #tprog .pb i{display:block;height:100%;background:linear-gradient(90deg,#3d8f8f,#4a7ba6);width:0%}
 #tprog span{font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
 /* ================= 魔兽世界皮肤 ================= */
+:root{--paper:#1b130c;--paper2:#241a10;--paper3:#2c2014;
+  --panel:rgba(30,20,11,.94);--panel2:rgba(41,28,16,.92);
+  --line:#6a5326;--txt:#e6d7b0;--mut:#b8a274;--mut2:#8d7a54;--acc:#c9a24d}
 body{background:radial-gradient(120% 90% at 50% 0%,#2a1c0f 0%,#1a1209 55%,#120c06 100%);color:var(--txt)}
 .panel{background:linear-gradient(160deg,rgba(48,32,17,.96),rgba(29,19,10,.97));
   border:1px solid #6a5326;border-radius:14px;
   box-shadow:inset 0 0 0 1px rgba(201,162,77,.20),inset 0 0 30px rgba(0,0,0,.55),0 14px 40px rgba(0,0,0,.6)}
 .panel::-webkit-scrollbar-thumb{background:#5a4520;border-radius:2px}
 #logo b{background:linear-gradient(90deg,#f4e3ac,#c9a24d 55%,#a8832f);-webkit-background-clip:text;background-clip:text;color:transparent}
-#logo small{color:#c9b483}
+#logo small{color:#8d7a54}
 .dotlogo{background:linear-gradient(135deg,#f4e3ac,#c9a24d);box-shadow:0 0 12px rgba(201,162,77,.55)}
 h2{color:#c9a24d;font-family:var(--serif);letter-spacing:.20em}
 button{color:#e2d3ae}
@@ -145,13 +148,13 @@ label{color:#b8a274}
 input,select{background:#241a0f;color:#e6d7b0;border:1px solid #6a5326}
 input:focus,select:focus{border-color:#c9a24d;box-shadow:0 0 0 3px rgba(201,162,77,.18)}
 input[type=range]{accent-color:#c9a24d}
-.cbtn .cs{color:#c9b483}.mbtn .mtag{color:#a8832f}
+.cbtn .cs{color:#8d7a54}.mbtn .mtag{color:#a8832f}
 .sw{background:#3a2b14}
 .sw.on{background:#7a6a2a}
 .sw.on::after{background:#f4e3ac}
 .cfgrow{background:rgba(41,28,16,.85);border:1px solid #5a4520}
 .cfgrow.on{border-color:rgba(201,162,77,.55);background:rgba(201,162,77,.08)}
-.cfgrow .nm small{color:#c9b483}
+.cfgrow .nm{color:#f2e6c8}.cfgrow .nm small{color:#a89468}
 .srange .rv{color:#c9a24d}
 .kbtn{border:1px solid #5a4520;background:rgba(201,162,77,.05);color:#b8a274}
 .kbtn.on{border-color:rgba(201,162,77,.6);background:rgba(201,162,77,.14);color:#f4e3ac}
@@ -160,7 +163,7 @@ input[type=range]{accent-color:#c9a24d}
 .big{color:#f4e3ac;text-shadow:0 0 18px rgba(201,162,77,.35)}
 .big small{color:#b8a274}
 .brow{border-bottom:1px dashed rgba(201,162,77,.18)}
-.brow .nm{color:#e2d3ae}.brow .nm small{color:#c9b483}
+.brow .nm{color:#e2d3ae}.brow .nm small{color:#8d7a54}
 .brow .v{color:#b8a274}.brow .v b{color:#f4e3ac}
 .pbar{background:#241a0f;border:1px solid #3a2b14}
 .badge.ok{background:rgba(120,140,70,.18);color:#cdd98e;border:1px solid rgba(160,180,90,.5)}
@@ -171,7 +174,7 @@ input[type=range]{accent-color:#c9a24d}
 .fleg{color:#a89468}
 #topbar{background:linear-gradient(170deg,rgba(48,32,17,.95),rgba(30,20,11,.96));border:1px solid #6a5326;
   box-shadow:inset 0 0 0 1px rgba(201,162,77,.2),0 10px 30px rgba(0,0,0,.55)}
-#topbar .sc{color:#c9b483}
+#topbar .sc{color:#8d7a54}
 #topbar button{border:1px solid #5a4520;background:rgba(201,162,77,.06);color:#cbb98c}
 #topbar button:hover{background:rgba(201,162,77,.14)}
 #topbar button.on{background:rgba(201,162,77,.2);border-color:rgba(201,162,77,.6);color:#f4e3ac}
@@ -198,7 +201,7 @@ input[type=range]{accent-color:#c9a24d}
 #mtx th{background:#241a0f;color:#c9a24d}
 #mtx td.mn{color:#e2d3ae}
 #mtx td .wv{color:#9db8d8}
-#mtx td .nv{color:#c9b483}
+#mtx td .nv{color:#8d7a54}
 .g2{color:#cdd98e}.m2{color:#f0cf7a}.b2{color:#e8a184}
 #toast{background:linear-gradient(170deg,rgba(48,32,17,.97),rgba(30,20,11,.97));color:#f4e3ac;border:1px solid #6a5326;
   box-shadow:0 0 0 1px rgba(201,162,77,.25),0 10px 30px rgba(0,0,0,.6)}
@@ -246,9 +249,9 @@ input[type=range]{accent-color:#c9a24d}
 
  <h2>图例</h2>
  <div style="font-size:11px;color:var(--mut);line-height:1.9;padding:2px 4px">
-  <div>粒子色＝烹饪烟气色，亮→暗＝浮力衰减</div>
-  <div><span style="color:#3a6a94;font-weight:600">蓝标签</span>＝墙体导流 · <span style="color:#7d421f;font-weight:600">棕标签</span>＝罩口</div>
-  <div>右侧/前方开敞＝无墙，烟气自由扩散</div>
+  <div>粒子色＝烹饪烟气色，<span style="color:#f4e3ac;font-weight:600">闪亮</span>＝新鲜热烟</div>
+  <div>渐暗消散＝冷却降温，沉降＝台面油污</div>
+  <div>开敞面＝无墙，烟气自由扩散</div>
  </div>
 </div>
 
@@ -1299,7 +1302,7 @@ init3D();
 buildUIButtons();
 refreshHUD();
 showModal("地精科技 震撼人心", `<div style="text-align:center">
-      <div style="font-size:11px;color:#c9b483;letter-spacing:.16em;margin-bottom:10px">老肖油烟机排烟仿真 · 地精实验室出品</div>
+      <div style="font-size:11px;color:#8d7a54;letter-spacing:.16em;margin-bottom:10px">老肖油烟机排烟仿真 · 地精实验室出品</div>
       灶 × 罩 × 墙 · 单厨房拢烟腔捕获率仿真
       <div style="color:#e8564a;font-size:11.5px;margin-top:12px;line-height:1.8">⚠ 公共烟道下邻居高静压机会降低本层实际排风量<br>→ <a href="老肖公共烟道仿真V1.0.html" target="_blank" style="color:#f0cf7a;text-decoration:underline">地精实验室 · 公共烟道仿真</a></div>
       </div>`, "开 始");

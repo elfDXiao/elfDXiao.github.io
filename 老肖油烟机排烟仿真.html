@@ -129,6 +129,9 @@ input[type=range]{padding:0;border:none;background:none;accent-color:var(--acc)}
 #tprog .pb i{display:block;height:100%;background:linear-gradient(90deg,#3d8f8f,#4a7ba6);width:0%}
 #tprog span{font-size:10.5px;color:var(--mut);font-variant-numeric:tabular-nums}
 /* ================= 魔兽世界皮肤 ================= */
+:root{--paper:#1b130c;--paper2:#241a10;--paper3:#2c2014;
+  --panel:rgba(30,20,11,.94);--panel2:rgba(41,28,16,.92);
+  --line:#6a5326;--txt:#e6d7b0;--mut:#b8a274;--mut2:#8d7a54;--acc:#c9a24d}
 body{background:radial-gradient(120% 90% at 50% 0%,#2a1c0f 0%,#1a1209 55%,#120c06 100%);color:var(--txt)}
 .panel{background:linear-gradient(160deg,rgba(48,32,17,.96),rgba(29,19,10,.97));
   border:1px solid #6a5326;border-radius:14px;
@@ -151,7 +154,7 @@ input[type=range]{accent-color:#c9a24d}
 .sw.on::after{background:#f4e3ac}
 .cfgrow{background:rgba(41,28,16,.85);border:1px solid #5a4520}
 .cfgrow.on{border-color:rgba(201,162,77,.55);background:rgba(201,162,77,.08)}
-.cfgrow .nm small{color:#8d7a54}
+.cfgrow .nm{color:#f2e6c8}.cfgrow .nm small{color:#a89468}
 .srange .rv{color:#c9a24d}
 .kbtn{border:1px solid #5a4520;background:rgba(201,162,77,.05);color:#b8a274}
 .kbtn.on{border-color:rgba(201,162,77,.6);background:rgba(201,162,77,.14);color:#f4e3ac}
@@ -246,9 +249,9 @@ input[type=range]{accent-color:#c9a24d}
 
  <h2>图例</h2>
  <div style="font-size:11px;color:var(--mut);line-height:1.9;padding:2px 4px">
-  <div>粒子色＝烹饪烟气色，亮→暗＝浮力衰减</div>
-  <div><span style="color:#3a6a94;font-weight:600">蓝标签</span>＝墙体导流 · <span style="color:#7d421f;font-weight:600">棕标签</span>＝罩口</div>
-  <div>右侧/前方开敞＝无墙，烟气自由扩散</div>
+  <div>粒子色＝烹饪烟气色，<span style="color:#f4e3ac;font-weight:600">闪亮</span>＝新鲜热烟</div>
+  <div>渐暗消散＝冷却降温，沉降＝台面油污</div>
+  <div>开敞面＝无墙，烟气自由扩散</div>
  </div>
 </div>
 
