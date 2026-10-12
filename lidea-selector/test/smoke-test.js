@@ -88,9 +88,9 @@ Q.reset();
 // shower_head：ThermoMetal（默认 D4）
 assert('shower_head EF 默认（ThermoMetal）= 0', Q.contributionFor('shower_head') == null);  // 未选
 Q.state.sel.shower_head = 'EF';
-assert('EF ThermoMetal = 0', Q.contributionFor('shower_head') === 0, Q.contributionFor('shower_head'));
+assert('EF ThermoMetal M = -10,000（手冊P.126 M列）', Q.contributionFor('shower_head') === -10000, Q.contributionFor('shower_head'));
 Q.state.sel.faucet = 'H3';   // シャワーシステム
-assert('シャワーシステム时 EF = 7,000', (function () { const v = P.toAmount(Q.opt('shower_head', 'EF').priceByType['ShowerSystem']); return v === 7000; })(), P.toAmount(Q.opt('shower_head', 'EF').priceByType['ShowerSystem']));
+assert('シャワーシステム时 EF 不可选（手冊P.126 无该行）', Q.disabledReason('shower_head', 'EF') != null, Q.disabledReason('shower_head', 'EF'));
 Q.reset();
 // urutuya A：BM=0 / C=+15,000
 assert('urutuya A M = 0', P.toAmount(Q.opt('urutuya', 'A').priceByType['BM']) === 0);

@@ -216,7 +216,7 @@
     }
     return String(size).indexOf(rest) === 0;
   }
-  /** 条件键 priceByType 解析（返回数字/文本或 null） */
+  /** 条件键 priceByType 解析（返回数字/文本或 null；值可为 {タイプ:値} 嵌套，由调用方按タイプ取格） */
   function contextPrice(option, dimId) {
     if (!option || !option.priceByType) return null;
     var key = null;
@@ -238,6 +238,21 @@
     if (key == null) return null;
     return Object.prototype.hasOwnProperty.call(option.priceByType, key) ? option.priceByType[key] : null;
   }
+  /** contextPrice 嵌套对象按当前タイプ取格（shower_head の水栓種×タイプ二次表）；非对象原样返回 */
+  function contextTypeValue(cv) {
+    if (cv == null) return null;
+    if (typeof cv === 'object') {
+      var t = typeCode();
+      if (Object.prototype.hasOwnProperty.call(cv, t)) return cv[t];
+      // 组键兜底（纯 HBM/C 键）
+      var best = null, bl = Infinity;
+      Object.keys(cv).forEach(function (k) {
+        if (/^[HBMC]+$/.test(k) && k.indexOf(t) >= 0 && k.length < bl) { best = cv[k]; bl = k.length; }
+      });
+      return best != null ? best : null;
+    }
+    return cv;
+  }
 
   /* ---------------- 计价 ---------------- */
 
@@ -249,7 +264,10 @@
     if (dimId === 'bathtub_pan' && code === 'W' && multiHas('osouji', 'K55')) return 0;
     if (o.priceByType) {
       var cv = contextPrice(o, dimId);
-      if (cv != null) return P.toAmount(cv);
+      if (cv != null) {
+        cv = contextTypeValue(cv);              // 嵌套 {タイプ:値} 按当前タイプ取格
+        if (cv != null) return P.toAmount(cv);
+      }
       var tv = P.priceByTypeValue(o, typeCode());
       if (tv != null) {
         if (typeof tv === 'object') {
@@ -438,6 +456,11 @@
       if (Array.isArray(o.types) && o.types.indexOf(type) < 0) return '该选项不适用于 ' + type + ' タイプ';
       if (o.priceByType) {
         var cv = contextPrice(o, dimId);
+        if (cv != null && typeof cv === 'object') {
+          // 嵌套 {タイプ:値}（水栓種×タイプ二次表）：当前タイプ无格 → 禁用
+          var tvC = contextTypeValue(cv);
+          if (tvC == null) return '该水栓条件下 ' + type + ' タイプ不可选';
+        }
         if (cv == null) {
           var tv = P.priceByTypeValue(o, type);
           if (tv == null) return '该タイプ/条件下不可选';
