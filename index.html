@@ -23,6 +23,15 @@
       <div class="wowmap-stage" id="wowmapStage" role="img" aria-label="奇幻世界地图 · 七大板块导览">
         <img src="img/wow/worldmap-ai.jpg" alt="首屏世界地图" draggable="false">
         <svg viewBox="0 0 2560 1440" preserveAspectRatio="none">
+          <defs>
+            <!-- #spot 被 css/wow.css 的 .hit fill 引用（hover 发光热区），不是死代码 -->
+            <radialGradient id="spot">
+              <stop offset="0" stop-color="#fff2cc" stop-opacity=".62"/>
+              <stop offset="0.4" stop-color="#ffd98a" stop-opacity=".34"/>
+              <stop offset="0.72" stop-color="#ffb43c" stop-opacity=".12"/>
+              <stop offset="1" stop-color="#ff9c10" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
                 <a class="region" href="furniture.html" data-id="furniture" aria-label="定制案例">
           <ellipse class="hit" cx="631" cy="743" rx="300" ry="520"/>
           <g transform="translate(631,520)"><g class="lab">
