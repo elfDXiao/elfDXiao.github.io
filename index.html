@@ -117,6 +117,7 @@
       r.addEventListener('mouseleave', reset);
       r.addEventListener('focus', function () { show(r); });
       r.addEventListener('click', function (e) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         location.href = BASE + r.getAttribute('href');
       });
@@ -132,7 +133,7 @@
       if (i >= 1 && i <= regions.length) {
         reset();
         var r = regions[i - 1];
-        r.classList.add('on'); show(r);
+        r.classList.add('on'); show(r); r.focus();
       }
       if (e.key === 'Escape') reset();
     });
