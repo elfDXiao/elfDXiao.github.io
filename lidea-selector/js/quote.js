@@ -210,7 +210,10 @@
     var g16 = (sg['16□□'] || '').split('・');
     var g1316 = ['1316'];
     if (rest === '16') return g16.indexOf(size) >= 0;
-    if (rest === '1316') return size === '1316';
+    if (rest === '13') {
+      // 13 档 = 1318・1316・1216・S1216（手冊 P.134 同组），不是仅 13□□
+      return size === '1318' || size === '1316' || size === '1216' || size === 'S1216';
+    }
     return String(size).indexOf(rest) === 0;
   }
   /** 条件键 priceByType 解析（返回数字/文本或 null） */
@@ -242,14 +245,29 @@
     if (isVirtualBasic(code)) return 0;
     var o = opt(dimId, code);
     if (!o) return null;
+    // ★ おそうじ浴槽（K55）選択時の浴槽パンあり（W）は ±¥0（手冊 P.111※/P.135※）
+    if (dimId === 'bathtub_pan' && code === 'W' && multiHas('osouji', 'K55')) return 0;
     if (o.priceByType) {
       var cv = contextPrice(o, dimId);
       if (cv != null) return P.toAmount(cv);
       var tv = P.priceByTypeValue(o, typeCode());
-      if (tv != null) return P.toAmount(tv);
+      if (tv != null) {
+        if (typeof tv === 'object') {
+          // 嵌套尺寸价（mirror 等タイプ×尺寸二维表）：按当前尺寸展开
+          var sg = DATA.meta.sizeGroups;
+          var hit = null;
+          var nk = Object.keys(tv);
+          for (var i = 0; i < nk.length; i++) {
+            if (P.sizeKeyMatches(nk[i], sizeCode(), sg)) { hit = tv[nk[i]]; break; }
+          }
+          if (hit == null) return null;   // 该タイプ此尺寸不可选
+          return P.toAmount(hit);
+        }
+        return P.toAmount(tv);
+      }
       return null;
     }
-    return P.priceFor(o, typeCode(), sizeCode());
+    return P.priceFor(o, typeCode(), sizeCode(), DATA.meta.sizeGroups);
   }
 
   function contributionFor(dimId) {
@@ -413,7 +431,7 @@
       if (Array.isArray(o.sizes)) {
         var okS = false;
         for (var i = 0; i < o.sizes.length; i++) {
-          if (P.sizeKeyMatches(o.sizes[i], size)) { okS = true; break; }
+          if (P.sizeKeyMatches(o.sizes[i], size, DATA.meta.sizeGroups)) { okS = true; break; }
         }
         if (!okS) return '该选项不适用于 ' + size + ' 尺寸';
       }
@@ -423,7 +441,22 @@
         if (cv == null) {
           var tv = P.priceByTypeValue(o, type);
           if (tv == null) return '该タイプ/条件下不可选';
+          if (typeof tv === 'object') {
+            // 嵌套尺寸价：该タイプ此尺寸无格（null/缺键）→ 禁用
+            var sg = DATA.meta.sizeGroups;
+            var nHit = null;
+            var nk = Object.keys(tv);
+            for (var j = 0; j < nk.length; j++) {
+              if (P.sizeKeyMatches(nk[j], size, sg)) { nHit = tv[nk[j]]; break; }
+            }
+            if (nHit == null) return '该タイプ ' + size + ' 尺寸不可选';
+          }
         }
+      }
+      // ★ pricesBySize null 守卫（照抄淋浴版 quote.js:617-620）：尺寸表明确 null/无格 → 禁用
+      if (o.pricesBySize) {
+        var v2 = P.priceBySize(o, size, DATA.meta.sizeGroups);
+        if (v2 == null) return '该选项不适用于 ' + size + ' 尺寸';
       }
     }
     if (dimId === 'type') {
@@ -437,7 +470,11 @@
 
     // ---- 浴槽パン 与 アクアジェット/おそうじ/ふろ水利用 必须搭配 ----
     var needPan = multiHas('aqua_jet', ['K14', 'K20', 'K13']) || multiHas('osouji', 'K55');
-    if (dimId === 'bathtub_pan' && code === 'W' && !needPan && false) { /* 无强制 */ }
+    // ---- おそうじ浴槽（K55）選択時、浴槽パンあり（W）価格は ±¥0（手冊 P.111※/P.135※）----
+    var osojiK55 = multiHas('osouji', 'K55');
+    if (osojiK55 && dimId === 'bathtub_pan' && code === 'W') {
+      return null;   // 仍可选（必須），计价归零由 radioContribution 处理
+    }
     if (needPan && dimId === 'bathtub_pan' && code === 'PAN_S') return 'アクアジェット/おそうじ浴槽选择时浴槽パン须あり（W）';
     if (dimId === 'aqua_jet' && selIs('bathtub_pan', 'PAN_S') && !state.sel.bathtub_pan) {
       return '需浴槽パンあり（W）';
@@ -489,6 +526,14 @@
     // ---- サポートパック不可组合（C タイプ/1624/1620ワイド/S1818） ----
     if (dimId === 'support_pack' && (type === 'C' || size === '1624' || size === 'S1818')) {
       return 'サポートパック不适用于当前型号/尺寸';
+    }
+    // ★ サポートパック价格双档：H16/B16/M16 档（1620・1618・1616）与 H13/B13/M13 档（1318・1316・1216・S1216）。
+    //   1216/S1216 之前经 supportPackKeyMatch 落空后由 priceByTypeValue 字符误中取 H16 档价（127,000 → 应 87,000）。
+    if (dimId === 'support_pack' && o.priceByType) {
+      var spRest13 = (size === '1318' || size === '1316' || size === '1216' || size === 'S1216');
+      var wantKey = type + (spRest13 ? '13' : '16');
+      if (!(type === 'H' || type === 'B' || type === 'M')) return 'サポートパック不适用于当前型号';
+      if (!Object.prototype.hasOwnProperty.call(o.priceByType, wantKey)) return 'サポートパック不适用于当前型号/尺寸';
     }
 
     // ---- 洗面室暖房機（K58）→ プラズマクラスター搭載換気乾燥暖房機必須 ----
@@ -559,22 +604,35 @@
   /* ---------------- CSV ---------------- */
   function toCSV() {
     var r = computeQuote();
-    var rows = [['見積No', state.quoteHead.no], ['日付', state.quoteHead.date], ['有効期限', state.quoteHead.valid],
-      ['顧客名', state.quoteHead.customer], ['施工住所', state.quoteHead.address],
-      ['販売店/担当', (state.quoteHead.dealer || '') + ' ' + (state.quoteHead.person || '')],
+    // ★ CSV 公式注入防护：表头字段以 = + - @ 开头时前置 ' 中和（Excel/Sheets 语义）
+    function escHead(v) {
+      v = String(v == null ? '' : v);
+      if (/^[=+\-@]/.test(v)) v = "'" + v;
+      return v;
+    }
+    var rows = [['見積No', escHead(state.quoteHead.no)], ['日付', escHead(state.quoteHead.date)], ['有効期限', escHead(state.quoteHead.valid)],
+      ['顧客名', escHead(state.quoteHead.customer)], ['施工住所', escHead(state.quoteHead.address)],
+      ['販売店/担当', escHead((state.quoteHead.dealer || '') + ' ' + (state.quoteHead.person || ''))],
       ['本体品番', productNo()],
       ['サイズ', r.size], ['タイプ', r.type], ['ドア位置', r.doorPos],
       ['', ''], ['区分', '品名（日）', '品名（中）', '記号', '型番', '仕様', '差額(税抜)', '金額']];
     r.lines.forEach(function (l) {
       rows.push([l.stepZh, l.nameJa, l.nameZh, l.code, l.model, l.extra,
-        l.base ? '' : l.diff, l.base ? String(l.basePrice) : String(l.diff)]);
+        l.base ? '' : l.diff, l.base ? String(r.basePrice != null ? r.basePrice : '') : String(l.diff)]);
     });
+    // ★ 未計上項目行（此前静默丢失）
+    if (r.unknown && r.unknown.length) {
+      r.unknown.forEach(function (u) {
+        rows.push(['未計上', '', u.name || '', u.dimId || '', '', u.detail || '', '', '']);
+      });
+    }
     rows.push(['', '', '', '', '', '本体価格（税抜）', r.totalEx]);
     rows.push(['', '', '', '', '', '消費税（10%）', r.tax]);
     rows.push(['', '', '', '', '', '税込合計', r.totalInc]);
     var csv = rows.map(function (row) {
       return row.map(function (v) {
         v = String(v == null ? '' : v);
+        if (/^[=+\-@]/.test(v)) v = "'" + v;   // 所有落盘单元格统一防注入
         return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
       }).join(',');
     }).join('\r\n');

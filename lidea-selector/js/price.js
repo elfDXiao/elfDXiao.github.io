@@ -1,7 +1,7 @@
 /**
- * price.js — TOTO Synla（シンラ）价格解析工具（纯函数，无 DOM 依赖）
+ * price.js — LIXIL Lidea（リデア）价格解析工具（纯函数，无 DOM 依赖）
  *
- * 挂载为 window.SYNLA.price。处理 Synla 价格表示：
+ * 挂载为 window.LIDEA.price。处理 Lidea 价格表示：
  *  1. 数字 priceDiff：固定差价（正=加价 负=减价 0=基本）
  *  2. price：单品绝对价（オプション单品/セット）
  *  3. priceByType：タイプ別差价，键多样（{G,BR,DC} / {G,BRDC} / {GBR,DC} / {GBRD,C} / {GR,B,DC} / {GRDC,B} 等）
@@ -56,6 +56,18 @@
    *   例：{G:0,BRDC:293300} B→BRDC；{GBR:0,DC:65000} D→DC；{GBRD:0,C:211000} G→GBRD；{GR:25000,B:25000,DC:0} G→GR。
    *   值 null → 该タイプ不可选（返回 null，与无键区分需调用方判断 hasOwnProperty）。
    */
+  /**
+   * priceByType 多样键取值：
+   *   1. 优先完全等于 typeCode 的键（值可能是数字，也可能是 {尺寸:差额} 嵌套对象）。
+   *   2. 否则仅在「纯タイプ组键」（全部字符 ∈ H/B/M/C，如 HBM/BMC/HB/MC）中找含 typeCode 的最短键。
+   *      非纯组键（PearlQuartz/WideGroup/Hiraki/MidGroup/BMC_Other/H16 等条件键）一律不参与字符误中回退，
+   *      它们只能由 quote.js 的 contextPrice 按上下文精确解析（堵 34 处字符误中）。
+   *   值 null → 该タイプ不可选（返回 null，与无键区分需调用方判断 hasOwnProperty）。
+   *   嵌套对象值由调用方（priceFor/optionPriceSummary）按尺寸展开。
+   */
+  function isTypeGroupKey(k) {
+    return /^[HBMC]+$/.test(String(k));
+  }
   function priceByTypeValue(option, typeCode) {
     if (!option || !option.priceByType) return null;
     var p = option.priceByType;
@@ -63,24 +75,32 @@
     var best = null;
     var bestLen = Infinity;
     Object.keys(p).forEach(function (k) {
+      if (!isTypeGroupKey(k)) return;                 // 条件键不参与回退
       if (k.indexOf(typeCode) >= 0 && k.length < bestLen) { best = k; bestLen = k.length; }
     });
     return best != null ? p[best] : null;
   }
 
-  /** 尺寸组匹配：pricesBySize 的键可能是 "1624/1620/1618"、"全サイズ" 或单尺寸 */
-  function sizeKeyMatches(key, size) {
+  /** 尺寸组匹配：pricesBySize 的键可能是 "1624/1620/1618"、"全サイズ"、单尺寸或组键（16□□/13□□/□□18/□□16，meta.sizeGroups 展开） */
+  function sizeKeyMatches(key, size, sizeGroups) {
+    key = String(key);
     if (key === '全サイズ' || key === '全尺寸') return true;
-    return String(key).split('/').some(function (s) { return s.trim() === size; });
+    if (key.split('/').some(function (s) { return s.trim() === size; })) return true;
+    // 组键（16□□ 等）：按 sizeGroups 展开为「・」分隔的尺寸列表
+    var sg = sizeGroups || (typeof window !== 'undefined' && window.LIDEA_DATA && window.LIDEA_DATA.meta && window.LIDEA_DATA.meta.sizeGroups) || {};
+    if (sg[key]) {
+      return String(sg[key]).split('・').some(function (s) { return s.trim() === size; });
+    }
+    return false;
   }
 
   /** 取 pricesBySize 中某尺寸的价格（数字或文本） */
-  function priceBySize(option, size) {
+  function priceBySize(option, size, sizeGroups) {
     var pbs = option.pricesBySize;
     if (!pbs) return null;
     var keys = Object.keys(pbs);
     for (var i = 0; i < keys.length; i++) {
-      if (sizeKeyMatches(keys[i], size)) return pbs[keys[i]];
+      if (sizeKeyMatches(keys[i], size, sizeGroups)) return pbs[keys[i]];
     }
     return null;
   }
@@ -96,17 +116,37 @@
   }
 
   /**
+   * 嵌套尺寸价展开：priceByType 的值可能是 {1624:56000, □□18:24000, ...}（タイプ×尺寸二维表）。
+   * 返回该尺寸的数字差额；null = 该タイプ此尺寸不可选。
+   */
+  function nestedBySize(v, size, sizeGroups) {
+    if (v == null) return null;
+    if (typeof v === 'object') {
+      var keys = Object.keys(v);
+      for (var i = 0; i < keys.length; i++) {
+        if (sizeKeyMatches(keys[i], size, sizeGroups)) return v[keys[i]];
+      }
+      return null;
+    }
+    return v;   // 数字/文本，非嵌套
+  }
+
+  /**
    * 统一取选项差价（数字）：优先级
-   *   priceDiff → priceByType → pricesBySize → price → isBasic(0) → null
+   *   priceDiff → priceByType（数字或嵌套尺寸对象，嵌套时按 size 展开）→ pricesBySize → price → isBasic(0) → null
    * 返回数字或 null（null=未选/无法确定/该タイプ不可选）。
    */
-  function priceFor(option, typeCode, size) {
+  function priceFor(option, typeCode, size, sizeGroups) {
     if (!option) return null;
     if (typeof option.priceDiff === 'number') return option.priceDiff;
     var v = priceByTypeValue(option, typeCode);
-    if (v != null) return toAmount(v);
+    if (v != null) {
+      v = nestedBySize(v, size, sizeGroups);
+      if (v != null) return toAmount(v);
+      return null;   // 嵌套对象中该尺寸无价 → 不可选（不回落）
+    }
     if (option.pricesBySize && size) {
-      v = priceBySize(option, size);
+      v = priceBySize(option, size, sizeGroups);
       if (v != null) return toAmount(v);
     }
     if (typeof option.price === 'number') return option.price;
@@ -117,7 +157,7 @@
   /**
    * 选项价格摘要（卡片显示）：返回 { text, type }。
    */
-  function optionPriceSummary(option, typeCode, size) {
+  function optionPriceSummary(option, typeCode, size, sizeGroups) {
     if (!option) return { text: '—', type: 'empty' };
     if (typeof option.priceDiff === 'number') {
       if (option.priceDiff === 0) return { text: '基本仕様', type: 'basic' };
@@ -126,6 +166,12 @@
     if (option.priceByType) {
       var v = priceByTypeValue(option, typeCode);
       if (v != null) {
+        if (typeof v === 'object') {
+          // 嵌套尺寸价：按当前尺寸取一格
+          var nv = nestedBySize(v, size, sizeGroups);
+          if (nv == null) return { text: tp('该尺寸不可', '該サイズ不可'), type: 'na' };
+          v = nv;
+        }
         if (typeof v === 'number') return { text: v === 0 ? '基本仕様' : fmtDiff(v), type: v === 0 ? 'basic' : 'num' };
         var c0 = parseCell(v);
         if (c0.type === 'num') return { text: c0.text, type: 'num' };
@@ -135,7 +181,7 @@
       return { text: tp('该タイプ不可选', '該タイプ不可'), type: 'na' };
     }
     if (option.pricesBySize && size) {
-      var v2 = priceBySize(option, size);
+      var v2 = priceBySize(option, size, sizeGroups);
       if (v2 != null) {
         if (typeof v2 === 'number') return { text: v2 === 0 ? '基本仕様' : fmtDiff(v2), type: v2 === 0 ? 'basic' : 'num' };
         var c1 = parseCell(v2);
