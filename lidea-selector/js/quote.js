@@ -177,8 +177,14 @@
       var bySize = tbp[typeCode()];
       if (bySize) v = typeof bySize[sizeCode()] === 'number' ? bySize[sizeCode()] : 0;
     }
-    // 寒冷地（region=C）標準 ＋¥5,000
-    if (selIs('region', 'C')) v += 5000;
+    if (selIs('region', 'C')) {
+      // ★ 寒冷地标准价通道：meta.coldTypeBasePrices[タイプ][サイズ] 有格 → 顶替一般地标准价；
+      //   无该字段（现网数据）→ 维持原有全局 ＋¥5,000（meta.coldBaseAdd 可覆盖金额）
+      var cbp = DATA.meta.coldTypeBasePrices;
+      var cv = (cbp && cbp[typeCode()]) ? cbp[typeCode()][sizeCode()] : null;
+      if (typeof cv === 'number') return cv;
+      v += (typeof DATA.meta.coldBaseAdd === 'number') ? DATA.meta.coldBaseAdd : 5000;
+    }
     return v;
   }
 
@@ -254,12 +260,80 @@
     return cv;
   }
 
+  /* ---------------- 寒冷地（region=C）选项价通道 ----------------
+   * 手册 meta ：「寒冷地仕様価格（一般地と異なる差額のみ記載）」——cold* 字段只登记与一般地不同的格。
+   * 语义因此定为「按当前上下文生效的字段替换」：
+   *   cold 字段存在、且对当前 タイプ×尺寸（或条件键）有格 → 用它顶替对应普通字段（值是 null 也算有格 = 寒冷地不可选）；
+   *   没有格 → 沿用一般地价（无字段回落的自然结果）。
+   * 现网数据无任何 cold* 字段 → effective() 原样返回，行为逐字节不变。
+   */
+  function isColdRegion() { return state.sel.region === 'C'; }
+
+  /** 条件键选择（与 contextPrice 同源；map 为 priceByType 形态的对象） */
+  function contextKeyOf(map, dimId) {
+    if (!map) return null;
+    if (dimId === 'water_pipe') return currentBathtubFaucet();
+    if (dimId === 'shower_head') return currentFaucetKind();
+    if (dimId === 'shower_hook') return currentUru();
+    if (dimId === 'support_pack') {
+      var t = typeCode(), s = sizeCode(), hit = null;
+      Object.keys(map).forEach(function (k) {
+        if (hit) return;
+        if (k.indexOf(t) !== 0) return;
+        if (supportPackKeyMatch(k.slice(t.length), s)) hit = k;
+      });
+      return hit;
+    }
+    return null;
+  }
+  /** cold 表是否含当前上下文的格（有格即生效，值与 null 无关） */
+  function coldHasCell(map, dimId) {
+    if (!map) return false;
+    var t = typeCode();
+    var ck = contextKeyOf(map, dimId);
+    if (ck != null && Object.prototype.hasOwnProperty.call(map, ck)) return true;
+    if (Object.prototype.hasOwnProperty.call(map, t)) return true;
+    var keys = Object.keys(map);
+    for (var i = 0; i < keys.length; i++) {
+      if (/^[HBMC]+$/.test(keys[i]) && keys[i].indexOf(t) >= 0) return true;
+    }
+    return false;
+  }
+  function coldSizeHasCell(map, size) {
+    if (!map || !size) return false;
+    var keys = Object.keys(map);
+    for (var i = 0; i < keys.length; i++) {
+      if (P.sizeKeyMatches(keys[i], size, DATA.meta.sizeGroups)) return true;
+    }
+    return false;
+  }
+  /** 寒冷地生效视图：cold* 字段对本上下文有格时顶替普通字段，否则原样返回（一般地与旧数据零影响） */
+  function effective(option, dimId) {
+    if (!option || !isColdRegion()) return option;
+    var swap = null;
+    function put(cold, normal) {
+      if (!swap) swap = {};
+      swap[normal] = cold;
+    }
+    if (typeof option.coldPriceDiff === 'number') put(option.coldPriceDiff, 'priceDiff');
+    if (option.coldPriceByType && coldHasCell(option.coldPriceByType, dimId)) put(option.coldPriceByType, 'priceByType');
+    if (option.coldPricesBySize && coldSizeHasCell(option.coldPricesBySize, sizeCode())) put(option.coldPricesBySize, 'pricesBySize');
+    if (typeof option.coldPrice === 'number') put(option.coldPrice, 'price');
+    if (typeof option.coldIsBasic === 'boolean') put(option.coldIsBasic, 'isBasic');
+    if (!swap) return option;
+    var v = {};
+    Object.keys(option).forEach(function (k) { v[k] = option[k]; });
+    Object.keys(swap).forEach(function (k) { v[k] = swap[k]; });
+    return v;
+  }
+
   /* ---------------- 计价 ---------------- */
 
   function radioContribution(dimId, code) {
     if (isVirtualBasic(code)) return 0;
     var o = opt(dimId, code);
     if (!o) return null;
+    o = effective(o, dimId);          // ★ 寒冷地视图（现网数据无 cold* 字段 → 原对象）
     // ★ おそうじ浴槽（K55）選択時の浴槽パンあり（W）は ±¥0（手冊 P.111※/P.135※）
     if (dimId === 'bathtub_pan' && code === 'W' && multiHas('osouji', 'K55')) return 0;
     if (o.priceByType) {
@@ -441,6 +515,7 @@
     var isVB = isVirtualBasic(code);
     var o = opt(dimId, code);
     if (!o && !isVB) return null;
+    if (o) o = effective(o, dimId);   // ★ 寒冷地视图：cold 表对本上下文有格时按寒冷地价判可/不可选
     var size = sizeCode();
     var type = typeCode();
 
@@ -675,6 +750,7 @@
     doorPosCode: doorPosCode,
     productNo: productNo,
     computeQuote: computeQuote, contributionFor: contributionFor, describe: describe,
+    effective: effective, isColdRegion: isColdRegion,
     disabledReason: disabledReason, autoFix: autoFix, setSize: setSize,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {

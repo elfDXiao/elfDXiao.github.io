@@ -114,7 +114,20 @@ lidea-bathroom/
 node test/gen-products.js   # 重新生成 products.js（数据更新后必跑）
 node test/smoke-test.js     # 核心逻辑 ✅（0.65 计价/矩阵/条件键/约束/品番/CSV）
 node test/dom-test.js       # UI 渲染 ✅（jsdom 模拟 file:// 直开）
+node test/cold-region-test.js  # 寒冷地（region=C）选项价通道 ✅（现网数据零影响 + 替换语义 + 标准价通道）
+node test/probe-ds-diff.js     # 与 d51c8f8 基线逐格对比（现网数据：78 项「有价→禁用」+ 180 处价格变化，全部为手册裁决项）
+node test/snapshot-region.js   # 一般地/寒冷地全量 contribution 快照（15804 行/区域）；加 --old <dir> 可用旧版 js/ 跑，做前后 diff
 ```
+
+### 寒冷地（region=C）选项价通道
+
+手册口径「寒冷地仕様価格（一般地と異なる差額のみ記載）」→ 实现为 **按当前上下文生效的字段替换**：
+
+- 选项上可写 `coldPriceByType` / `coldPricesBySize` / `coldPriceDiff` / `coldPrice` / `coldIsBasic`，语义与对应普通字段完全相同（含条件键、嵌套尺寸表、组键 □□18/□□16）。
+- 寒冷地时，`Q.effective(option, dimId)` 在该 cold 字段**对当前 タイプ×尺寸（或水栓/うるつや条件键）有格**时顶替普通字段；**没有格 → 沿用一般地价**（「異なる差額のみ記載」的自然结果）；格的值写 `null` = 寒冷地不可选（`disabledReason` 会给出理由）。
+- 计价链（`radioContribution` → `describe` → `computeQuote`/`toCSV`）与卡片显示（wizard 的 `priceFor`/`optionPriceSummary`）都过 `effective()`，所以明细与合计必然同口径。
+- 标准价：`meta.coldTypeBasePrices[タイプ][尺寸]` 有格则顶替一般地标准价；无该字段时维持原有全局 `＋¥5,000`（金额可用 `meta.coldBaseAdd` 覆盖）。
+- **现网数据无任何 cold* 字段**，`effective()` 原样返回同一对象 → 一般地与旧数据行为逐字节不变（`snapshot-region.js --old` 的 diff 为 0）。
 
 smoke 特有断言：**0.65 人民币计价（M1616：1,379,000→税込 1,516,900→×0.05×0.65=49,299）**、標準仕様価格矩阵抽查、寒冷地 +5,000、1624 自动修复タイプ→M、条件键（water_pipe FaucetNone/WallFaucet、shower_head ThermoMetal/ShowerSystem、support_pack H16/H13）、约束（サポートパック C 不可、シャワーシステム×カウンター、うるつや×D5、兼用×浴槽側、K58 需 Q/T、アクアジェット→パン W autoFix、K20 尺寸限定）、品番 BDUS-1616M-A+H(C)RL、CSV。
 
