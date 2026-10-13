@@ -1,5 +1,5 @@
 // cold-region-test.js — 寒冷地（region=C）选项价通道自测（Node vm，无 DOM）
-// ① 一般地 vs 寒冷地逐格同值（现网数据无 cold* 字段 → 通道零影响）
+// ① 一般地 vs 寒冷地逐格对比：差异必须只出现在 cold* 登记的格（现网＝手册 8 青字格，蓝字＝替换值）
 // ② cold* 字段替换语义：对当前 タイプ×尺寸/条件键「有格才生效，无格回落一般地价」，显式 null = 寒冷地不可选
 // ③ 冷地标准价通道 meta.coldTypeBasePrices / coldBaseAdd（无字段时维持 ＋¥5,000）
 // 用法：node test/cold-region-test.js
@@ -63,11 +63,29 @@ keys.forEach(k => {
   if (a[0] !== b[0] || a[1] !== b[1]) diff.push(k + ': ' + JSON.stringify(a) + ' vs ' + JSON.stringify(b));
 });
 assert('扫描格数 = 全维度选项 × 9 尺寸 × 4 タイプ（' + expectCells + '）', keys.length === expectCells, keys.length);
-assert('选项差价/可选择性 逐格完全相同（diff = 0）', diff.length === 0, diff.slice(0, 3));
+// ★水栓 7 行 patch 后：现网 cold* 录数 = 手册 8 青字格（P.122×3＋P.123×5，蓝字＝寒冷地替换值）。
+//   一般/寒冷差异必须只落在这 7 个选项的有格タイプ：D5(H/B/M)＋H3(H)＋H4(H)＋BP/BQ/BR/BT(全4类型) × 9 尺寸 = 189 格
+const ALLOW = /\/(faucet\/(D5|H3|H4)|tub_faucet\/(BP|BQ|BR|BT))$/;
+assert('一般/寒冷 diff 仅落在 8 青字格登记的 7 选项（189 格）',
+  diff.length === 189 && diff.every(dd => ALLOW.test(dd.slice(0, dd.indexOf(':')))), diff.slice(0, 3));
 const baseDiff = Object.keys(hot.base).filter(k => hot.base[k] !== 5000 && cold.base[k] !== hot.base[k] + 5000);
 assert('标准价差异恒为 ＋¥5,000（现网无 coldTypeBasePrices）', baseDiff.length === 0, baseDiff.slice(0, 3));
-const anyColdField = DATA.categories.some(c => c.options.some(o => COLD_KEYS.some(k => o[k] != null)));
-assert('现网数据确实无任何 cold* 字段（对照前提成立）', anyColdField === false);
+const EXPECT_COLD = {
+  'faucet/D5': { coldPriceByType: { H: 60000, B: 79600, M: 79600 } },
+  'faucet/H3': { coldPriceByType: { H: 149700 } },
+  'faucet/H4': { coldPriceByType: { H: 249700 } },
+  'faucet/BP': { coldPriceDiff: 148200 },
+  'faucet/BQ': { coldPriceDiff: 208200 },
+  'faucet/BR': { coldPriceDiff: 69600 },
+  'faucet/BT': { coldPriceDiff: 116500 }
+};
+const seen = {};
+DATA.categories.forEach(c => c.options.forEach(o => {
+  const cold = {};
+  COLD_KEYS.forEach(k => { if (o[k] != null) cold[k] = o[k]; });
+  if (Object.keys(cold).length) seen[c.id + '/' + o.code] = cold;
+}));
+assert('cold* 录数恰为手册 8 青字格（7 选项），逐格值一致', JSON.stringify(seen) === JSON.stringify(EXPECT_COLD), seen);
 
 console.log('== ② cold* 字段替换语义（合成夹具，用完即撤） ==');
 function pick(dimId, pred) {
