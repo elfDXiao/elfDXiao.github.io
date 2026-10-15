@@ -629,46 +629,144 @@ function flagTex(kind) {
 
 /* ---------- 材质速查 ---------- */
 const M = {
-  slab: () => new THREE.MeshLambertMaterial({ color: 0xcbc2af }),
+  slab: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().slab }),
   wall: (o) => new THREE.MeshLambertMaterial({ color: 0xe9e4d8, transparent: true, opacity: o || 0.3, side: THREE.DoubleSide }),
   floorEdge: () => new THREE.LineBasicMaterial({ color: 0x8b8478 }),
-  kitchen: () => new THREE.MeshLambertMaterial({ color: 0xd9cfc0 }),
-  cabinet: () => new THREE.MeshLambertMaterial({ color: 0x9a8f7f }),
-  counter: () => new THREE.MeshLambertMaterial({ color: 0x3a3733 }),
+  kitchen: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().floor }),
+  cabinet: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().cabinet }),
+  counter: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().stone }),
   stove: () => new THREE.MeshLambertMaterial({ color: 0x23211e }),
   hoodSteel: () => new THREE.MeshPhongMaterial({ color: 0xcfd2d6, shininess: 55 }),
   hoodDark: () => new THREE.MeshPhongMaterial({ color: 0x8f949a, shininess: 40 }),
   hoodWhite: () => new THREE.MeshPhongMaterial({ color: 0xf2f0ec, shininess: 25 }),
   duct: () => new THREE.MeshLambertMaterial({ color: 0xb9b3a6 }),
   ductF3: () => new THREE.MeshPhongMaterial({ color: 0xc98a5e, shininess: 40 }),
-  riserMat: () => new THREE.MeshLambertMaterial({ color: 0xf1ede4, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }),
+  riserMat: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().metal, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
   valveBody: (f3) => new THREE.MeshPhongMaterial({ color: f3 ? 0xb87333 : 0x6d6759, shininess: 60 }),
   valveDisc: (f3) => new THREE.MeshPhongMaterial({ color: f3 ? 0xd9a066 : 0xc9c2b2, shininess: 80, side: THREE.DoubleSide })
 };
 
+/* ---------- 程序纹理（精细化：混凝土/地砖/木纹/石台面） ---------- */
+let TXT = null;
+function makeTexs() {
+  if (TXT) return TXT;
+  TXT = {};
+  const T = (w, h, draw, rx, ry) => {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(rx || 1, ry || 1);
+    return t;
+  };
+  TXT.slab = T(256, 256, (g) => {          // 混凝土楼板（细噪点+拼缝）
+    g.fillStyle = "#c2b8a3"; g.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 1100; i++) {
+      g.fillStyle = `rgba(${90 + Math.random() * 90 | 0},${85 + Math.random() * 84 | 0},${72 + Math.random() * 74 | 0},.22)`;
+      g.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
+    }
+    g.strokeStyle = "rgba(105,96,78,.5)"; g.lineWidth = 2;
+    for (let i = 1; i < 2; i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, 256); g.stroke(); }
+    g.beginPath(); g.moveTo(0, 128); g.lineTo(256, 128); g.stroke();
+  }, 5, 3.5);
+  TXT.floor = T(256, 256, (g) => {         // 厨房地砖（3×3 方格）
+    g.fillStyle = "#b9b0a2"; g.fillRect(0, 0, 256, 256);
+    for (let r = 0; r < 3; r++) for (let c2 = 0; c2 < 3; c2++) {
+      g.fillStyle = ["#cfc6b6", "#c9c0af", "#d4cbbb"][(r * 3 + c2) % 3];
+      g.fillRect(c2 * 85 + 2, r * 85 + 2, 80, 80);
+      g.fillStyle = "rgba(255,246,225,.08)";
+      g.fillRect(c2 * 85 + 2, r * 85 + 2, 80, 7);
+    }
+  }, 6, 4);
+  TXT.cabinet = T(256, 256, (g) => {       // 橱柜木纹（竖条）
+    g.fillStyle = "#8a7a66"; g.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 3; i++) {
+      g.fillStyle = ["#94836e", "#84745f", "#8e7d68"][i];
+      g.fillRect(i * 85 + 2, 0, 80, 256);
+      g.strokeStyle = "rgba(60,45,30,.35)"; g.lineWidth = 1;
+      for (let k = 0; k < 5; k++) {
+        const xx = i * 85 + 10 + k * 15 + Math.sin(i + k) * 3;
+        g.beginPath(); g.moveTo(xx, 0); g.bezierCurveTo(xx + 3, 85, xx - 3, 170, xx + 1, 256); g.stroke();
+      }
+      g.fillStyle = "rgba(40,30,20,.5)"; g.fillRect(i * 85, 0, 2, 256);
+    }
+  }, 2, 1);
+  TXT.stone = T(256, 256, (g) => {         // 台面水磨石
+    g.fillStyle = "#4a4640"; g.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 380; i++) {
+      g.fillStyle = `rgba(${110 + Math.random() * 80 | 0},${106 + Math.random() * 70 | 0},${96 + Math.random() * 60 | 0},.4)`;
+      g.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 3, 1 + Math.random() * 3);
+    }
+    g.strokeStyle = "rgba(20,18,15,.5)"; g.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+      g.beginPath(); g.moveTo(0, Math.random() * 256);
+      g.bezierCurveTo(80, Math.random() * 256, 170, Math.random() * 256, 256, Math.random() * 256); g.stroke();
+    }
+  }, 2, 1);
+  TXT.metal = T(128, 256, (g) => {         // 金属拉丝（烟道）
+    g.fillStyle = "#d8d2c6"; g.fillRect(0, 0, 128, 256);
+    for (let x = 0; x < 128; x += 2) {
+      g.fillStyle = `rgba(${120 + Math.random() * 100 | 0},${116 + Math.random() * 92 | 0},${104 + Math.random() * 80 | 0},.12)`;
+      g.fillRect(x, 0, 1, 256);
+    }
+  }, 1.2, 14);
+  return TXT;
+}
 /* ---------- 场景骨架 ---------- */
+function makeStarTex() { // 程序生成星空：深空渐变 + 银河带 + 1500 颗星
+  const c = document.createElement("canvas"); c.width = 2048; c.height = 1024;
+  const g = c.getContext("2d");
+  const gr = g.createLinearGradient(0, 0, 0, 1024);
+  gr.addColorStop(0, "#070a18"); gr.addColorStop(.45, "#0e1430");
+  gr.addColorStop(.75, "#131a38"); gr.addColorStop(1, "#0b0e22");
+  g.fillStyle = gr; g.fillRect(0, 0, 2048, 1024);
+  g.save(); g.translate(1024, 430); g.rotate(-0.30);            // 银河带
+  for (let i = 0; i < 3; i++) {
+    const rw = 1500 - i * 380;
+    const mg = g.createRadialGradient(0, 0, 0, 0, 0, rw);
+    mg.addColorStop(0, "rgba(150,170,230,.10)"); mg.addColorStop(.6, "rgba(120,130,200,.05)");
+    mg.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = mg;
+    g.save(); g.scale(1, (260 - i * 70) / rw); g.beginPath(); g.arc(0, 0, rw, 0, 6.3); g.fill(); g.restore();
+  }
+  g.restore();
+  for (let i = 0; i < 1900; i++) {                              // 星星
+    const x = Math.random() * 2048, y = Math.random() * 1024;
+    const r = Math.random() < 0.92 ? Math.random() * 1.2 + 0.4 : Math.random() * 2.0 + 1.3;
+    const al = 0.45 + Math.random() * 0.55, tn = Math.random();
+    g.fillStyle = tn < 0.12 ? `rgba(170,190,255,${al})` : tn < 0.24 ? `rgba(255,225,190,${al})` : `rgba(255,255,255,${al})`;
+    g.beginPath(); g.arc(x, y, r, 0, 6.3); g.fill();
+  }
+  for (let i = 0; i < 14; i++) {                                // 亮星十字光
+    const x = Math.random() * 2048, y = Math.random() * 1024;
+    g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(x - 7, y); g.lineTo(x + 7, y); g.moveTo(x, y - 7); g.lineTo(x, y + 7); g.stroke();
+    g.fillStyle = "rgba(255,255,255,.95)"; g.beginPath(); g.arc(x, y, 1.6, 0, 6.3); g.fill();
+  }
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
+}
 function init3D() {
   V3 = {};
   V3.renderer = new THREE.WebGLRenderer({ canvas: v3c, antialias: true, preserveDrawingBuffer: true, alpha: true });
   V3.renderer.setClearColor(0x000000, 0);
   V3.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   V3.scene = new THREE.Scene();
-  V3.scene.background = null; // 透出页面地精车间背景
-  V3.scene.fog = new THREE.Fog(0x1c1207, 34, 110);
+  V3.scene.background = makeStarTex(); // 星空环境
+  V3.scene.fog = new THREE.Fog(0x0d1226, 32, 120);
   V3.camera = new THREE.PerspectiveCamera(52, 1, 0.1, 220);
   V3.orb = { th: Math.PI / 2, ph: 1.50, dist: 18.4, tx: 3.0, ty: 8.6, tz: 0, auto: false }; // 锁定正立面：厨房列居中
-  V3.scene.add(new THREE.HemisphereLight(0xfff0d0, 0x40341f, 1.05));
-  const dl = new THREE.DirectionalLight(0xfff4e0, 0.65); dl.position.set(10, 20, 9); V3.scene.add(dl);
-  const dl2 = new THREE.DirectionalLight(0xffe0c0, 0.22); dl2.position.set(-8, 6, -10); V3.scene.add(dl2);
+  V3.scene.add(new THREE.HemisphereLight(0xc8d4ff, 0x1c2438, 0.70)); // 冷月夜
+  const dl = new THREE.DirectionalLight(0xdfe8ff, 0.44); dl.position.set(14, 26, 12); V3.scene.add(dl); // 月光
+  const dl2 = new THREE.DirectionalLight(0xffd8a0, 0.25); dl2.position.set(-8, 6, -10); V3.scene.add(dl2); // 暖补光
   V3.group = new THREE.Group(); V3.scene.add(V3.group);
   buildGround(); buildStatic(); buildRiser(); buildGauges(); buildUnits(); initParticles(); initLabels();
   bindCam(); v3Resize();
 }
 
 function buildGround() {
-  const g = new THREE.Mesh(new THREE.CircleGeometry(34, 48), new THREE.MeshLambertMaterial({ color: 0x382a1a }));
+  const g = new THREE.Mesh(new THREE.CircleGeometry(34, 48), new THREE.MeshLambertMaterial({ color: 0x1c2234 }));
   g.rotation.x = -Math.PI / 2; V3.group.add(g);
-  const grid = new THREE.GridHelper(60, 30, 0x5f4e30, 0x4a3b24);
+  const grid = new THREE.GridHelper(60, 30, 0x33405c, 0x28324e);
   grid.position.y = 0.01; grid.material.transparent = true; grid.material.opacity = 0.55; V3.group.add(grid);
 }
 
