@@ -341,7 +341,7 @@ const GEO = {
   backZ: -1.28,     // 后墙内表面
   ceilY: 2.72,      // 顶棚
   wallX: -0.885,    // 左墙内表面
-  counterY: 0.90,   // 橱柜台面
+  counterY: 0.85,   // 橱柜台面（85cm 高）
   counterX0: -0.885, counterX1: 0.015,   // 灶台宽 90cm（贴墙）
   burnerL: [-0.615, -0.94],  // 左灶眼 x,z（近墙；眼距 36cm 对称于台面中心 -0.435）
   burnerR: [-0.255, -0.94],  // 右灶眼
@@ -353,18 +353,18 @@ const GEO = {
 /* ---------- 烹饪类型（产烟模型） ---------- */
 /* rate:粒子/s  T0:初始超温K  tau:湍流σ  life:寿命s  col:RGB  drag:松弛率  burst:出生横向爆发速度 */
 const COOKS = {
-  light:   { n: "清淡饮食", rate: 60,  T0: 40, tau: 6.0, sig: 0.18, life: 19, col: [0.52, 0.55, 0.58], size: 0.055, drag: 3.6, burst: 0.10 },
-  tempura: { n: "日式天妇罗", rate: 200, T0: 68, tau: 5.4, sig: 0.60, life: 24, col: [0.85, 0.66, 0.40], size: 0.075, drag: 3.0, burst: 0.75 },
-  stirfry: { n: "中式爆炒", rate: 360, T0: 62, tau: 5.6, sig: 0.64, life: 26, col: [0.74, 0.53, 0.30], size: 0.080, drag: 2.8, burst: 0.85 },
-  chuan:   { n: "川湘小炒", rate: 450, T0: 58, tau: 6.0, sig: 0.74, life: 28, col: [0.66, 0.38, 0.24], size: 0.085, drag: 2.6, burst: 1.02 }
+  light:   { n: "清淡饮食", rate: 60,  T0: 42, tau: 6.0, sig: 0.18, life: 19, col: [0.52, 0.55, 0.58], size: 0.055, drag: 3.6, burst: 0.10 },
+  tempura: { n: "日式天妇罗", rate: 300, T0: 64, tau: 5.4, sig: 0.52, life: 22, col: [0.93, 0.87, 0.66], size: 0.100, drag: 2.4, burst: 0.55 },   // 油炸：持续大油面、下锅水油爆溅、奶白大液滴
+  stirfry: { n: "中式爆炒", rate: 360, T0: 72, tau: 5.6, sig: 0.66, life: 26, col: [0.74, 0.53, 0.30], size: 0.072, drag: 2.8, burst: 0.85 },   // 锅温最高、翻锅甩烟
+  chuan:   { n: "川湘爆炒", rate: 450, T0: 68, tau: 6.0, sig: 0.74, life: 28, col: [0.66, 0.38, 0.24], size: 0.068, drag: 2.6, burst: 1.02 }    // 炝锅峰值、燃烧细颗粒
 };
 
 /* ---------- 油烟机机型 ---------- */
 /* S:汇流系数(罩口整形能力)  w/depth/h:罩体  mouthY:默认罩口高  mouthW/D:罩口有效矩形 */
 const MACH = {
-  eu:   { n: "平板",     sub: "钢化玻璃薄罩 · 15m³/min",  q0: 15, sp0: 260, S: 0.27, w: 0.90, depth: 0.50, h: 0.18, kind: "flat", mouthY: 1.70, mouthW: 0.90, mouthD: 0.42 },
-  side: { n: "侧吸",     sub: "低位斜口近吸 · 17m³/min",  q0: 17, sp0: 300, S: 0.38, w: 0.90, kind: "side", yLo: 1.06, yHi: 1.60, zLo: -0.72, zHi: -1.26 },
-  cn:   { n: "侧顶双吸", sub: "下斜+顶腔 7字机 · 19m³/min", q0: 19, sp0: 320, S: 0.36, w: 0.90, kind: "sideTop", yLo: 1.06, yHi: 1.40, zLo: -0.70, zHi: -1.18, depth: 0.50, h: 0.24, mouthY: 1.72, mouthW: 0.84, mouthD: 0.46 }
+  eu:   { n: "平板",     sub: "钢化玻璃薄罩 · 15m³/min",  q0: 15, sp0: 260, S: 0.27, w: 0.90, depth: 0.50, h: 0.18, kind: "flat", mouthY: 1.55, mouthW: 0.90, mouthD: 0.42 },
+  side: { n: "侧吸",     sub: "低位斜口近吸 · 17m³/min",  q0: 17, sp0: 300, S: 0.38, w: 0.90, kind: "side", yLo: 1.01, yHi: 1.55, zLo: -0.72, zHi: -1.26 },
+  cn:   { n: "侧顶双吸", sub: "下斜+顶腔 7字机 · 19m³/min", q0: 19, sp0: 320, S: 0.36, w: 0.90, kind: "sideTop", yLo: 1.01, yHi: 1.35, zLo: -0.70, zHi: -1.18, depth: 0.50, h: 0.24, mouthY: 1.67, mouthW: 0.84, mouthD: 0.46 }
 };
 
 /* ---------- 全局配置 ---------- */
@@ -927,50 +927,50 @@ function buildStove() {
   const S = new THREE.Group(); V3.stove = S;
   // 橱柜体（左端贴拢烟墙内表面，不穿墙）
   const cb = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.86, 0.60), M.cabinet());
-  cb.position.set(-0.44, 0.45, -0.98); S.add(cb);
+  cb.position.set(-0.44, 0.40, -0.98); S.add(cb);
   const cbe = new THREE.LineSegments(new THREE.EdgesGeometry(cb.geometry), M.floorEdge());
   cbe.position.copy(cb.position); S.add(cbe);
   // 台面（左端与墙齐平）
   const ct = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.045, 0.66),
     new THREE.MeshPhongMaterial({ color: 0x9c9284, shininess: 32, map: V3.tex.stone }));
-  ct.position.set(-0.435, 0.88, -0.98); S.add(ct);
+  ct.position.set(-0.435, 0.83, -0.98); S.add(ct);
   // 后挡水条（靠墙）
   const splash = new THREE.Mesh(new THREE.BoxGeometry(0.90, 0.055, 0.022),
     new THREE.MeshPhongMaterial({ color: 0x8a8174, shininess: 40, map: V3.tex.stone }));
-  splash.position.set(-0.435, 0.925, -1.30); S.add(splash);
+  splash.position.set(-0.435, 0.875, -1.30); S.add(splash);
   // 柜门缝 + 拉手（两扇门）
   const seamM = new THREE.LineBasicMaterial({ color: 0x2a1c10 });
   [ -0.66, -0.22 ].forEach(x => {
     const seam = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(x, 0.055, -0.679), new THREE.Vector3(x, 0.845, -0.679)]), seamM);
+      new THREE.Vector3(x, 0.005, -0.679), new THREE.Vector3(x, 0.795, -0.679)]), seamM);
     S.add(seam);
   });
   const seamH = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(-0.875, 0.83, -0.679), new THREE.Vector3(-0.005, 0.83, -0.679)]), seamM);
+    new THREE.Vector3(-0.875, 0.78, -0.679), new THREE.Vector3(-0.005, 0.78, -0.679)]), seamM);
   S.add(seamH);
   const handleM = new THREE.MeshPhongMaterial({ color: 0xc9b98a, shininess: 115 });
   [ -0.585, -0.295 ].forEach(x => {
     const hd = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.13, 10), handleM);
-    hd.rotation.z = Math.PI / 2; hd.position.set(x, 0.72, -0.668); S.add(hd);
+    hd.rotation.z = Math.PI / 2; hd.position.set(x, 0.67, -0.668); S.add(hd);
   });
   // 台面调料（灶面板右上角：油瓶 + 调料罐）
   const oil = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.036, 0.15, 12),
     new THREE.MeshPhongMaterial({ color: 0x6a5a20, shininess: 90, envMap: V3.envTex, reflectivity: 0.3, combine: THREE.MixOperation }));
-  oil.position.set(-0.115, 0.985, -0.70); S.add(oil);
+  oil.position.set(-0.115, 0.935, -0.70); S.add(oil);
   const oilCap = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.02, 0.03, 10), handleM);
-  oilCap.position.set(-0.115, 1.072, -0.70); S.add(oilCap);
+  oilCap.position.set(-0.115, 1.022, -0.70); S.add(oilCap);
   const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.028, 0.075, 12),
     new THREE.MeshPhongMaterial({ color: 0x584c3c, shininess: 60 }));
-  jar.position.set(-0.055, 0.945, -0.735); S.add(jar);
+  jar.position.set(-0.055, 0.895, -0.735); S.add(jar);
   // 灶面板
   const sp = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.022, 0.52), M.stoveGlass());
-  sp.position.set(-0.435, 0.913, -0.92); S.add(sp);
+  sp.position.set(-0.435, 0.863, -0.92); S.add(sp);
   // 双灶眼 + 支架环 + 火盘
   [GEO.burnerL, GEO.burnerR].forEach((b, bi) => {
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.008, 8, 28), M.stoveRing());
-    ring.rotation.x = Math.PI / 2; ring.position.set(b[0], 0.925, b[1]); S.add(ring);
+    ring.rotation.x = Math.PI / 2; ring.position.set(b[0], 0.875, b[1]); S.add(ring);
     const fm = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.075, 0.012, 20), M.flame());
-    fm.position.set(b[0], 0.928, b[1]); S.add(fm);
+    fm.position.set(b[0], 0.878, b[1]); S.add(fm);
     if (bi === 0) V3.flameL = fm; else V3.flameR = fm;
   });
   V3.flameR.visible = false;
@@ -985,10 +985,10 @@ function buildStove() {
   const hd = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.014, 0.014), M.stoveRing());
   hd.position.set(0.20, 0.115, 0); P.add(hd);
   const hd2 = hd.clone(); hd2.position.set(-0.20, 0.115, 0); P.add(hd2);
-  const b = potPos(); P.position.set(b[0], 0.925, b[1]); S.add(P);
+  const b = potPos(); P.position.set(b[0], 0.875, b[1]); S.add(P);
   // 锅内食物色（按烹饪）
   const food = new THREE.Mesh(new THREE.CircleGeometry(0.115, 22), new THREE.MeshBasicMaterial({ color: 0xb07a3a }));
-  food.rotation.x = -Math.PI / 2; food.position.set(b[0], 0.965, b[1]); S.add(food);
+  food.rotation.x = -Math.PI / 2; food.position.set(b[0], 0.915, b[1]); S.add(food);
   V3.food = food;
   V3.group.add(S);
 }
@@ -1078,7 +1078,7 @@ function buildHood() {
     H.add(mesh);
   }
   H.position.x = cx;
-  H.position.y = m.kind === "flat" ? (CFG.mouthY - 1.70) : 0;   // 顶吸跟随罩口高滑块
+  H.position.y = m.kind === "flat" ? (CFG.mouthY - 1.70) : -0.05;   // 顶吸跟随罩口高；侧吸/双吸随台面下移 5cm
   V3.hoodLblP = [cx, m.kind === "flat" ? CFG.mouthY + 0.2 : 1.8, -0.8];
   V3.group.add(H);
 }
@@ -1214,9 +1214,9 @@ function toggleWok() {
 }
 function resetWok() {
   const b = potPos();
-  V3.potG.position.set(b[0], 0.925, b[1]);
+  V3.potG.position.set(b[0], 0.875, b[1]);
   V3.potG.rotation.set(0, 0, 0);
-  V3.food.position.set(b[0], 0.965, b[1]);
+  V3.food.position.set(b[0], 0.915, b[1]);
 }
 function updateWok(dt) {
   if (!WOK.on || CFG.paused || FAST.busy) return;
@@ -1228,10 +1228,10 @@ function updateWok(dt) {
   const pitch = Math.sin(ph * Math.PI * 2) * 0.20;          // 俯仰 ±11.5°
   const lift = Math.max(0, Math.sin(ph * Math.PI)) * 0.012; // 锅底微离灶圈
   const b = potPos();
-  V3.potG.position.set(b[0], 0.925 + lift, b[1] + dz);
+  V3.potG.position.set(b[0], 0.875 + lift, b[1] + dz);
   V3.potG.rotation.x = pitch;
   V3.potG.rotation.z = Math.sin(ph * Math.PI) * 0.05;
-  V3.food.position.set(b[0], 0.965 + lift, b[1] + dz + 0.015 * Math.sin(ph * Math.PI * 2));
+  V3.food.position.set(b[0], 0.915 + lift, b[1] + dz + 0.015 * Math.sin(ph * Math.PI * 2));
   if (cycN !== WOK.lastCyc && ph > 0.42) {                   // 上抛相位：抛一波烟
     WOK.lastCyc = cycN;
     wokFlush(Math.min(70, Math.round(COOKS[CFG.cook].rate * 0.30)));
@@ -1323,8 +1323,8 @@ $("potL").addEventListener("click", () => { if (CFG.pot !== "L") { applyCfg({ po
 $("potR").addEventListener("click", () => { if (CFG.pot !== "R") { applyCfg({ pot: "R" }); movePot(); } });
 function movePot() {
   const b = potPos();
-  V3.potG.position.set(b[0], 0.925, b[1]);
-  V3.food.position.set(b[0], 0.965, b[1]);
+  V3.potG.position.set(b[0], 0.875, b[1]);
+  V3.food.position.set(b[0], 0.915, b[1]);
   V3.flameL.visible = CFG.pot === "L"; V3.flameR.visible = CFG.pot === "R";
 }
 
@@ -1379,7 +1379,7 @@ function showModalMatrix(res) {
        <b>关键读数：</b>侧吸(17m³/min)<b class="k">+墙</b> 四菜均值 <b>${(sideAvg * 100).toFixed(1)}%</b>，
        侧顶双吸(19m³/min)<b>无墙</b> 四菜均值 <b>${(cnAvg * 100).toFixed(1)}%</b>——
        差距就是"结构拢烟"与"大风量硬吸/双区拦截"两条路线的对比。<br>
-       川湘小炒一行整排泛红：湍流扩散是拢烟结构的天敌，什么墙都只能缓解、不能消灭。
+       川湘爆炒一行整排泛红：湍流扩散是拢烟结构的天敌，什么墙都只能缓解、不能消灭。
      </div>`, "关 闭");
 }
 
@@ -1389,7 +1389,7 @@ function showHelp() {
   showModal("老肖油烟机排烟仿真 · 使用说明",
     `<div class="mb">
      <b>这是一台什么机器？</b><br>
-     单厨房一角：下方燃气灶、上方油烟机、左侧可砌/可拆的<b class="k">拢烟墙</b>。
+     单厨房一角：台面 85cm、平板罩口距台面 70cm、左侧可砌/可拆的<b class="k">拢烟墙</b>。
      烟气用拉格朗日粒子模拟——每颗粒子有自己的热浮力（随冷却衰减）、随机湍流、
      以及被罩口负压"汇流场"拖拽的空气阻力，撞墙会被折返向上（导流）。<br><br>
      <b>视角操作（魔兽世界式）：</b><br>
