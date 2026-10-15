@@ -263,7 +263,7 @@ input[type=range]{accent-color:#c9a24d}
       <button id="b_help2">说明</button>
       <button id="b_wok">颠锅</button>
     </span>
-    <span class="wokhint"><svg width="27" height="16" viewBox="0 0 27 16" aria-hidden="true"><defs><linearGradient id="wag" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#ff9a80"/><stop offset="0.55" stop-color="#e8564a"/><stop offset="1" stop-color="#c22a1a"/></linearGradient></defs><path d="M25 8H5.6" stroke="url(#wag)" stroke-width="2.3" fill="none" stroke-linecap="round"/><path d="M11.6 2 4.6 8l7 6" stroke="url(#wag)" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 8l-3.6-3.1M25 8l-3.6 3.1" stroke="#ffb9a4" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".85"/><circle cx="25.4" cy="8" r="1.15" fill="#ffd0c0"/></svg>点击这里 颠起来
+    <span class="wokhint"><svg width="24" height="15" viewBox="0 0 24 15" aria-hidden="true"><path d="M23 7.5 H4 M10.5 1.2 L3 7.5 L10.5 13.8" stroke="#e8564a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>点击这里 颠起来
     </span>
   </div>
   <div id="cview"><canvas id="v3c"></canvas>
@@ -880,86 +880,75 @@ function buildHood() {
   if (V3.hoodG) { V3.group.remove(V3.hoodG); disposeGroup(V3.hoodG); }
   const H = new THREE.Group(); V3.hoodG = H;
   const m = MACH[CFG.mach], cx = CFG.wall ? GEO.wallX + m.w / 2 : GEO.hoodCX, bz = GEO.backZ;
-  const glass = () => new THREE.MeshPhongMaterial({ color: 0x2a3038, shininess: 115, specular: 0x8899aa, emissive: 0x070a0e });   // 黑玻（提亮底色+反光，暗环境可见）
+  const glass = () => new THREE.MeshPhongMaterial({ color: 0x1d2126, shininess: 95 });
   const steel = M.hoodSteel, dark = M.hoodDark;
-  const bright = () => new THREE.MeshPhongMaterial({ color: 0xd8d0b4, shininess: 110 });   // 亮银饰条/触控
   const box = (w, h, d, mat, x, y, z) => {
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
     b.position.set(x, y, z); H.add(b); return b;
   };
-  const endPanel = (w, y0, y1, z0, z1, thick, mat, ox) => {  // 两端点法（板面朝前下倾斜，ox 可偏移）
+  const slope = (w, y0, y1, z0, z1, thick, mat) => {          // 上下(z0→z1)倾斜板
     const len = Math.hypot(y1 - y0, z1 - z0);
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, thick, len + 0.02), mat);
-    b.position.set(ox === undefined ? cx : ox, (y0 + y1) / 2, (z0 + z1) / 2);
+    b.position.set(cx, (y0 + y1) / 2, (z0 + z1) / 2);
+    b.rotation.x = -Math.PI / 2 + Math.atan2(z1 - z0, y1 - y0);
+    H.add(b); return b;
+  };
+  const endPanel = (w, y0, y1, z0, z1, thick, mat) => {       // 两端点法（板面朝前下倾斜）
+    const len = Math.hypot(y1 - y0, z1 - z0);
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, thick, len + 0.02), mat);
+    b.position.set(cx, (y0 + y1) / 2, (z0 + z1) / 2);
     b.rotation.x = Math.atan2(y0 - y1, z1 - z0);
     H.add(b); return b;
   };
-  const triPanel = (pts, sd, thick, mat) => {                 // 侧三角板 pts:[[z,y]x3]（shape XY→世界 ZY）
-    const sh = new THREE.Shape();
-    sh.moveTo(pts[0][0], pts[0][1]); sh.lineTo(pts[1][0], pts[1][1]); sh.lineTo(pts[2][0], pts[2][1]); sh.closePath();
-    const g = new THREE.ExtrudeGeometry(sh, { depth: thick, bevelEnabled: false });
-    const mesh = new THREE.Mesh(g, mat);
-    mesh.rotation.y = -Math.PI / 2;                           // 世界 z=局部 x、world x=-局部 z
-    mesh.position.set(sd > 0 ? cx + m.w / 2 : cx - m.w / 2 + thick, 0, 0);
-    H.add(mesh); return mesh;
-  };
-  const ductTower = (w, d, y0) => {                           // 烟道方柱装饰罩（真机标配）
-    box(w, 2.72 - y0, d, steel(), cx, y0 + (2.72 - y0) / 2, bz + d / 2);
-    box(w + 0.02, 0.03, d + 0.02, dark(), cx, y0 + 0.015, bz + d / 2);      // 底部收口线
-    box(w - 0.05, 0.025, d - 0.05, bright(), cx, y0 - 0.008, bz + d / 2);   // 亮银压条
-  };
 
   if (m.kind === "flat") {
-    // ===== 平板（参考白 T 型真机：扁平大罩 + 窄烟道柱 + 中央油盘） =====
-    const my = CFG.mouthY, d = 0.51;
-    ductTower(0.36, 0.30, my + 0.10);
-    box(m.w, 0.06, d, glass(), cx, my + 0.032, bz + d / 2);               // 黑玻大板
-    box(m.w - 0.04, 0.055, d - 0.05, steel(), cx, my + 0.093, bz + d / 2); // 上层机身
-    box(m.w + 0.012, 0.05, 0.028, bright(), cx, my + 0.03, bz + d - 0.012); // 前缘银边
-    box(0.028, 0.05, d - 0.04, bright(), cx - m.w / 2, my + 0.03, bz + d / 2);
-    box(0.028, 0.05, d - 0.04, bright(), cx + m.w / 2, my + 0.03, bz + d / 2);
-    const sk = new THREE.Mesh(new THREE.BoxGeometry(m.w, 0.10, 0.03), glass());   // 前缘斜切玻璃
-    sk.position.set(cx, my - 0.015, bz + d - 0.015); sk.rotation.x = 0.28; H.add(sk);
-    box(m.w * 0.44, 0.03, 0.13, bright(), cx, my - 0.012, bz + d * 0.40);  // 中央油盘（银）
-    box(m.w * 0.10, 0.028, 0.10, dark(), cx, my - 0.018, bz + d * 0.40);  // 油杯
-    box(0.07, 0.026, 0.07, bright(), cx - m.w * 0.30, my - 0.006, bz + d * 0.40);   // 左右灯位
-    box(0.07, 0.026, 0.07, bright(), cx + m.w * 0.30, my - 0.006, bz + d * 0.40);
-    box(m.w * 0.34, 0.016, 0.018, bright(), cx, my + 0.145, bz + d + 0.002);         // 触控条
+    // ===== 平板（欧式 900×520 深，钢化玻璃大板；安装离台面 ~700mm） =====
+    const my = CFG.mouthY, d = 0.52;
+    box(m.w, 0.055, d, glass(), cx, my + 0.028, bz + d / 2);              // 黑玻大板 900×520
+    box(m.w, 0.16, 0.30, steel(), cx, my + 0.135, bz + 0.30);             // 中部薄机身（电机腔）
+    box(m.w - 0.08, 0.02, d - 0.06, steel(), cx, my + 0.062, bz + d / 2); // 板上银衬
+    const sk = new THREE.Mesh(new THREE.BoxGeometry(m.w, 0.16, 0.035), glass());
+    sk.position.set(cx, my - 0.02, bz + d - 0.02); sk.rotation.x = 0.30; H.add(sk);   // 前缘斜切玻璃
+    box(m.w * 0.30, 0.022, 0.09, dark(), cx - m.w * 0.20, my - 0.012, bz + d * 0.42); // 双集油槽
+    box(m.w * 0.30, 0.022, 0.09, dark(), cx + m.w * 0.20, my - 0.012, bz + d * 0.42);
+    box(m.w * 0.38, 0.02, 0.02, dark(), cx, my + 0.21, bz + d * 0.58);    // 触控条
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 2.72 - (my + 0.21), 14), M.duct());
+    pipe.position.set(cx, my + 0.21 + (2.72 - my - 0.21) / 2, bz + 0.30); H.add(pipe);
     V3.hoodLblP = [cx, my + 0.24, bz + d + 0.10];
   } else if (m.kind === "side") {
-    // ===== 侧吸（参考黑侧吸真机：烟道柱 + 机身箱 + 外扩斜裙 + 底盘油槽） =====
-    ductTower(0.34, 0.28, 1.75);
-    box(m.w, 0.30, 0.26, steel(), cx, 1.59, bz + 0.13);                   // 机身箱 y1.44-1.74
-    box(m.w - 0.10, 0.13, 0.016, glass(), cx, 1.665, bz + 0.268);         // 正面黑玻饰面
-    box(m.w * 0.42, 0.018, 0.016, bright(), cx, 1.575, bz + 0.27);        // 触控条
-    endPanel(m.w, 1.42, 1.12, -1.02, -0.62, 0.03, glass);                 // 前斜裙板（外扩 53°）
-    [-1, 1].forEach(sd => {                                               // 两侧三角挡板
-      triPanel([[-1.255, 1.44], [-1.02, 1.44], [-0.635, 1.12]], sd, 0.03, steel);
+    // ===== 侧吸（900 宽 · 机身厚 240mm · 吸口底距台面 ~280mm；顶吸去掉顶腔的薄身） =====
+    box(m.w, 0.42, 0.18, steel(), cx, 1.52, bz + 0.09);                   // 贴墙超薄机身 180mm（y1.31-1.73）
+    box(m.w - 0.12, 0.16, 0.016, glass(), cx, 1.60, bz + 0.184);          // 正面上部黑玻饰面
+    box(m.w * 0.40, 0.02, 0.02, dark(), cx, 1.695, bz + 0.187);           // 触控条
+    box(m.w - 0.10, 0.30, 0.024, dark(), cx, 1.44, bz + 0.183);           // 机身下部大吸口黑栅
+    endPanel(m.w, 1.31, 1.18, -1.10, -0.88, 0.032, glass);                // 前倾挡烟板（前伸 180mm，下缘距台面 280mm）
+    [-1, 1].forEach(sd => {                                               // 挡烟板两侧银框
+      const len = Math.hypot(0.13, 0.22);
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.048, len), steel);
+      fr.position.set(cx + sd * (m.w / 2 - 0.015), 1.245, bz + 0.19);
+      fr.rotation.x = Math.atan2(0.13, 0.22);
+      H.add(fr);
     });
-    box(m.w, 0.045, 0.05, bright(), cx, 1.095, bz + 0.62);                // 底盘前银缘（贴斜裙下缘）
-    box(m.w * 0.36, 0.032, 0.18, dark(), cx, 1.12, bz + 0.50);            // 集油盘
-    box(m.w - 0.06, 0.024, 0.10, dark(), cx, 1.30, bz + 0.36);            // 斜裙内进风口
-    V3.hoodLblP = [cx, 1.24, bz + 0.45];
+    box(m.w, 0.036, 0.036, steel(), cx, 1.19, bz + 0.215);                // 下缘银封边
+    box(m.w - 0.02, 0.05, 0.16, steel(), cx, 1.755, bz + 0.08);           // 顶部薄盖
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.72 - 1.78, 14), M.duct());
+    pipe.position.set(cx, 1.78 + (2.72 - 1.78) / 2, bz + 0.08); H.add(pipe);
+    V3.hoodLblP = [cx, 1.24, bz + 0.30];
   } else {
-    // ===== 侧顶双吸（参考斜背塔真机：上箱含顶吸口 + 大斜面板 + 弧线饰条 + 低位口） =====
-    ductTower(0.34, 0.28, 1.88);
-    box(m.w, 0.24, 0.46, steel(), cx, 1.76, bz + 0.23);                   // 上箱（顶吸腔）y1.64-1.88
-    box(m.w - 0.08, 0.018, 0.40, dark(), cx, 1.645, bz + 0.22);           // 顶口滤网（朝下）
-    box(m.w - 0.02, 0.034, 0.44, dark(), cx, 1.652, bz + 0.23);           // 顶口围板
-    endPanel(m.w, 1.62, 1.10, -0.82, -0.58, 0.03, glass);                 // 大斜面板（主体）
-    [-1, 1].forEach(sd => {                                               // 侧三角板
-      triPanel([[-1.255, 1.64], [-0.82, 1.64], [-0.595, 1.10]], sd, 0.03, steel);
-    });
-    [-1, 1].forEach(sd => {                                               // 斜面板两侧银框（勾出黑色面板轮廓）
-      endPanel(0.028, 1.635, 1.09, -0.815, -0.575, 0.026, bright(), cx + sd * (m.w / 2 - 0.02));
-    });
-    box(m.w, 0.024, 0.028, bright(), cx, 1.638, bz + 0.435);              // 顶缝银线（箱·面接缝）
-    endPanel(m.w - 0.20, 1.415, 1.395, -0.716, -0.707, 0.009, steel);   // 细饰线（上）
-    endPanel(m.w - 0.20, 1.235, 1.215, -0.626, -0.617, 0.009, steel);   // 细饰线（下）
-    box(m.w * 0.40, 0.016, 0.016, bright(), cx, 1.255, bz + 0.575);       // 斜面触控条
-    box(m.w - 0.14, 0.06, 0.18, dark(), cx, 1.145, bz + 0.60);            // 低位侧吸口
-    box(m.w, 0.038, 0.05, bright(), cx, 1.105, bz + 0.60);                // 底缘银边
-    V3.hoodLblP = [cx, 1.70, bz + 0.50];
+    // ===== 侧顶双吸（7字机 · 900 宽 · 竖板厚 180mm · 顶檐前伸 380mm · 低位口贴灶沿） =====
+    box(m.w, 0.46, 0.18, steel(), cx, 1.57, bz + 0.09);                   // 贴墙竖板 y1.34-1.80
+    box(m.w - 0.14, 0.26, 0.016, glass(), cx, 1.64, bz + 0.184);          // 正面黑玻饰面
+    box(m.w, 0.15, 0.38, steel(), cx, m.mouthY + 0.115, bz + 0.19);       // 顶部前伸顶吸檐
+    box(m.w - 0.08, 0.045, 0.36, dark(), cx, m.mouthY - 0.006, bz + 0.19);  // 顶口前围板
+    box(m.w - 0.10, 0.018, 0.32, dark(), cx, m.mouthY + 0.014, bz + 0.18);  // 顶口滤网（朝下）
+    box(m.w * 0.36, 0.018, 0.02, dark(), cx, m.mouthY + 0.175, bz + 0.375); // 檐口触控条
+    box(m.w - 0.16, 0.08, 0.16, dark(), cx, 1.23, bz + 0.06);             // 低位侧吸口（薄，锅沿上 12cm）
+    box(m.w - 0.12, 0.02, 0.20, steel(), cx, 1.185, bz + 0.08);           // 口下导烟唇
+    const cone = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.17, 0.11, 16), steel());
+    cone.position.set(cx, m.mouthY + 0.245, bz + 0.12); H.add(cone);
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.72 - (m.mouthY + 0.30), 14), M.duct());
+    pipe.position.set(cx, m.mouthY + 0.30 + (2.72 - m.mouthY - 0.30) / 2, bz + 0.12); H.add(pipe);
+    V3.hoodLblP = [cx, m.mouthY + 0.22, bz + 0.38];
   }
   V3.group.add(H);
 }
