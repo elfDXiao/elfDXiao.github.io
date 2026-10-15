@@ -628,6 +628,10 @@ function flagTex(kind) {
 }
 
 /* ---------- 材质速查 ---------- */
+const HOOD_COLS = [ // 各层油烟机色（珐琅质感）：朱红/铜橙/鎏金/青瓷/靛蓝
+  0xd85238, 0xe0903a, 0xf0c840, 0x3fa87e, 0x4864cc
+];
+const shade = (c, k) => new THREE.Color(c).multiplyScalar(k).getHex();
 const M = {
   slab: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().slab }),
   wall: (o) => new THREE.MeshLambertMaterial({ color: 0xe9e4d8, transparent: true, opacity: o || 0.3, side: THREE.DoubleSide }),
@@ -636,9 +640,9 @@ const M = {
   cabinet: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().cabinet }),
   counter: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().stone }),
   stove: () => new THREE.MeshLambertMaterial({ color: 0x23211e }),
-  hoodSteel: () => new THREE.MeshPhongMaterial({ color: 0xcfd2d6, shininess: 55 }),
-  hoodDark: () => new THREE.MeshPhongMaterial({ color: 0x8f949a, shininess: 40 }),
-  hoodWhite: () => new THREE.MeshPhongMaterial({ color: 0xf2f0ec, shininess: 25 }),
+  hoodSteel: (c) => new THREE.MeshPhongMaterial({ color: c || 0xcfd2d6, shininess: 55 }),
+  hoodDark: (c) => new THREE.MeshPhongMaterial({ color: c || 0x8f949a, shininess: 40 }),
+  hoodWhite: (c) => new THREE.MeshPhongMaterial({ color: c || 0xf2f0ec, shininess: 25 }),
   duct: () => new THREE.MeshLambertMaterial({ color: 0xb9b3a6 }),
   ductF3: () => new THREE.MeshPhongMaterial({ color: 0xc98a5e, shininess: 40 }),
   riserMat: () => new THREE.MeshLambertMaterial({ color: 0xffffff, map: makeTexs().metal, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
@@ -881,7 +885,8 @@ function buildUnits() {
     // ---- 油烟机 ----
     const hood = new THREE.Group(); g.add(hood);
     V3.units3d[i] = { group: g, hood };
-    buildHood(hood, i === ST.focus ? u.kind : "CN", i === ST.focus);
+    buildHood(hood, i === ST.focus ? u.kind : "CN", i === ST.focus, i);
+    decorate(g, i); // 每层不同装饰
     // ---- 支管 ----
     const dm = i === ST.focus ? M.ductF3() : M.duct();
     const v1 = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.57, 12), dm);
@@ -929,24 +934,72 @@ function buildStove(g, kind, i) {
     });
   }
 }
-function buildHood(hood, kind, isF3) {
+function decorate(g, i) { // 每层装饰各不相同（1吊柜调料 2挂杆锅具 3吊灯盆栽 4挂画绿植 5水壶挂钟）
+  const lam = (c) => new THREE.MeshLambertMaterial({ color: c });
+  const ph = (c) => new THREE.MeshPhongMaterial({ color: c, shininess: 60 });
+  switch (i) {
+    case 0: // 1F：吊柜 + 台面调料瓶
+      g.add(box(0.5, 0.66, 0.3, M.cabinet(), STX - 0.84, 2.06, STZ - 0.55));
+      g.add(box(0.03, 0.58, 0.24, lam(0xb8ab94), STX - 0.59, 2.08, STZ - 0.55));
+      [[-0.62, 0xba5a3a], [-0.52, 0x7a8a5a], [-0.42, 0xc9a24d]].forEach(o => {
+        const b = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.043, 0.18, 8), ph(o[1]));
+        b.position.set(STX + o[0], 1.02, STZ + 0.22); g.add(b);
+      });
+      break;
+    case 1: // 2F：后墙挂杆 + 锅具
+      g.add(box(0.94, 0.035, 0.035, ph(0xb8b0a4), STX - 0.62, 1.42, STZ - 0.62));
+      const pan = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.03, 14), ph(0x5a5148));
+      pan.position.set(STX - 0.88, 1.3, STZ - 0.62); g.add(pan);
+      const sp = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.2, 8), ph(0x8a8070));
+      sp.position.set(STX - 0.5, 1.31, STZ - 0.62); g.add(sp);
+      break;
+    case 2: // 3F（焦点）：吊灯 + 盆栽（精装层）
+      const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.5, 6), lam(0x3a352e));
+      wire.position.set(STX + 0.72, 2.72, STZ); g.add(wire);
+      const lamp = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.19, 14), ph(0xe0b04a));
+      lamp.position.set(STX + 0.72, 2.4, STZ); lamp.material.emissive = new THREE.Color(0x8a5a12); g.add(lamp);
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.06, 0.12, 10), lam(0x8a5a3a));
+      pot.position.set(STX + 0.62, 1.0, STZ + 0.24); g.add(pot);
+      const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.115, 10, 8), lam(0x64a84e));
+      leaf.position.set(STX + 0.62, 1.15, STZ + 0.24); g.add(leaf);
+      break;
+    case 3: // 4F：后墙挂画 + 绿植
+      g.add(box(0.34, 0.44, 0.03, ph(0x6a7a94), STX - 0.75, 2.15, STZ - 0.66));
+      g.add(box(0.28, 0.38, 0.01, lam(0xc9bfa8), STX - 0.75, 2.15, STZ - 0.64));
+      const p2 = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.11, 10), lam(0x9a6a4a));
+      p2.position.set(STX + 0.68, 0.99, STZ + 0.22); g.add(p2);
+      const l2 = new THREE.Mesh(new THREE.SphereGeometry(0.105, 10, 8), lam(0x74b45c));
+      l2.position.set(STX + 0.68, 1.11, STZ + 0.22); g.add(l2);
+      break;
+    case 4: // 5F：挂钟 + 台面水壶
+      const ck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.03, 18), ph(0x8a7a5a));
+      ck.rotation.x = Math.PI / 2; ck.position.set(STX - 0.72, 2.2, STZ - 0.66); g.add(ck);
+      const ck2 = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.012, 16), lam(0xd9cfb8));
+      ck2.rotation.x = Math.PI / 2; ck2.position.set(STX - 0.72, 2.2, STZ - 0.64); g.add(ck2);
+      const kettle = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.107, 0.18, 12), ph(0x6a94a8));
+      kettle.position.set(STX + 0.66, 1.02, STZ + 0.24); g.add(kettle);
+      break;
+  }
+}
+function buildHood(hood, kind, isF3, fi) {
   while (hood.children.length) { const c = hood.children[0]; hood.remove(c); }
+  const hc = HOOD_COLS[(fi || 0) % HOOD_COLS.length]; // 楼层专属色
   const flag = flagTex(kind);
   const flagMat = new THREE.MeshBasicMaterial({ map: flag, side: THREE.DoubleSide });
   if (kind === "JP") { // 深型罩+拢烟翼+前整流板
-    hood.add(box(0.62, 0.44, 0.5, M.hoodWhite(), STX, 1.69, STZ));
+    hood.add(box(0.62, 0.44, 0.5, M.hoodWhite(shade(hc, 1.06)), STX, 1.69, STZ));
     // 前整流斜板
-    const lp = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.4), M.hoodWhite());
+    const lp = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.4), M.hoodWhite(shade(hc, 1.0)));
     lp.position.set(STX, 1.5, STZ + 0.38); lp.rotation.x = 0.65; hood.add(lp);
     // 侧拢烟翼（贴墙概念）
-    [-0.33, 0.33].forEach(o => hood.add(box(0.024, 0.42, 0.34, M.hoodWhite(), STX + o, 1.66, STZ - 0.05)));
+    [-0.33, 0.33].forEach(o => hood.add(box(0.024, 0.42, 0.34, M.hoodWhite(shade(hc, 0.92)), STX + o, 1.66, STZ - 0.05)));
     const f = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.226), flagMat);
     f.position.set(STX, 1.72, STZ + 0.253); hood.add(f);
     const fn = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.226), flagMat);
     fn.position.set(STX, 1.72, STZ - 0.253); fn.rotation.y = Math.PI; hood.add(fn);
   } else { // 中式顶吸深腔
-    hood.add(box(0.86, 0.3, 0.46, M.hoodDark(), STX, 1.6, STZ));
-    hood.add(box(0.95, 0.24, 0.5, M.hoodSteel(), STX, 1.87, STZ));
+    hood.add(box(0.86, 0.3, 0.46, M.hoodDark(shade(hc, 0.85)), STX, 1.6, STZ));
+    hood.add(box(0.95, 0.24, 0.5, M.hoodSteel(hc), STX, 1.87, STZ));
     const f = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.266), flagMat);
     f.position.set(STX, 1.87, STZ + 0.253); hood.add(f);
     const fn = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.266), flagMat);
@@ -959,7 +1012,7 @@ function rebuildUnits3D() { // 焦点切换时重建全部单元（强化视觉/
 }
 function rebuildHood3F() { // 切换焦点机型（app1 调用）
   if (!V3 || !V3.units3d) return;
-  buildHood(V3.units3d[ST.focus].hood, ST.units[ST.focus].kind, true);
+  buildHood(V3.units3d[ST.focus].hood, ST.units[ST.focus].kind, true, ST.focus);
   buildStove(V3.units3d[ST.focus].group, ST.units[ST.focus].kind, ST.focus);
 }
 function disposeGroup(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
