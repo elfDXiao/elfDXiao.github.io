@@ -670,7 +670,7 @@ function makeTexs() {
     return t;
   };
   TXT.slab = T(256, 256, (g) => {          // 混凝土楼板（细噪点+拼缝）
-    g.fillStyle = "#c2b8a3"; g.fillRect(0, 0, 256, 256);
+    g.fillStyle = "#7c6b52"; g.fillRect(0, 0, 256, 256);
     for (let i = 0; i < 1100; i++) {
       g.fillStyle = `rgba(${90 + Math.random() * 90 | 0},${85 + Math.random() * 84 | 0},${72 + Math.random() * 74 | 0},.22)`;
       g.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
@@ -679,12 +679,12 @@ function makeTexs() {
     for (let i = 1; i < 2; i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, 256); g.stroke(); }
     g.beginPath(); g.moveTo(0, 128); g.lineTo(256, 128); g.stroke();
   }, 5, 3.5);
-  TXT.floor = T(256, 256, (g) => {         // 厨房地砖（3×3 方格）
-    g.fillStyle = "#b9b0a2"; g.fillRect(0, 0, 256, 256);
+  TXT.floor = T(256, 256, (g) => {         // 厨房地砖（棕褐瓷砖，对齐油烟机仿真）
+    g.fillStyle = "#4c4136"; g.fillRect(0, 0, 256, 256);
     for (let r = 0; r < 3; r++) for (let c2 = 0; c2 < 3; c2++) {
-      g.fillStyle = ["#cfc6b6", "#c9c0af", "#d4cbbb"][(r * 3 + c2) % 3];
+      g.fillStyle = ["#6a5b48", "#645641", "#6e5f4b"][(r * 3 + c2) % 3];
       g.fillRect(c2 * 85 + 2, r * 85 + 2, 80, 80);
-      g.fillStyle = "rgba(255,246,225,.08)";
+      g.fillStyle = "rgba(255,240,210,.10)";
       g.fillRect(c2 * 85 + 2, r * 85 + 2, 80, 7);
     }
   }, 6, 4);
@@ -761,22 +761,22 @@ function init3D() {
   V3.renderer.setClearColor(0x000000, 0);
   V3.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   V3.scene = new THREE.Scene();
-  V3.scene.background = makeStarTex(); // 星空环境
-  V3.scene.fog = new THREE.Fog(0x0d1226, 32, 120);
+  V3.scene.background = new THREE.Color(0x120d08); // 深暖底（对齐油烟机仿真氛围）
+  V3.scene.fog = new THREE.Fog(0x120d08, 30, 110);
   V3.camera = new THREE.PerspectiveCamera(52, 1, 0.1, 220);
   V3.orb = { th: Math.PI / 2, ph: 1.50, dist: 18.4, tx: 3.0, ty: 8.6, tz: 0, auto: false }; // 锁定正立面：厨房列居中
-  V3.scene.add(new THREE.HemisphereLight(0xc8d4ff, 0x1c2438, 0.70)); // 冷月夜
-  const dl = new THREE.DirectionalLight(0xdfe8ff, 0.44); dl.position.set(14, 26, 12); V3.scene.add(dl); // 月光
-  const dl2 = new THREE.DirectionalLight(0xffd8a0, 0.25); dl2.position.set(-8, 6, -10); V3.scene.add(dl2); // 暖补光
+  V3.scene.add(new THREE.HemisphereLight(0xffd9a0, 0x2a1c10, 0.58)); // 暖环境光（偏暗，衬托暖光斑）
+  const dl = new THREE.DirectionalLight(0xffcf90, 0.40); dl.position.set(14, 26, 12); V3.scene.add(dl); // 暖主光
+  const dl2 = new THREE.DirectionalLight(0xffbe80, 0.22); dl2.position.set(-8, 6, -10); V3.scene.add(dl2); // 暖补光
   V3.group = new THREE.Group(); V3.scene.add(V3.group);
   buildGround(); buildStatic(); buildRiser(); buildGauges(); buildUnits(); initParticles(); initLabels();
   bindCam(); v3Resize();
 }
 
 function buildGround() {
-  const g = new THREE.Mesh(new THREE.CircleGeometry(34, 48), new THREE.MeshLambertMaterial({ color: 0x1c2234 }));
+  const g = new THREE.Mesh(new THREE.CircleGeometry(34, 48), new THREE.MeshLambertMaterial({ color: 0x221709 }));
   g.rotation.x = -Math.PI / 2; V3.group.add(g);
-  const grid = new THREE.GridHelper(60, 30, 0x33405c, 0x28324e);
+  const grid = new THREE.GridHelper(60, 30, 0x4a3a22, 0x382b16);
   grid.position.y = 0.01; grid.material.transparent = true; grid.material.opacity = 0.55; V3.group.add(grid);
 }
 
@@ -893,6 +893,11 @@ function buildUnits() {
     V3.units3d[i] = { group: g, hood };
     buildHood(hood, i === ST.focus ? u.kind : "CN", i === ST.focus, i);
     decorate(g, i); // 每层不同装饰
+    // 每层暖光点灯（对齐油烟机仿真的暖光氛围）
+    const pl = new THREE.PointLight(0xffb060, 0.75, 4.5, 2);
+    pl.position.set(STX - 0.35, 2.5, STZ + 0.15); g.add(pl);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffd9a0 }));
+    bulb.position.copy(pl.position); g.add(bulb);
     // ---- 支管 ----
     const dm = i === ST.focus ? M.ductF3() : M.duct();
     const v1 = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.57, 12), dm);
