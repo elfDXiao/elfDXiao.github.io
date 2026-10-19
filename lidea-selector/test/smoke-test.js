@@ -29,7 +29,7 @@ function assert(name, cond, extra) {
 }
 
 console.log('== 数据加载 ==');
-assert('categories = 31', DATA.categories.length === 31, DATA.categories.length);
+assert('categories = 35（+浴槽形状/壁柄/壁ベース/照明限定壁）', DATA.categories.length === 35, DATA.categories.length);
 assert('size options = 9', Q.cat('size').options.length === 9);
 assert('type options = 4（H/B/M/C）', Q.cat('type').options.length === 4);
 assert('meta.rmbRate = 0.65', DATA.meta.rmbRate === 0.65, DATA.meta.rmbRate);

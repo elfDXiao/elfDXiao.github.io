@@ -58,10 +58,14 @@
       codes: ['W'], titleJa: '浴槽パン', titleZh: '浴缸底盘' },
     // step 2
     { id: 'wall', step: 2, cat: 'wall', kind: 'radio', codes: 'ALL', titleJa: '壁パネル', titleZh: '壁面' },
+    { id: 'wall_design', step: 2, cat: 'wall_design', kind: 'radio', none: true, codes: 'ALL', titleJa: '壁パネル柄', titleZh: '壁面花色' },
+    { id: 'wall_base', step: 2, cat: 'wall_base', kind: 'radio', none: true, codes: 'ALL', titleJa: 'ベースパネル', titleZh: '基板花色' },
+    { id: 'wall_limited', step: 2, cat: 'wall_limited', kind: 'multi', codes: ['LIMITED'], titleJa: '照明限定壁パネル', titleZh: '照明限定壁面板' },
     // step 3
     { id: 'floor', step: 3, cat: 'floor', kind: 'radio', codes: 'ALL', titleJa: '床', titleZh: '地板' },
     // step 4
-    { id: 'bt_tub', step: 4, cat: 'bathtub', kind: 'radio', codes: ['BT_SHAPE', 'T6', 'T7', 'T8', 'TR', 'TT', 'TS', 'TW', 'TU', 'TV', 'TA', 'TB', 'TC', 'TD'], titleJa: '浴槽（形状・素材・色）', titleZh: '浴缸（形状·材质·色）' },
+    { id: 'bt_shape', step: 4, cat: 'bathtub_shape', kind: 'radio', none: true, codes: 'ALL', titleJa: '浴槽形状', titleZh: '浴缸形状' },
+    { id: 'bt_tub', step: 4, cat: 'bathtub', kind: 'radio', codes: ['BT_SHAPE', 'S6', 'S7', 'S8', 'T6', 'T7', 'T8', 'TR', 'TT', 'TS', 'TW', 'TU', 'TV', 'TA', 'TB', 'TC', 'TD'], titleJa: '浴槽（素材・色）', titleZh: '浴缸（材质·颜色）' },
     { id: 'bt_apron', step: 4, cat: 'bathtub', kind: 'radio', codes: ['EP1', 'EP2', 'EP7', 'EPB', 'EPC', 'EPD'], titleJa: 'エプロン', titleZh: '裙板' },
     { id: 'bt_drain', step: 4, cat: 'bathtub', kind: 'radio', codes: ['DRAIN3', 'DRAIN1', 'DRAIN5'], titleJa: '浴槽排水栓', titleZh: '浴缸排水栓' },
     { id: 'bt_bar', step: 4, cat: 'bathtub', kind: 'radio', codes: ['BAR1', 'BAR2', 'BARN'], titleJa: '浴槽内握りバー', titleZh: '浴缸内扶手' },
@@ -98,7 +102,9 @@
     // step 12
     { id: 'lighting', step: 12, cat: 'lighting', kind: 'radio',
       basic: { code: 'LIGHT_BASIC', nameJa: '照明（基本）', nameZh: '照明（基本）' },
-      codes: 'ALL', titleJa: '照明', titleZh: '照明' },
+      codes: ['EC', 'EC_UP', 'EH', 'EH_UP', 'YC', 'YC1', 'YH', 'YH1', 'PC', 'PC1', 'GP', 'RW'],   // HP（追加ダウンライト）は lighting_add へ
+      titleJa: '照明', titleZh: '照明' },
+    { id: 'lighting_add', step: 12, cat: 'lighting', kind: 'multi', codes: ['HP'], titleJa: '追加ダウンライト', titleZh: '追加筒灯' },
     { id: 'mirror', step: 12, cat: 'mirror', kind: 'radio', codes: 'ALL', titleJa: 'ミラー', titleZh: '镜子' },
     // step 13
     { id: 'storage', step: 13, cat: 'storage', kind: 'radio',
@@ -226,6 +232,125 @@
     if (uru === 'UruAri') return 'UruAri_' + bucket;              // うるつやありは兼用水栓列なし
     return 'UruNashi_' + bucket + (selIs('faucet', 'S5') ? '_Kan' : '_Futsu');
   }
+  /** ★ 浴槽形状（P.115/P.116）：未选择时按尺寸取標準形（1624=ワイド、其余=ミナモ） */
+  var SHAPE_NAMES = { MW: 'ミナモワイド', WD: 'ワイド', MN: 'ミナモ', EB: 'エコベンチ', SL: 'ストレートライン', L16: '1600ロング', L12: '1200ロング' };
+  function currentShape() {
+    var c = state.sel.bt_shape;
+    if (c && SHAPE_NAMES[c]) return c;
+    return sizeCode() === '1624' ? 'WD' : 'MN';   // 標準：FRP ホワイト＋標準形状（P.116 表2）
+  }
+  function currentShapeName() { return SHAPE_NAMES[currentShape()] || 'ミナモ'; }
+  function shapeIs(codes) {
+    var list = Array.isArray(codes) ? codes : [codes];
+    return list.indexOf(currentShape()) >= 0 || list.indexOf(currentShapeName()) >= 0;
+  }
+  /** ワイド系（1624、或 1620×ミナモワイド/ワイド）——S21（P.140）・フロフタ（P.118）等の分支 */
+  function isWidePlan() {
+    return sizeCode() === '1624' || (sizeCode() === '1620' && shapeIs(['MW', 'WD']));
+  }
+  /** ★ 浴槽内握りバー〈メタル〉（P.117）：1318/1316 と エコベンチ/1600ロング/ストレートライン = +27,000 */
+  function barPlanKey() {
+    var sz = sizeCode();
+    if (sz === '1316' || sz === '1318') return 'Compact';
+    if (shapeIs(['EB', 'L16', 'SL'])) return 'Eco';
+    return 'Std';
+  }
+  /** ★ フロフタ3枚組（P.118）：1624・1620（ワイド/ミナモワイド）=Wide列・1216/S1216=― */
+  function lidPlanKey() {
+    var sz = sizeCode();
+    if (sz === '1216' || sz === 'S1216') return 'None';
+    return isWidePlan() ? 'Wide' : 'Narrow';
+  }
+  /** ★ ドア位置移動（P.123）：ドア種×移動量×サイズ区分の適否（marks = 抽表した 35 列文字列） */
+  var DOOR_MOVE_COL = {
+    KE4: 0, KO4: 0, KE5: 0, KE6: 0,                    // 折り戸 700W
+    SA4: 1, SA5: 1, KE1: 1, KO1: 1, KE2: 1, KE3: 1,    // 折り戸 800W・フィラー付 700W
+    J4: 2, K4: 2, J5: 2,                               // 開き戸 700W
+    J1: 3, K1: 3, L1: 3, M1: 3, J2: 3,                 // 開き戸 800W
+    F1: 4, FE: 5, R7: 6                                // 2枚引き戸 800W / 900W / 片引き戸 800W
+  };
+  function doorMoveSide(posCode) {
+    if (posCode === 'RL' || posCode === 'LR') return 'RL_LR';
+    if (posCode === 'RC' || posCode === 'LC') return 'RC_LC';
+    return null;
+  }
+  function doorMoveRow(side) {
+    var sz = sizeCode();
+    if (side === 'RL_LR') {
+      if (sz === '1624' || (sz === '1620' && !shapeIs(['MW', 'WD']))) return 0;                 // 1624・1620（ワイド浴槽以外）
+      if ((sz === '1620' && shapeIs(['MW', 'WD'])) || sz === 'S1818' || sz === '1618' || sz === '1318') return 1;  // 1620（ワイド浴槽）・□□18
+      if (sz === '1616' || sz === '1316' || sz === '1216' || sz === 'S1216') return 2;          // □□16
+      return null;
+    }
+    if (sz === '1624' || sz === '1620' || sz === '1618' || sz === 'S1818' || sz === '1616') return 0;   // 16□□・S1818
+    if (sz === '1318' || sz === '1316') return 1;                                                // 13□□
+    if (sz === '1216') return 2;
+    if (sz === 'S1216') return 3;
+    return null;
+  }
+  /** 抽表字符串 → 单元数组（'O' / 'O1' / 'O12' / 'X'） */
+  function parseDoorMarks(str) {
+    var out = [], i = 0;
+    while (str && i < str.length) {
+      var ch = str[i];
+      if (ch === 'X') { out.push({ ok: false, c1: false, c2: false }); i++; }
+      else if (ch === 'O') {
+        var c1 = false, c2 = false; i++;
+        if (str[i] === '1' && str[i + 1] === '2') { c1 = c2 = true; i += 2; }
+        else if (str[i] === '1') { c1 = true; i++; }
+        else if (str[i] === '2') { c2 = true; i++; }
+        out.push({ ok: true, c1: c1, c2: c2 });
+      } else { i++; }
+    }
+    return out;
+  }
+  function doorMoveCell(doorCode, posCode) {
+    var m = /^(RL|LR|RC|LC)([SNTM])$/.exec(posCode || '');
+    if (!m) return null;                       // 無移動（RL/LR/RC/LC）は全○
+    var side = doorMoveSide(m[1]);
+    var col = DOOR_MOVE_COL[doorCode];
+    if (side == null || col == null) return null;
+    var rows = DATA.meta.doorMoveMatrix && DATA.meta.doorMoveMatrix.rows;
+    var row = rows && rows[side] && rows[side][doorMoveRow(side)];
+    var cells = row && parseDoorMarks(row.marks);
+    if (!cells) return null;
+    var idx = { S: 1, N: 2, T: 3, M: 4 }[m[2]] * 7 + col;
+    return cells[idx] || null;
+  }
+  /** ドア×ドア位置が不可の理由（null = 可）。＊1=Cタイプ×B面窓開口レイアウト変更、＊2=シャワーシステム（P.123） */
+  function doorMoveReason(doorCode, posCode) {
+    var cell = doorMoveCell(doorCode, posCode);
+    if (!cell) return null;
+    if (!cell.ok) return '選択中のドア位置移動では対応不可（P.123）';
+    if (cell.c1 && typeCode() === 'C' && multiHas('window_frame', 'B41')) return '＊1：CタイプのB面窓開口用レイアウト変更と同時選択不可（P.123）';
+    if (cell.c2 && currentFaucetKind() === 'ShowerSystem') return '＊2：シャワーシステム（OG1）と同時選択不可（P.123）';
+    return null;
+  }
+  /** ★ 壁パネル（P.113）：wall（クラス組合せ）× 柄クラス × ベース列 の整合 */
+  var WALL_CLASS_LABEL = { 'プレミアムⅡ': 'プレミアムⅡクラス', 'プレミアムⅠ': 'プレミアムⅠクラス', 'ハイ': 'ハイクラス', 'ベーシック': 'ベーシッククラス' };
+  var WALL_SPEC = {
+    W0: { kind: 'full', accent: 'プレミアムⅡ' }, W1: { kind: 'full', accent: 'プレミアムⅠ' },
+    W2: { kind: 'full', accent: 'ハイ' }, W3: { kind: 'full', accent: 'ベーシック' },
+    AC1: { kind: 'accent', accent: 'プレミアムⅡ', base: 'high' },
+    AC2: { kind: 'accent', accent: 'プレミアムⅡ', base: 'basic' },
+    AC3: { kind: 'accent', accent: 'プレミアムⅠ', base: 'high' },
+    AC4: { kind: 'accent', accent: 'プレミアムⅠ', base: 'basic' },
+    AC5: { kind: 'accent', accent: 'ハイ', base: 'high' },
+    AC6: { kind: 'accent', accent: 'ハイ', base: 'basic' },
+    AC7: { kind: 'accent', accent: 'ハイ', base: 'basic', baseFix: 'LE301', designFix: 'HN301' }
+  };
+  function wallSpec() { return WALL_SPEC[state.sel.wall] || null; }
+  function wallBaseKey() {
+    var o = opt('wall_base', state.sel.wall_base);
+    if (!o) return null;
+    return o.code === 'FULL' ? 'full' : o.code;
+  }
+  function wallCellCode(designOpt, baseKey) {
+    var pc = designOpt && designOpt.panelCodes;
+    if (!pc || !baseKey) return null;
+    var v = pc[baseKey];
+    return (v && v !== '―' && v !== '全面張り') ? v : null;
+  }
   /** 尺寸组后缀匹配（support_pack 键 H16/H13 等） */
   function supportPackKeyMatch(rest, size) {
     if (!rest) return true;
@@ -247,6 +372,9 @@
     else if (dimId === 'shower_head') key = currentFaucetKind();
     else if (dimId === 'shower_hook') key = currentUru();
     else if (dimId === 'bt_drain') key = currentTubMaterial();          // ★ 排水栓：浴槽材質
+    else if (dimId === 'bt_bar') key = barPlanKey();                    // ★ 浴槽内握りバー（P.117）
+    else if (dimId === 'bt_lid') key = lidPlanKey();                    // ★ フロフタ（P.118）
+    else if (dimId === 'misc_options') key = isWidePlan() ? 'Wide' : 'Narrow';   // ★ S21（P.140）
     else if (dimId === 'mirror' || dimId === 'storage') key = hShowerKey();  // ★ H×シャワーシステム
     else if (dimId === 'hose_hook') key = hoseHookKey();                // ★ シャワーホースフック
     else if (dimId === 'support_pack') {
@@ -296,6 +424,9 @@
     if (dimId === 'shower_head') return currentFaucetKind();
     if (dimId === 'shower_hook') return currentUru();
     if (dimId === 'bt_drain') return currentTubMaterial();
+    if (dimId === 'bt_bar') return barPlanKey();
+    if (dimId === 'bt_lid') return lidPlanKey();
+    if (dimId === 'misc_options') return isWidePlan() ? 'Wide' : 'Narrow';
     if (dimId === 'mirror' || dimId === 'storage') return hShowerKey();
     if (dimId === 'hose_hook') return hoseHookKey();
     if (dimId === 'support_pack') {
@@ -583,6 +714,8 @@
         if (!okS) return '该选项不适用于 ' + size + ' 尺寸';
       }
       if (Array.isArray(o.types) && o.types.indexOf(type) < 0) return '该选项不适用于 ' + type + ' タイプ';
+      // ★ 浴槽形状の適用限定（P.115/P.116：材質×形状、エプロン色など）
+      if (Array.isArray(o.shapes) && !shapeIs(o.shapes)) return '该选项不适用于「' + currentShapeName() + '」浴槽（P.115）';
       if (o.priceByType) {
         var cv = contextPrice(o, dimId);
         if (cv != null && typeof cv === 'object') {
@@ -639,6 +772,68 @@
       var hasPan = selIs('bathtub_pan', 'W');
       if (hasPan && ['A', 'U', 'B'].indexOf(code) >= 0) return '浴槽パンあり時は D/エ/F/R/ニ を選択（P.144）';
       if (!hasPan && ['D', 'E', 'F', 'R', 'NI'].indexOf(code) >= 0) return '浴槽パンなし時は A/ウ/B を選択（P.144）';
+    }
+
+    // ---- ★ 浴槽形状依存の適用制限（P.117/P.118/P.128）----
+    if (dimId === 'bt_lid' && code === 'FT_H') {
+      if (sizeIs(['1624', 'S1818'])) return '薄型腰掛付保温フタセットは1624・S1818サイズでは選択不可（P.118）';
+      if (shapeIs(['MW', 'WD', 'SL'])) return 'ワイド・ミナモワイド・ストレートライン浴槽では選択不可（P.118）';
+    }
+    if (dimId === 'counter' && code === 'VM' && shapeIs(['EB']) && currentBathtubFaucet() === 'WallFaucet') {
+      return 'エコベンチ浴槽×浴槽側壁付水栓では選択不可（P.128）';
+    }
+
+    // ---- ★ ドア位置移動の適否（P.123）：ドア位置側・ドア側の双方向 ----
+    if (dimId === 'door_position' && selected('door')) {
+      var dmr = doorMoveReason(state.sel.door, code);
+      if (dmr) return dmr;
+    }
+    if (dimId === 'door' && state.sel.door_position) {
+      var dmr2 = doorMoveReason(code, state.sel.door_position);
+      if (dmr2) return dmr2;
+    }
+
+    // ---- ★ 壁パネル 柄×ベース×クラス整合（P.113）----
+    if (dimId === 'wall_design') {
+      var specD = wallSpec();
+      if (specD) {
+        if (specD.designFix && o.code !== specD.designFix) return 'P.113：この組合せは ' + specD.designFix + ' 柄専用（標準仕様）';
+        if ((o.designClass || '') !== specD.accent) return 'P.113：' + (WALL_CLASS_LABEL[specD.accent] || specD.accent) + 'の柄を選択してください';
+        if (specD.kind === 'full') {
+          if (!wallCellCode(o, 'full')) return 'P.113：この柄は全面張りパネルとしては―';
+        } else {
+          var bkD = wallBaseKey();
+          if (bkD && bkD !== 'full' && !wallCellCode(o, bkD)) return 'P.113：この柄×ベースパネルの組合せは―';
+        }
+      }
+    }
+    if (dimId === 'wall_base') {
+      var specB = wallSpec();
+      if (specB) {
+        if (specB.kind === 'full') {
+          if (o.code !== 'FULL') return 'P.113：全面張りの場合は「全面張り」列のみ';
+        } else {
+          if (o.code === 'FULL') return 'P.113：アクセント張りではベースパネルを選択してください';
+          if (specB.base && o.baseRank !== specB.base) return 'P.113：' + (specB.base === 'basic' ? 'ベーシック' : 'ハイクラス') + 'クラスのベースパネルを選択してください';
+          if (specB.baseFix && o.code !== specB.baseFix) return 'P.113：この組合せは ' + specB.baseFix + ' 専用（標準仕様）';
+          var dvB = opt('wall_design', state.sel.wall_design);
+          if (dvB && !wallCellCode(dvB, o.code)) return 'P.113：選択中の柄×このベースパネルは―';
+        }
+      }
+    }
+    if (dimId === 'wall_limited' && code === 'LIMITED') {
+      var dvL = opt('wall_design', state.sel.wall_design);
+      var bkL = wallBaseKey();
+      if (!dvL || !bkL || (dvL.lightingOnly || []).indexOf(bkL) < 0) return 'P.113：この柄×ベースパネルは照明限定壁パネル非対応';
+    }
+    // ---- ★ 照明限定壁パネルと照明の灯数（P.129 ※1/※2/※3）----
+    if (dimId === 'lighting_add' && code === 'HP' && !multiHas('wall_limited', 'LIMITED')) {
+      return '照明限定壁パネル選択時のみ（P.129）';
+    }
+    if (multiHas('wall_limited', 'LIMITED') && dimId === 'lighting') {
+      if (code === 'EC' || code === 'EH') return '照明限定壁パネル時は＋1灯版（EC_UP／EH_UP）を選択（P.129 ※1）';
+      if ((code === 'YC1' || code === 'YH1' || code === 'PC1') && !multiHas('lighting_add', 'HP')) return '照明限定壁パネル時の1灯は追加ダウンライト併用（P.129 ※2）';
+      if ((code === 'YC' || code === 'YH' || code === 'PC') && sizeIs(['1624'])) return '照明限定壁パネルの1624サイズは2灯＋追加ダウンライト（P.129 ※3）';
     }
 
     // ---- ★ ドア高×壁高（P.123）：壁高1900ではドア高2000H（各種ドア/引き戸）は選択不可 ----

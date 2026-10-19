@@ -24,9 +24,9 @@ function assert(name, cond, extra) {
 }
 
 /** 设定选择并取该维度选项的 contribution / disabledReason */
-function probe(dimId, code, sel, size) {
+function probe(dimId, code, sel, size, multi) {
   Q.state.sel = Object.assign({ type: 'M' }, sel || {});
-  Q.state.multi = {};
+  Q.state.multi = JSON.parse(JSON.stringify(multi || {}));
   Object.keys(Q.state.sel).forEach(k => { if (k.indexOf('multi:') === 0) { /* noop */ } });
   Q.setSize(size || '1616');
   const d = Q.dim(dimId);
@@ -34,8 +34,8 @@ function probe(dimId, code, sel, size) {
   else { Q.state.multi[dimId] = {}; Q.state.multi[dimId][code] = true; }
   return { v: Q.contributionFor(dimId), dis: Q.disabledReason(dimId, code) };
 }
-function v(dimId, code, sel, size) { return probe(dimId, code, sel, size).v; }
-function dis(dimId, code, sel, size) { return probe(dimId, code, sel, size).dis; }
+function v(dimId, code, sel, size, multi) { return probe(dimId, code, sel, size, multi).v; }
+function dis(dimId, code, sel, size, multi) { return probe(dimId, code, sel, size, multi).dis; }
 
 console.log('== P.114 床（C列 +50,000/+70,000、2E/2C/2A は C 専用）==');
 assert('C×1E = +50,000', v('floor', '1E', { type: 'C' }) === 50000, v('floor', '1E', { type: 'C' }));
@@ -188,7 +188,71 @@ assert('壁高1900×R7(片引き2000H) = 不可选', !!dis('door', 'R7', { ceili
 assert('壁高2000×KE1 = 可选', !dis('door', 'KE1', { ceiling: 'E0' }));
 assert('壁高未选（既定2200）×KE1 = 可选', !dis('door', 'KE1', {}));
 
-console.log('== 基准报价未漂移（M 1616 標準仕様 + 默认选项）==');
+console.log('== P.115/P.116 浴槽形状维度（形状±0／材質×形状限定／形状依存价）==');
+assert('浴槽形状 7 种（MW/WD/MN/EB/SL/L16/L12）', (DATA.categories.find(c => c.id === 'bathtub_shape') || { options: [] }).options.length === 7);
+assert('P.116 パール ミナモワイド＝S6/S7/S8', ['S6', 'S7', 'S8'].every(c => v('bt_tub', c, { type: 'M', bt_shape: 'MW' }, '1624') === 165000));
+assert('P.116 S6 在ミナモ形状下 不可选', !!dis('bt_tub', 'S6', { type: 'M', bt_shape: 'MN' }, '1620'));
+assert('P.116 T6 在ワイド形状下 不可选', !!dis('bt_tub', 'T6', { type: 'M', bt_shape: 'WD' }, '1620'));
+assert('P.116 T6 在ミナモ形状下 +165,000', v('bt_tub', 'T6', { type: 'M', bt_shape: 'MN' }, '1620') === 165000);
+assert('P.115 ルフレトーンはワイドでも可选', !dis('bt_tub', 'TR', { type: 'M', bt_shape: 'WD' }, '1620') && v('bt_tub', 'TR', { type: 'M', bt_shape: 'WD' }, '1620') === 70000);
+assert('P.117 浴槽内握りバー メタル：ミナモ+37,000', v('bt_bar', 'BAR2', { type: 'M', bt_shape: 'MN' }, '1616') === 37000);
+assert('P.117 エコベンチ は +27,000', v('bt_bar', 'BAR2', { type: 'M', bt_shape: 'EB' }, '1616') === 27000);
+assert('P.117 ストレートラインは +27,000', v('bt_bar', 'BAR2', { type: 'M', bt_shape: 'SL' }, '1620') === 27000);
+assert('P.117 1316 は +27,000', v('bt_bar', 'BAR2', { type: 'M', bt_shape: 'MN' }, '1316') === 27000);
+assert('P.117 1216 は +37,000', v('bt_bar', 'BAR2', { type: 'M', bt_shape: 'MN' }, '1216') === 37000);
+assert('P.117 エプロン色 B（グレー）はミナモのみ', !dis('bt_apron', 'EPB', { type: 'M', bt_shape: 'MN' }) && !!dis('bt_apron', 'EPB', { type: 'M', bt_shape: 'EB' }));
+assert('P.118 フロフタ3枚組：ミナモ 1616＝+6,000', v('bt_lid', 'FT_F', { type: 'M', bt_shape: 'MN' }, '1616') === 6000);
+assert('P.118 フロフタ3枚組：ワイド 1620＝+9,000', v('bt_lid', 'FT_F', { type: 'M', bt_shape: 'WD' }, '1620') === 9000);
+assert('P.118 フロフタ3枚組：ミナモ 1620＝+6,000', v('bt_lid', 'FT_F', { type: 'M', bt_shape: 'MN' }, '1620') === 6000);
+assert('P.118 フロフタ3枚組：1216 は―', v('bt_lid', 'FT_F', { type: 'M', bt_shape: 'MN' }, '1216') === null);
+assert('P.118 腰掛付フタ：ミナモ 1620＝+40,000', v('bt_lid', 'FT_H', { type: 'M', bt_shape: 'MN' }, '1620') === 40000);
+assert('P.118 腰掛付フタ：ワイド 1620 は―', !!dis('bt_lid', 'FT_H', { type: 'M', bt_shape: 'WD' }, '1620'));
+assert('P.118 腰掛付フタ：1624 は―', !!dis('bt_lid', 'FT_H', { type: 'M', bt_shape: 'WD' }, '1624'));
+assert('P.118 腰掛付フタ：ストレートラインは―', !!dis('bt_lid', 'FT_H', { type: 'M', bt_shape: 'SL' }, '1620'));
+assert('P.140 S21：1624＝+11,000／ミナモ 1620＝+10,000', v('misc_options', 'S21', { type: 'M', bt_shape: 'WD' }, '1624') === 11000 && v('misc_options', 'S21', { type: 'M', bt_shape: 'MN' }, '1620') === 10000);
+assert('P.128 VM（Cタイプ専用）×エコベンチ×浴槽側壁付水栓 は―',
+  !!dis('counter', 'VM', { type: 'C', bt_shape: 'EB', tub_faucet: 'BP' }, null, {}) &&
+  !dis('counter', 'VM', { type: 'C', bt_shape: 'EB', tub_faucet: 'NN' }, null, {}) &&
+  !!dis('counter', 'VM', { type: 'M', bt_shape: 'EB', tub_faucet: 'BP' }, null, {}));
+
+console.log('== P.123 ドア位置移動 適否マトリクス ==');
+assert('meta.doorMoveMatrix 存在（RL_LR 3 行 + RC_LC 4 行）',
+  !!(DATA.meta.doorMoveMatrix && DATA.meta.doorMoveMatrix.rows.RL_LR[2] && DATA.meta.doorMoveMatrix.rows.RC_LC[3]));
+assert('1624・RLM×折り戸800 可（マトリクス○）', !dis('door_position', 'RLM', { type: 'M', door: 'KE1' }, '1624'));
+assert('1624・RLM×2枚引き戸900 不可（マトリクス―）', !!dis('door_position', 'RLM', { type: 'M', door: 'FE' }, '1624'));
+assert('1616・RCS×片引き戸800 不可', !!dis('door_position', 'RCS', { type: 'M', door: 'R7' }, '1616'));
+assert('1616・RLS×折り戸700 可', !dis('door_position', 'RLS', { type: 'M', door: 'KE5' }, '1616'));
+assert('1616・RLS×折り戸800 不可', !!dis('door_position', 'RLS', { type: 'M', door: 'KE1' }, '1616'));
+assert('＊1：C×B面窓開口レイアウト変更 + RCM×開き戸800 → 不可',
+  !!dis('door_position', 'RCM', { type: 'C', door: 'L1' }, '1616', { window_frame: { B41: true } }));
+assert('＊1 条件不满足则可选（M タイプ）', !dis('door_position', 'RCM', { type: 'M', door: 'L1' }, '1616'));
+assert('＊2：シャワーシステム + 1318・RCN×開き戸800 → 不可',
+  !!dis('door_position', 'RCN', { type: 'M', door: 'J1', faucet: 'H3' }, '1318'));
+assert('＊2 条件不满足则可选（非シャワーシステム）', !dis('door_position', 'RCN', { type: 'M', door: 'J1', faucet: 'D4' }, '1318'));
+assert('反向：ドア侧也被矩阵拦（FE @ RLM）', !!dis('door', 'FE', { type: 'M', door_position: 'RLM' }, '1624'));
+
+console.log('== P.113 壁パネル 35 柄 × 7 列マトリクス + 照明限定壁 ==');
+assert('meta.wallPanelMatrix 存在（7 列）', !!(DATA.meta.wallPanelMatrix && DATA.meta.wallPanelMatrix.columns.length === 7));
+assert('wall_design 35 柄 / wall_base 7 列', (DATA.categories.find(c => c.id === 'wall_design') || { options: [] }).options.length === 35 && (DATA.categories.find(c => c.id === 'wall_base') || { options: [] }).options.length === 7);
+assert('W0（全面プレミアムⅡ）× プレミアムⅡ柄 可', !dis('wall_design', 'HF334', { type: 'M', wall: 'W0' }));
+assert('W2（全面ハイクラス）× プレミアムⅡ柄 不可（クラス不同）', !!dis('wall_design', 'HF334', { type: 'M', wall: 'W2' }));
+assert('W2 × ハイクラス柄 可', !dis('wall_design', 'HN642', { type: 'M', wall: 'W2' }));
+assert('AC1（プレⅡ＋ハイクラス）× プレⅡ柄 可', !dis('wall_design', 'HF334', { type: 'M', wall: 'AC1', wall_base: 'HN301' }));
+assert('AC1 × ベーシック基板 不可', !!dis('wall_base', 'LE301', { type: 'M', wall: 'AC1' }));
+assert('全面張り时只允许「全面張り」列', !!dis('wall_base', 'HN301', { type: 'M', wall: 'W0' }) && !dis('wall_base', 'FULL', { type: 'M', wall: 'W0' }));
+assert('AC7 标准仕様：鏡面ホワイト柄＋マットホワイト基板 可', !dis('wall_design', 'HN301', { type: 'M', wall: 'AC7', wall_base: 'LE301' }) && !dis('wall_base', 'LE301', { type: 'M', wall: 'AC7' }));
+assert('AC7 × 别的柄 不可', !!dis('wall_design', 'HF334', { type: 'M', wall: 'AC7', wall_base: 'LE301' }));
+assert('照明限定壁：HF334×全面張り 可', !dis('wall_limited', 'LIMITED', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }));
+assert('照明限定壁：HN301×全面張り 不可（マトリクス无标记）', !!dis('wall_limited', 'LIMITED', { type: 'M', wall: 'W2', wall_design: 'HN301', wall_base: 'FULL' }));
+assert('P.129 HP（追加ダウンライト）は照明限定壁时のみ',
+  !!dis('lighting_add', 'HP', { type: 'M' }) &&
+  !dis('lighting_add', 'HP', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }, null, { wall_limited: { LIMITED: true } }));
+assert('P.129 ※1 照明限定壁 × EC → 不可（＋1灯版必须）', !!dis('lighting', 'EC', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }, null, { wall_limited: { LIMITED: true } }));
+assert('P.129 ※1 照明限定壁 × EC_UP → 可', !dis('lighting', 'EC_UP', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }, null, { wall_limited: { LIMITED: true } }));
+assert('P.129 ※2 照明限定壁 × YC1（无 HP）→ 不可', !!dis('lighting', 'YC1', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }, null, { wall_limited: { LIMITED: true } }));
+assert('P.129 ※2 照明限定壁 × YC1＋HP → 可', !dis('lighting', 'YC1', { type: 'M', wall: 'W0', wall_design: 'HF334', wall_base: 'FULL' }, null, { wall_limited: { LIMITED: true }, lighting_add: { HP: true } }));
+
+console.log('== 基准报价未漂移（M 1616 標準仕様）==');
 Q.reset();
 Q.setSize('1616');
 Q.state.sel.type = 'M';

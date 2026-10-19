@@ -29,17 +29,20 @@ function convertOption(o, catId) {
   if (o.material) out.material = o.material;      // ★ 浴槽材质标签（排水栓等按材质判可/不可选）
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
+  // ★ 其余字段（shapes/codesByShape/designClass/panelCodes/lightingOnly/baseRank 等）原样透传，
+  //   以后加维度字段不必再改生成器（availability 已在上面转成 sizes，不重复带出）
+  Object.keys(o).forEach(function (k) {
+    if (k === 'availability') return;
+    if (out[k] !== undefined) return;
+    out[k] = o[k];
+  });
   // ★ t32 浴缸材质 sizes 补齐（《浴缸颜色结构.md》P.71 形状×材质对应）：
   //   パールクォーツ（T6/T7/T8）= ミナモ系 1624/1620/S1818/1618/1616
   //   ルフレトーン/FRP（TR~TD）= ミナモワイド除外 6 形状（全尺寸可用）
-  if (catId === 'bathtub' && /^T[0-9A-Z]$/.test(o.code)) {   // T6~T8 / TR~TV / TA~TD
-    if (o.code === 'T6' || o.code === 'T7' || o.code === 'T8') {
-      out.sizes = ['1624', '1620', 'S1818', '1618', '1616'];
-    } else {
-      out.sizes = ['1216', '1620', '1624', 'S1818/1618/1616', '1318/1316', 'S1216'];
-    }
-    out.material = (o.code === 'T6' || o.code === 'T7' || o.code === 'T8') ? 'パールクォーツ'
-      : (o.code === 'TR' || o.code === 'TT' || o.code === 'TS' || o.code === 'TW' || o.code === 'TU' || o.code === 'TV') ? 'ルフレトーン'
+  // ★ t32 浴缸材质 material 补齐（尺寸/shape 限定以 lidea-data.json 为准，生成器不再硬编码尺寸）
+  if (catId === 'bathtub' && /^(?:S|T)[0-9A-Z]$/.test(o.code) && !out.material) {
+    out.material = /^[ST][678]$/.test(o.code) ? 'パールクォーツ'
+      : /^(?:TR|TT|TS|TW|TU|TV)$/.test(o.code) ? 'ルフレトーン'
       : 'FRP';
   }
   const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize;
@@ -107,6 +110,11 @@ const meta = {
   selectGuideMarkers: d.meta.selectGuideMarkers || {},
   _stats: d.meta._stats || {}
 };
+// ★ meta 的其余字段（doorMoveMatrix / wallPanelMatrix 等）原样透传（避免每加一个矩阵就要改生成器）
+Object.keys(d.meta).forEach(function (k) {
+  if (meta[k] !== undefined) return;
+  meta[k] = d.meta[k];
+});
 
 const out = { meta, categories };
 const header = '/* LIXIL Lidea（リデア）选型报价系统数据（由 gen-products.js 从 lidea-data.json 生成，请勿手改）\n' +

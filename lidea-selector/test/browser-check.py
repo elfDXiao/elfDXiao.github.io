@@ -14,7 +14,7 @@ from playwright.sync_api import sync_playwright
 import os
 # 默认本地：在仓库根目录起 `python -m http.server 8093`；也可 LIDEA_BASE=https://elfdxiao.github.io/lidea-selector/ python test/browser-check.py 直测线上
 BASE = os.environ.get("LIDEA_BASE", "http://127.0.0.1:8093/lidea-selector/")
-OUT = Path(__file__).resolve().parent / "_browser-shots"
+OUT = Path(os.environ.get("LIDEA_SHOTS", Path(__file__).resolve().parent / "_browser-shots"))
 OUT.mkdir(exist_ok=True)
 
 results = []
@@ -85,10 +85,15 @@ def main():
         check("P.114 C×1F 显示 ＋￥70,000", price_of(page, "floor", "1F") == "＋￥70,000", price_of(page, "floor", "1F"))
         check("P.114 C×2E 可选（C専用・基本仕様）", not disabled_of(page, "floor", "2E"), price_of(page, "floor", "2E"))
 
-        # P.117 排水栓（材質で可/不可が変わる）
+        # P.117 排水栓（材質で可/不可が変わる）：形状 ミナモワイド → パール S6 / FRP TA
         goto_step(page, 4)
-        js_click(page, '.opt-block[data-dim="bt_tub"] input[data-code="T6"]')
+        js_click(page, '.opt-block[data-dim="bt_shape"] input[data-code="MW"]')
+        check("P.115 形状维度（ミナモワイド）可选", True)
+        js_click(page, '.opt-block[data-dim="bt_tub"] input[data-code="S6"]')
         check("P.117 パール×ゴム栓 禁用", disabled_of(page, "bt_drain", "DRAIN1"))
+        check("P.116 パール/クォーツ（ミナモワイド S6）＝＋￥165,000", price_of(page, "bt_tub", "S6") == "＋￥165,000",
+              price_of(page, "bt_tub", "S6"))
+        js_click(page, '.opt-block[data-dim="bt_shape"] input[data-code="WD"]')   # ワイド＝ルフレトーン/FRP のみ
         js_click(page, '.opt-block[data-dim="bt_tub"] input[data-code="TA"]')
         check("P.117 C×ゴム栓（FRP）＝基本仕様（±0）", price_of(page, "bt_drain", "DRAIN1") == "基本",
               price_of(page, "bt_drain", "DRAIN1"))
@@ -119,6 +124,23 @@ def main():
         check("P.132 KD（M）＝－￥5,200", price_of(page, "storage", "KD") == "－￥5,200", price_of(page, "storage", "KD"))
         check("P.132 GT（M）＝＋￥31,700（FT 同額）", price_of(page, "storage", "GT") == "＋￥31,700", price_of(page, "storage", "GT"))
         check("P.132 JT/KT 卡片存在（HT 同額）", card(page, "storage", "JT").count() > 0 and card(page, "storage", "KT").count() > 0)
+
+        # P.113 壁パネル柄（35 柄）+ ベースパネル（7 列）
+        goto_step(page, 2)
+        check("P.113 壁パネル柄 35 张卡片", card(page, "wall_design", "HF334").count() > 0 and
+              page.locator('.opt-block[data-dim="wall_design"] label.opt-card').count() == 35,
+              page.locator('.opt-block[data-dim="wall_design"] label.opt-card').count())
+        check("P.113 ベースパネル 7 列", page.locator('.opt-block[data-dim="wall_base"] label.opt-card').count() == 7)
+        js_click(page, '.opt-block[data-dim="wall"] input[data-code="W0"]')
+        check("P.113 W0×プレミアムⅡ柄 可选", not disabled_of(page, "wall_design", "HF334"))
+        check("P.113 W0×ハイクラス柄 禁用（クラス不同）", disabled_of(page, "wall_design", "HN642"))
+
+        # P.123 ドア位置移動：RLM×2枚引き戸900 @1624 は矩阵―
+        goto_step(page, 1)
+        js_click(page, '.opt-block[data-dim="door_position"] input[data-code="RLM"]')
+        goto_step(page, 8)
+        check("P.123 ドア矩阵：RLM @1624 で 2枚引き戸900 禁用", disabled_of(page, "door", "FE"))
+        check("P.123 ドア矩阵：RLM @1624 で 折り戸800 可", not disabled_of(page, "door", "KE1"))
 
         # P.144 給水配管：新規 エ・ニ が出る
         goto_step(page, 15)
