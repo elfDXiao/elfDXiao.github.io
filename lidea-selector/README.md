@@ -76,7 +76,9 @@ lidea-bathroom/
 | `priceDiff` | 固定差价（全タイプ共通） | `130000`（壁パネル W0） |
 | `price` | 单品绝对价 | `334000`（浴室テレビ） |
 | `priceByType` | タイプ键（H/B/M/C）或组键（HBM/BMC/HMC/BM） | `{"H":0,"BMC":19600}` |
-| `priceByType` 条件键 | 按当前选择解析：水栓種（ThermoMetal/WideLever/ShowerSystem/BlackFaucet）、浴槽側水栓（FaucetNone/WallFaucet）、うるつや（UruAri/UruNashi）、サポートパック（タイプ+尺寸组 H16/H13） | `{"FaucetNone":0,"WallFaucet":15000}` |
+| `priceByType` 条件键 | 按当前选择解析：水栓種（ThermoMetal/WideLever/ShowerSystem/BlackFaucet）、浴槽側水栓（FaucetNone/WallFaucet）、うるつや（UruAri/UruNashi）、サポートパック（タイプ+尺寸组 H16/H13）、**浴槽材質（PearlQuartz/FRP：P.117 排水栓）**、**H×シャワーシステム（H_SS/H_BH：P.130/132）**、**シャワーホースフック复合键（UruAri_BM／UruNashi_MS_Futsu／UruNashi_BM_Kan 等：P.128）** | `{"FaucetNone":0,"WallFaucet":15000}` |
+| `sizes` / `types` | 適用尺寸/タイプ限定（直接数组，或由 `availability` 派生） | `["1624","S1818"]` |
+| `material` | 浴槽材質标签（T6-T8=パールクォーツ／TR-TV=ルフレトーン／TA-TD=FRP）——排水栓可/不可与价格按此分支 | `"FRP"` |
 | `pricesBySize` | 尺寸档差价（键为尺寸或尺寸组） | `{"1624":0,"1620/S1818/1618":0,...}` |
 | `constraints` / `note` | 组合限制/备注 | — |
 
@@ -111,12 +113,16 @@ lidea-bathroom/
 ## 七、测试
 
 ```bash
-node test/gen-products.js   # 重新生成 products.js（数据更新后必跑）
-node test/smoke-test.js     # 核心逻辑 ✅（0.65 计价/矩阵/条件键/约束/品番/CSV）
-node test/dom-test.js       # UI 渲染 ✅（jsdom 模拟 file:// 直开）
-node test/cold-region-test.js  # 寒冷地（region=C）选项价通道 ✅（现网数据零影响 + 替换语义 + 标准价通道）
-node test/probe-ds-diff.js     # 与 d51c8f8 基线逐格对比（现网数据：78 项「有价→禁用」+ 180 处价格变化，全部为手册裁决项）
-node test/snapshot-region.js   # 一般地/寒冷地全量 contribution 快照（15804 行/区域）；加 --old <dir> 可用旧版 js/ 跑，做前后 diff
+node test/gen-products.js            # 重新生成 products.js（数据更新后必跑；源=lidea-data.json）
+node test/smoke-test.js              # 核心逻辑 ✅
+node test/dom-test.js                # UI 渲染 ✅（jsdom 模拟 file:// 直开）
+node test/cold-region-test.js        # 寒冷地（region=C）选项价通道 ✅
+node test/official-verify-20261019.js  # ★ 官方 P110-P147 逐表核对门禁（85 断言）✅
+node test/probe-ds-diff.js           # 与 d51c8f8 基线逐格对比（历史探针）
+node test/snapshot-region.js         # 一般地/寒冷地全量 contribution 快照；`--old <dir>` 可做前后 diff
+node test/sync-json-from-products.js # 维护工具：把 products.js 独有字段回填 lidea-data.json（--dry 试跑）
+node test/fix-official-20261019.js   # 维护工具：2026-10-19 官方修订数据脚本（--dry 试跑；page 出处写在每条 note）
+python test/browser-check.py         # ★ 真实浏览器门禁（20 项，需 python playwright；仓库根目录起 8093 服务）
 ```
 
 ### 寒冷地（region=C）选项价通道
@@ -131,7 +137,41 @@ node test/snapshot-region.js   # 一般地/寒冷地全量 contribution 快照�
 
 smoke 特有断言：**0.65 人民币计价（M1616：1,379,000→税込 1,516,900→×0.05×0.65=49,299）**、標準仕様価格矩阵抽查、寒冷地 +5,000、1624 自动修复タイプ→M、条件键（water_pipe FaucetNone/WallFaucet、shower_head ThermoMetal/ShowerSystem、support_pack H16/H13）、约束（サポートパック C 不可、シャワーシステム×カウンター、うるつや×D5、兼用×浴槽側、K58 需 Q/T、アクアジェット→パン W autoFix、K20 尺寸限定）、品番 BDUS-1616M-A+H(C)RL、CSV。
 
-## 八、部署前收尾建议
+## 八、2026-10-19 官方逐表核对修订（P110-P147）
+
+以官方 PDF（与本地目录 P110-P147 文本层逐字节一致的 2026.08 価格掲載版）逐表比对后修订；
+证据存 `E:/自媒体账号阶段性成活/个人主页管理/lidea-bathroom/_verify_official_20261019/`（official_p*.txt 表抽提 + imgs/*.png 放大图）。
+
+**修了的价格（右上为官方页）**：
+
+| 位置 | 官方 | 修订前 |
+| :--- | :--- | :--- |
+| 床 P.114 | C タイプ列：1E/1C/1A +¥50,000、1F/1D/1B +¥70,000；2E/2C/2A 仅 C | C 列为 0 / 全タイプ共通 +20,000；2E/2C/2A 全タイプ可选 |
+| 浴槽排水栓 P.117 | プッシュ：HBM±0／C+15,000；ゴム栓：HBM(FRP)−15,000／C(FRP)±0／パールは― | 按材質键（HBM+FRP 多算 15,000＋两项少算/多减） |
+| カウンター P.128 | NY（なし・585mm）=HBM−35,000／C±0；XV は C―；アッパーカウンターは 1624・S1818×M/C 専用 | NY=0；AC1/AC2 无限制 |
+| 照明 P.129 | EC/EH 標準灯数=±0（+17,900 是「1灯多い」版，另设 EC_UP/EH_UP）；YC/YH・PC の 1620系=+3,900/+15,900；1灯版 −7,000/−1,000（另设 YC1/YH1/PC1）；1216×シャワーシステムは GP/RW が3灯 | EC/EH 小尺寸默认 +17,900；YC/PC 1620系用了小尺寸的 1灯值 |
+| ミラー P.130 | NN（ミラーなし）B−40,500〜−31,500／M−13,500／C−8,700；EA は H×シャワーシステム+10,000；BA は C 専用；キレイ鏡は B/M/C | B/M/C 不能选なし；EA 写反；BA/キレイ镜无类型限定 |
+| 収納 P.132 | KD=HD 同額、GT=FT 同額、**JT/KT（新設）=HT 同額**；メタルシェルフは H×シャワーシステム／M S1818・以外で分岐（C は―）；H（ボディハグ）列与シャワーシステム列分开 | KD/GT 固定值；JT/KT 缺失；メタルシェルフ按尺寸一口价 |
+| 収納 P.131 | 1U/2U/SB は B 専用；浴槽側メタルシェルフ600W（AA/BA）は H×シャワーシステム専用 | 无类型/条件限定 |
+| 給水給湯配管 P.144 | 全 8 種（A/ウ/B/D/**エ/ニ**）；パンなし=A/ウ/B、パンあり=D/エ/F/R/ニ | 6 種；无パン区分（ウ 在无壁付水栓时也可选） |
+| シャワーヘッド P.126 | FF/FG 仅 B/M/C（H表无） | H 可采（−12,000） |
+| シャワーフック P.127 | GE/GF/GD/HD 为 B 专用；GC/HC 的 M/C 价不同（GC：M−3,000/C+25,000） | B 值通用于所有タイプ |
+| シャワーホースフック P.128 | うるつや有無 ×（B/M・M S1818・C）× 兼用水栓 三维持价（含 HK_N） | 5 个代表值（C/M S1818 价错） |
+| 保温材 P.140 | S20 トラップ保温材：一般地+3,000／寒冷地±0 | 用 `一般地/寒冷地` 键（引擎不识别 → 禁用） |
+| ドア高×壁高 P.123 | 壁高1900 时 2000H 门不可 | 未执行 |
+
+**管线（重要）**：源数据 = `lidea-bathroom/data/lidea-data.json`，线上 `data/products.js` 由 `test/gen-products.js` 生成。
+本轮先跑 `test/sync-json-from-products.js` 把线上修復批次（水栓按タイプ重键、8 青字格寒冷地价、T6-T8 尺寸限定）**回填源 JSON**，再改新修正——
+否则直接生成会把线上已修好的那幾项覆盖回旧值。现在的回归链：JSON → gen-products → products.js（与修订前逐字节可复现）+ 四套 Node 门禁 + 无头浏览器门禁。
+
+**已知局限（有意不实现，均不影响現有可达价格）**：
+1. **没建“浴槽形状”维度**（ミナモ/ワイド/エコベンチ/1600ロング/ストレートライン/1200ロング）——按尺寸隐式取标准形（ミナモ系）；因此 BAR2 的 +27,000（エコベンチ等）、EP7/EPB/EPC/EPD 的形状限定、FT_F/FT_H 的形状条件、とるピカスリム×エコベンチ 互斥等在 UI 上不可达（数值本身已按官方写入 note）。
+2. **ドア位置移動适否矩阵（P.123）×寸法×门种**、**P.121 移动量矩阵**未建（价格统一 +9,000 已正确）。
+3. **壁パネル 35 柄×7 ベース 组合矩阵（P.113）**未收（价格只到“全面張り4 クラス + アクセント7 组合”一层，官方等价；柄仅影响品番）。
+4. **照明限定壁パネル**未做维度（因此“+17,900 増灯/HP 追加ダウンライト”的强制联动只在 note/约束文本里）；電源/壁高/斜め天井等禁则仍以数据注记形式展示，引擎只硬编码十余条（逐步补）。
+5. 形状相关的一层待补：S21 床気密材の 1620（ワイド/ミナモ）、バー 1620〜1616 的 27,000 分支。
+
+## 九、部署前收尾建议
 
 - [ ] reviewer 终核 `数据提取说明.md` 与 `研究文档 §8` 不确定项（ドア位置移動 200-400mm 価格、写真セット 14 组合、1620 ワイド浴槽区分、壁柄コード表、寒冷地オプション差額網羅、サポートパック 6 価格のサイズ対応、マグネットアイテム取付位置制限）
 - [ ] 部署 `elfDXiao.github.io/lidea-selector/`（复制 web/ 内容），并在 kitchen.html 加 select-card 入口

@@ -16,11 +16,17 @@ function convertOption(o, catId) {
   if (o.price != null) out.price = o.price;
   if (o.priceByType) out.priceByType = o.priceByType;
   if (o.pricesBySize) out.pricesBySize = o.pricesBySize;
+  // ★ 寒冷地（region=C）差异格通道：cold* 原样透传（引擎按上下文顶替一般地价）
+  ['coldPriceDiff', 'coldPriceByType', 'coldPricesBySize', 'coldPrice', 'coldIsBasic'].forEach(function (k) {
+    if (o[k] !== undefined) out[k] = o[k];
+  });
+  if (Array.isArray(o.sizes)) out.sizes = o.sizes.slice();   // ★ 直接指定的適用尺寸（アッパーカウンター等）
   if (o.availability && typeof o.availability === 'object') {
     const sizes = Object.keys(o.availability).filter(k => o.availability[k] !== false);
     if (sizes.length) out.sizes = sizes;
   }
   if (o.types && Array.isArray(o.types)) out.types = o.types;
+  if (o.material) out.material = o.material;      // ★ 浴槽材质标签（排水栓等按材质判可/不可选）
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
   // ★ t32 浴缸材质 sizes 补齐（《浴缸颜色结构.md》P.71 形状×材质对应）：

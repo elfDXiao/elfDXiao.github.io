@@ -93,7 +93,7 @@
     { id: 'urutuya', step: 11, cat: 'urutuya', kind: 'radio',
       basic: { code: 'URU_BASIC', nameJa: 'うるつや浄水（タイプ別基本）', nameZh: '润泽净水（按型号）' },
       codes: ['A', 'N'], titleJa: 'うるつや浄水', titleZh: '润泽净水' },
-    { id: 'hose_hook', step: 11, cat: 'urutuya', kind: 'radio', none: true, codes: ['HK1', 'HK2', 'HK4', 'HK5'], titleJa: 'シャワーホースフック', titleZh: '花洒软管挂钩' },
+    { id: 'hose_hook', step: 11, cat: 'urutuya', kind: 'radio', none: true, codes: ['HK1', 'HK2', 'HK4', 'HK5', 'HK_N'], titleJa: 'シャワーホースフック', titleZh: '花洒软管挂钩' },
     { id: 'counter', step: 11, cat: 'counter', kind: 'radio', codes: 'ALL', titleJa: 'カウンター', titleZh: '台面' },
     // step 12
     { id: 'lighting', step: 12, cat: 'lighting', kind: 'radio',
@@ -102,7 +102,7 @@
     { id: 'mirror', step: 12, cat: 'mirror', kind: 'radio', codes: 'ALL', titleJa: 'ミラー', titleZh: '镜子' },
     // step 13
     { id: 'storage', step: 13, cat: 'storage', kind: 'radio',
-      codes: ['1U', '2U', 'SB4', 'SB5', 'SB3', 'AA', 'BA', 'FD', 'GD', 'HD', 'JD', 'KD', 'FT', 'GT', 'HT', '2G', '2T', '3G', '3T', 'L2', '2Q', 'L3', '3Q', 'AS', 'BS', 'CS', 'DS', 'ES', 'LS', 'MS', 'PS', 'QS', 'RS', 'AC', 'BC', 'CC', 'DC', 'EC', 'LC', 'MC', 'PC', 'QC', 'RC'],
+      codes: ['1U', '2U', 'SB4', 'SB5', 'SB3', 'AA', 'BA', 'FD', 'GD', 'HD', 'JD', 'KD', 'FT', 'GT', 'HT', 'JT', 'KT', '2G', '2T', '3G', '3T', 'L2', '2Q', 'L3', '3Q', 'AS', 'BS', 'CS', 'DS', 'ES', 'LS', 'MS', 'PS', 'QS', 'RS', 'AC', 'BC', 'CC', 'DC', 'EC', 'LC', 'MC', 'PC', 'QC', 'RC'],
       titleJa: '収納棚', titleZh: '收纳架' },
     { id: 'magnet', step: 13, cat: 'storage', kind: 'multi',
       codes: ['A70', 'A71', 'A72', 'A73', 'A74', 'A75', 'A76', 'A77', 'A78', 'A79', 'A83', 'A84', 'A85', 'A86', 'A87', 'A88', 'A89', 'A90', 'A91', 'A92', 'A96', 'A97', 'A98', 'A99', 'M03', 'A93', 'A94', 'A95'],
@@ -209,6 +209,23 @@
   function currentUru() {
     return selIs('urutuya', 'A') ? 'UruAri' : 'UruNashi';
   }
+  /** ★ 浴槽材質（P.117 排水栓の可/不可・価格分岐）：パール/クォーツ と FRP・ルフレトーン の2列 */
+  function currentTubMaterial() {
+    var o = selOpt('bt_tub');
+    return (o && o.material === 'パールクォーツ') ? 'PearlQuartz' : 'FRP';
+  }
+  /** ★ Hタイプのシャワー種（P.132 収納・P.130 ミラー）：シャワーシステム（OG1）=H3/H4 選択時は H_SS、他は H_BH */
+  function hShowerKey() {
+    if (typeCode() !== 'H') return null;
+    return currentFaucetKind() === 'ShowerSystem' ? 'H_SS' : 'H_BH';
+  }
+  /** ★ シャワーホースフック（P.128）：うるつや有無 × サイズ区分（B/M・M S1818・C）× 兼用水栓（S5） */
+  function hoseHookKey() {
+    var uru = currentUru();
+    var bucket = typeCode() === 'C' ? 'C' : (typeCode() === 'M' && sizeCode() === 'S1818' ? 'MS' : 'BM');
+    if (uru === 'UruAri') return 'UruAri_' + bucket;              // うるつやありは兼用水栓列なし
+    return 'UruNashi_' + bucket + (selIs('faucet', 'S5') ? '_Kan' : '_Futsu');
+  }
   /** 尺寸组后缀匹配（support_pack 键 H16/H13 等） */
   function supportPackKeyMatch(rest, size) {
     if (!rest) return true;
@@ -229,6 +246,9 @@
     if (dimId === 'water_pipe') key = currentBathtubFaucet();
     else if (dimId === 'shower_head') key = currentFaucetKind();
     else if (dimId === 'shower_hook') key = currentUru();
+    else if (dimId === 'bt_drain') key = currentTubMaterial();          // ★ 排水栓：浴槽材質
+    else if (dimId === 'mirror' || dimId === 'storage') key = hShowerKey();  // ★ H×シャワーシステム
+    else if (dimId === 'hose_hook') key = hoseHookKey();                // ★ シャワーホースフック
     else if (dimId === 'support_pack') {
       var p = option.priceByType;
       var t = typeCode();
@@ -275,6 +295,9 @@
     if (dimId === 'water_pipe') return currentBathtubFaucet();
     if (dimId === 'shower_head') return currentFaucetKind();
     if (dimId === 'shower_hook') return currentUru();
+    if (dimId === 'bt_drain') return currentTubMaterial();
+    if (dimId === 'mirror' || dimId === 'storage') return hShowerKey();
+    if (dimId === 'hose_hook') return hoseHookKey();
     if (dimId === 'support_pack') {
       var t = typeCode(), s = sizeCode(), hit = null;
       Object.keys(map).forEach(function (k) {
@@ -336,6 +359,12 @@
     o = effective(o, dimId);          // ★ 寒冷地视图（现网数据无 cold* 字段 → 原对象）
     // ★ おそうじ浴槽（K55）選択時の浴槽パンあり（W）は ±¥0（手冊 P.111※/P.135※）
     if (dimId === 'bathtub_pan' && code === 'W' && multiHas('osouji', 'K55')) return 0;
+    // ★ 照明 P.129：1216・S1216 でシャワーシステム（OG1）選択時はダウンライトが3灯（GP/RW）
+    if (dimId === 'lighting' && currentFaucetKind() === 'ShowerSystem' &&
+      (sizeCode() === '1216' || sizeCode() === 'S1216')) {
+      if (code === 'GP') return 48200;
+      if (code === 'RW') return 114200;
+    }
     if (o.priceByType) {
       var cv = contextPrice(o, dimId);
       if (cv != null) {
@@ -428,6 +457,31 @@
       }
       default: return out;
     }
+  }
+
+  /**
+   * 卡片价格显示（与计价同源，含条件键/材质上下文）：返回 { text, type, num }
+   * ——optionPriceSummary（price.js）只看纯タイプ键，条件键（H_SS/PearlQuartz/UruNashi_BM_Futsu 等）会显示成「不可」；
+   *   本函数先走 contextPrice/contextTypeValue，与 radioContribution 逐格一致。
+   */
+  function priceSummaryOf(dimId, code) {
+    if (isVirtualBasic(code)) return { text: '基本仕様', type: 'basic', num: 0 };
+    var o = opt(dimId, code);
+    if (!o) return { text: '—', type: 'empty', num: null };
+    o = effective(o, dimId);
+    if (o.priceByType) {
+      var cv = contextPrice(o, dimId);
+      if (cv != null) {
+        var tv2 = contextTypeValue(cv);
+        if (tv2 == null || typeof tv2 === 'object') return { text: '该条件下不可', type: 'na', num: null };
+        var n2 = P.toAmount(tv2);
+        if (n2 == null) return { text: '该条件下不可', type: 'na', num: null };
+        return { text: n2 === 0 ? '基本仕様' : P.fmtDiff(n2), type: n2 === 0 ? 'basic' : 'num', num: n2 };
+      }
+    }
+    var num = P.priceFor(o, typeCode(), sizeCode(), DATA.meta.sizeGroups);
+    var s = P.optionPriceSummary(o, typeCode(), sizeCode(), DATA.meta.sizeGroups);
+    return { text: s.text, type: s.type, num: (typeof num === 'number') ? num : null };
   }
 
   /** 汇总计算 */
@@ -579,6 +633,19 @@
     }
 
     // ---- ドア位置移動 200/300/400mm 待确认（仅 100mm 定价）→ 仅提示不禁 ----
+
+    // ---- ★ 給水給湯配管：浴槽パン有無で適用コードが分かれる（P.144）----
+    if (dimId === 'water_pipe') {
+      var hasPan = selIs('bathtub_pan', 'W');
+      if (hasPan && ['A', 'U', 'B'].indexOf(code) >= 0) return '浴槽パンあり時は D/エ/F/R/ニ を選択（P.144）';
+      if (!hasPan && ['D', 'E', 'F', 'R', 'NI'].indexOf(code) >= 0) return '浴槽パンなし時は A/ウ/B を選択（P.144）';
+    }
+
+    // ---- ★ ドア高×壁高（P.123）：壁高1900ではドア高2000H（各種ドア/引き戸）は選択不可 ----
+    if (dimId === 'door' && ['KE1', 'KO1', 'KE4', 'KO4', 'SA4', 'J1', 'K1', 'L1', 'M1', 'J4', 'K4', 'F1', 'FE', 'R7'].indexOf(code) >= 0) {
+      var wallHeight = { E2: 2200, K2: 2200, J2: 2200, E0: 2000, K0: 2000, J0: 2000, E9: 1900, K9: 1900, J9: 1900 }[state.sel.ceiling];
+      if (wallHeight === 1900) return '壁高1900ではドア高2000Hは選択不可（P.123）';
+    }
 
     // ---- シャワーシステム（H3/H4）× まる洗いカウンター/ダウンライト以外 ----
     var showerSys = selIs('faucet', ['H3', 'H4']);
@@ -751,6 +818,7 @@
     productNo: productNo,
     computeQuote: computeQuote, contributionFor: contributionFor, describe: describe,
     effective: effective, isColdRegion: isColdRegion,
+    priceSummaryOf: priceSummaryOf,
     disabledReason: disabledReason, autoFix: autoFix, setSize: setSize,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {

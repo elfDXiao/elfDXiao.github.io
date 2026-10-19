@@ -325,16 +325,14 @@
   }
 
   function priceNum(d, code, o) {
-    if (Q.isVirtualBasic(code)) return 0;
-    var v = P.priceFor(Q.effective(o, d.id), Q.typeCode(), Q.sizeCode());
-    return (typeof v === 'number') ? v : null;
+    return Q.priceSummaryOf(d.id, code).num;   // ★ 与计价同源（含条件键/材质上下文）
   }
 
   function optionLabel(d, code, o) {
     var sel = Q.state.sel[d.id] === code ? ' on' : '';
     var dis = Q.disabledReason(d.id, code);
     var disCls = dis ? ' disabled' : '';
-    var s = P.optionPriceSummary(Q.effective(o, d.id), Q.typeCode(), Q.sizeCode());
+    var s = Q.priceSummaryOf(d.id, code);
     var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
     var note = '';
     if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
@@ -452,7 +450,7 @@
       var on = Q.state.multi[d.id] && Q.state.multi[d.id][code];
       var dis = Q.disabledReason(d.id, code);
       var disCls = dis ? ' disabled' : '';
-      var s = P.optionPriceSummary(Q.effective(o, d.id), Q.typeCode(), Q.sizeCode());
+      var s = Q.priceSummaryOf(d.id, code);
       var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
       var note = '';
       if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';

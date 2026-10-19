@@ -65,9 +65,10 @@ keys.forEach(k => {
 assert('扫描格数 = 全维度选项 × 9 尺寸 × 4 タイプ（' + expectCells + '）', keys.length === expectCells, keys.length);
 // ★水栓 7 行 patch 后：现网 cold* 录数 = 手册 8 青字格（P.122×3＋P.123×5，蓝字＝寒冷地替换值）。
 //   一般/寒冷差异必须只落在这 7 个选项的有格タイプ：D5(H/B/M)＋H3(H)＋H4(H)＋BP/BQ/BR/BT(全4类型) × 9 尺寸 = 189 格
-const ALLOW = /\/(faucet\/(D5|H3|H4)|tub_faucet\/(BP|BQ|BR|BT))$/;
-assert('一般/寒冷 diff 仅落在 8 青字格登记的 7 选项（189 格）',
-  diff.length === 189 && diff.every(dd => ALLOW.test(dd.slice(0, dd.indexOf(':')))), diff.slice(0, 3));
+// ★2026-10-19 官方核对增补：S20 トラップ保温材（P.140「一般地＋¥3,000／寒冷地±¥0」）→ +9尺寸×4タイプ = 36 格，合计 225。
+const ALLOW = /\/(faucet\/(D5|H3|H4)|tub_faucet\/(BP|BQ|BR|BT)|misc_options\/S20)$/;
+assert('一般/寒冷 diff 仅落在 8 青字格登记的 7 选项＋S20（225 格）',
+  diff.length === 225 && diff.every(dd => ALLOW.test(dd.slice(0, dd.indexOf(':')))), diff.slice(0, 3));
 const baseDiff = Object.keys(hot.base).filter(k => hot.base[k] !== 5000 && cold.base[k] !== hot.base[k] + 5000);
 assert('标准价差异恒为 ＋¥5,000（现网无 coldTypeBasePrices）', baseDiff.length === 0, baseDiff.slice(0, 3));
 const EXPECT_COLD = {
@@ -77,7 +78,8 @@ const EXPECT_COLD = {
   'faucet/BP': { coldPriceDiff: 148200 },
   'faucet/BQ': { coldPriceDiff: 208200 },
   'faucet/BR': { coldPriceDiff: 69600 },
-  'faucet/BT': { coldPriceDiff: 116500 }
+  'faucet/BT': { coldPriceDiff: 116500 },
+  'misc_options/S20': { coldPriceDiff: 0 }      // P.140：一般地＋¥3,000／寒冷地±¥0
 };
 const seen = {};
 DATA.categories.forEach(c => c.options.forEach(o => {
@@ -85,7 +87,7 @@ DATA.categories.forEach(c => c.options.forEach(o => {
   COLD_KEYS.forEach(k => { if (o[k] != null) cold[k] = o[k]; });
   if (Object.keys(cold).length) seen[c.id + '/' + o.code] = cold;
 }));
-assert('cold* 录数恰为手册 8 青字格（7 选项），逐格值一致', JSON.stringify(seen) === JSON.stringify(EXPECT_COLD), seen);
+assert('cold* 录数恰为手册 8 青字格（7 选项）＋S20，逐格值一致', JSON.stringify(seen) === JSON.stringify(EXPECT_COLD), seen);
 
 console.log('== ② cold* 字段替换语义（合成夹具，用完即撤） ==');
 function pick(dimId, pred) {
