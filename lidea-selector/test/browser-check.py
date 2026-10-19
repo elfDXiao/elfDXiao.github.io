@@ -11,7 +11,9 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-BASE = "http://127.0.0.1:8093/lidea-selector/"   # 在仓库根目录起服务（../js/wow-char.js 需要）
+import os
+# 默认本地：在仓库根目录起 `python -m http.server 8093`；也可 LIDEA_BASE=https://elfdxiao.github.io/lidea-selector/ python test/browser-check.py 直测线上
+BASE = os.environ.get("LIDEA_BASE", "http://127.0.0.1:8093/lidea-selector/")
 OUT = Path(__file__).resolve().parent / "_browser-shots"
 OUT.mkdir(exist_ok=True)
 
