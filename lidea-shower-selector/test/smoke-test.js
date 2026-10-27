@@ -1,5 +1,5 @@
 // smoke-test.js — LIXIL シャワーユニット NS 报价系统核心逻辑自测（Node vm，无 DOM）
-// 真实数据（shower-data.json 生成）：標準仕様価格矩阵（4×4）/0.8 人民币/壁パネル两段式（23柄3クラス）/水栓種条件键/约束/品番 NSPB/CSV
+// 真实数据（shower-data.json 生成）：標準仕様価格矩阵（4×4）/0.65 人民币/壁パネル两段式（23柄3クラス）/水栓種条件键/约束/品番 NSPB/CSV
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -32,7 +32,7 @@ console.log('== 数据加载 ==');
 assert('categories = 32', DATA.categories.length === 32, DATA.categories.length);
 assert('size options = 4', Q.cat('size').options.length === 4);
 assert('type options = 4（UZ/UX/FZ/FX）', Q.cat('type').options.length === 4);
-assert('meta.rmbRate = 0.8', DATA.meta.rmbRate === 0.8, DATA.meta.rmbRate);
+assert('meta.rmbRate = 0.65', DATA.meta.rmbRate === 0.65, DATA.meta.rmbRate);
 assert('壁柄 23（wall_pattern）', Q.wallPatterns().length === 23, Q.wallPatterns().length);
 assert('写真セット 12（photo_set）', Q.cat('photo_set').options.length === 12);
 assert('总选项 = 210', DATA.categories.reduce((n, c) => n + c.options.length, 0) === 210, DATA.categories.reduce((n, c) => n + c.options.length, 0));
@@ -60,10 +60,10 @@ assert('默认 totalInc = 1,158,300', r.totalInc === 1158300, r.totalInc);
 assert('默认无 unknown', r.unknown.length === 0, r.unknown);
 assert('默认品番 = NSPB-1216LBU X-C+H(C)RL 前缀正确', Q.productNo().indexOf('NSPB-1216LB') === 0, Q.productNo());
 
-console.log('== ★ 人民币计价 rmbRate=0.8（税込×汇率×0.8） ==');
+console.log('== ★ 人民币计价 rmbRate=0.65（税込×汇率×0.65） ==');
 Q.setRate(0.05);
 r = Q.computeQuote();
-assert('rate=0.05 → rmbAllIn = round(1,158,300×0.05×0.8) = 46,332', r.rmbAllIn === 46332, r.rmbAllIn);
+assert('rate=0.05 → rmbAllIn = round(1,158,300×0.05×0.65) = 37,645', r.rmbAllIn === 37645, r.rmbAllIn);
 Q.setRate(0);
 r = Q.computeQuote();
 assert('rate=0 → rmbAllIn null', r.rmbAllIn === null, r.rmbAllIn);

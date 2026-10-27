@@ -53,7 +53,7 @@ lidea-shower/
    - shower_head：UZUX_tower（アクアタワー/アクアネオ）・UZUX_sysMetal（シャワーシステムOG1メタル）・UZUX_black（ブラック系）・FZFX_other・FZFX_bst。
    - shower_hook：UZ／UX_tower／UX_sys／FZFX_other／FZFX_bst；storage：UZUX／FZFX。
 5. **写真セット**（photo_set，12 プラン）：SU02G〜SU18A，photoSetPrice = standardPrice + optionTotal（SU02G=2,428,800、SU07F=728,200 实证 ✓）。
-6. **税込** = 本体 × 1.10；**人民币含安装价** = 税込 × 汇率 × rmbRate（**0.8**，系数仅存在于 quote.js 计算内部，页面任何位置不显示算式）。
+6. **税込** = 本体 × 1.10；**人民币含安装价** = 税込 × 汇率 × rmbRate（**0.65**，系数仅存在于 quote.js 计算内部，页面任何位置不显示算式）。
 7. **本体品番**：`NSPB-{サイズ}L{床A/B}{タイプ}-C+H(C){ドア位置}`（A=タイル床／B=FRP床），例 NSPB-0914LAUZ-C+H(C)RL / NSPB-0812LBFX-C+H(C)RC。
 
 ## 四、组合约束（§5 关键互斥，已全量实现）
@@ -73,7 +73,7 @@ lidea-shower/
 ## 五、无公式规范（全站统一）
 
 页面任何可见位置（rate-hint / sec-sub / 报价单 / 复制清单）不显示人民币计算系数或算式，仅描述：
-「大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み」。rmbRate=0.8 仅存在于 `js/quote.js` 计算内部。
+「大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み」。rmbRate=0.65 仅存在于 `js/quote.js` 计算内部。
 
 ## 六、测试与验证
 

@@ -147,7 +147,7 @@ const meta = {
   product: 'シャワーユニット（淋浴单元・浴槽なし）',
   currency: 'JPY',
   taxRate: 0.10,
-  rmbRate: 0.8,                           // ★ 人民币系数（仅计算用，页面不显示）
+  rmbRate: 0.65,                           // ★ 人民币系数（仅计算用，页面不显示）
   priceNote: d.meta.priceNote || '表示価格は全て税抜（メーカー希望小売価格）、取付費別途・オプション別。＋＝加价、－＝減价。',
   basePlan: d.meta.basePlan || { size: '1216', type: 'UX', price: 1053000 },
   typeBasePrices: typeBase,
@@ -179,7 +179,7 @@ const header = '/* LIXIL シャワーユニット NS 选型报价系统数据（
   ' * 命名空间：window.LSHOWER_DATA\n' +
   ' * 价格字段：priceDiff / price / priceByType(UZ|UX|FZ|FX) / pricesBySize（含 tile 特殊键=タイル床時）/ priceByTypeGroup / priceByFaucetGroup / priceByTypeFaucet / priceByDoorType / priceByDoorWidth / priceByClass / priceByCombo / photoSetPrice\n' +
   ' * 壁パネル两段：wall（0 全面張り/1 アクセントB面）+ wall_pattern（23 柄：premium1/high/basic + fullWallCode/accentCodeByBase 5ベース列）\n' +
-  ' * 人民币系数 rmbRate=0.8 仅存在于 meta（页面不显示算式）\n' +
+  ' * 人民币系数 rmbRate=0.65 仅存在于 meta（页面不显示算式）\n' +
   ' */\n';
 const body = header + 'window.LSHOWER_DATA = ' + JSON.stringify(out) + ';\n';
 fs.writeFileSync(DST, body, 'utf8');

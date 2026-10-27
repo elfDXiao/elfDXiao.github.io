@@ -660,10 +660,12 @@
     };
   }
 
-  /** 本体品番：BDUS/BDUW-サイズタイプ-A+H(C)ドア位置（简化：省略壁パネルL/床B/浴槽2 段；完整规则见 meta.productNo 参考） */
+  /** 本体品番（P.41 品番の見方）：BD{U}{S/W}-{サイズ}L B{タイプ}{浴槽2}-A+H（C）{ドア位置}
+   *  L＝壁パネル（Lパネル各種）、B＝FRP床（均为固定段）；第八段「2」仅 1620 尺寸且浴槽为ミナモ时表记 */
   function productNo() {
     var pan = selIs('bathtub_pan', 'W') ? 'W' : 'S';
-    return 'BDU' + pan + '-' + sizeCode() + typeCode() + '-A+H(C)' + doorPosCode();
+    var tubDigit = (sizeCode() === '1620' && currentShape() === 'MN') ? '2' : '';
+    return 'BDU' + pan + '-' + sizeCode() + 'LB' + typeCode() + tubDigit + '-A+H（C）' + doorPosCode();
   }
 
   /* ---------------- 组合约束 ---------------- */
@@ -899,6 +901,105 @@
     // ---- 洗面室暖房機（K58）→ プラズマクラスター搭載換気乾燥暖房機必須 ----
     if (dimId === 'fan' && code === 'K58' && !selIs('fan', ['Q', 'T'])) {
       return '洗面室暖房機需プラズマクラスター搭載換気乾燥暖房機（Q/T）';
+    }
+
+    // ==== ★ 斜め天井・フリーサイズ梁パネルキット 禁則（P.145，双向拦截）====
+    // C01/C02＝斜め天井C面（浴槽面 200×400 / 400×800）、C33＝斜め天井B面（器具面 200×400）
+    // S79＝フリーサイズ梁パネルキットC面用、S80＝B面用
+    var p145m = function (c) { return multiHas('misc_options', c); };
+    var p145SlopeC = p145m('C01') || p145m('C02');
+    var p145SlopeB = p145m('C33');
+    var p145BeamC = p145m('S79');
+    var p145BeamB = p145m('S80');
+    var p145Wh = { E2: 2200, K2: 2200, J2: 2200, E0: 2000, K0: 2000, J0: 2000, E9: 1900, K9: 1900, J9: 1900 }[state.sel.ceiling];
+    var p145Dl = ['EC', 'EH', 'EC_UP', 'EH_UP', 'GP', 'RW'];          // パネルダウンライト＋各種ダウンライト
+    var p145HasDl = p145Dl.indexOf(state.sel.lighting) >= 0 || multiHas('lighting_add', 'HP');
+    var p145ShowerSys = selIs('faucet', ['H3', 'H4']);                // シャワーシステム（OG1）
+    var p145MvRL = ['RLS', 'LRS', 'RLN', 'LRN', 'RLT', 'LRT', 'RLM', 'LRM'];  // ドア位置移動 RL□/LR□
+    var p145MvRC = ['RCS', 'LCS', 'RCN', 'LCN', 'RCT', 'LCT', 'RCM', 'LCM'];  // ドア位置移動 RC□/LC□
+    var p145Slide = ['F1', 'FE', 'R7'];                               // 各種引き戸
+    var p145Part = ['F27', 'F40', 'F35', 'F41', 'F37'];               // 間仕切りユニット
+    var p145VentDry = ['P', 'Q', 'R', 'T', 'F', 'G'];                  // 各種換気乾燥暖房機
+    var p145Small = sizeIs(['S1216', '1216', '1316', '1318']);          // 1216・13□□・S1216
+    var p145Sound = multiHas('bathroom_tv', 'K28');                    // サウンドシステム
+    var p145Dp = state.sel.door_position || '';
+
+    // ① 斜め天井C面 ↔ ダウンライト／サウンドシステム
+    if (dimId === 'lighting' && p145SlopeC) return '斜め天井C面とダウンライトは同時選択不可（P.145）';
+    if (dimId === 'lighting_add' && p145SlopeC) return '斜め天井C面と追加ダウンライトは同時選択不可（P.145）';
+    if (dimId === 'bathroom_tv' && code === 'K28' && p145SlopeC) return '斜め天井C面とサウンドシステムは同時選択不可（P.145）';
+    if (dimId === 'fan' && p145m('C01') && (p145VentDry.indexOf(code) >= 0 || code === 'D' || code === 'E')) {
+      return '斜め天井C面（200×400）と換気乾燥暖房機/2室3室天井換気扇は同時選択不可（P.145）';
+    }
+    // ② 斜め天井C面 ↔ ドア位置移動RL□/LR□ × 各種引き戸
+    if (dimId === 'door' && p145Slide.indexOf(code) >= 0 && p145SlopeC && p145MvRL.indexOf(p145Dp) >= 0) {
+      return 'ドア位置移動RL□/LR□では斜め天井C面と各種引き戸は同時選択不可（P.145）';
+    }
+    // ③ 斜め天井C面 ↔ 壁高1900（C01）／内組平天井廻し縁なし（C02）
+    if (dimId === 'ceiling' && p145m('C01') && p145Wh === 1900) return '斜め天井C面（200×400）と壁高1900は同時選択不可（P.145）';
+    if (dimId === 'ceiling' && p145m('C02') && ['E2', 'E0', 'E9'].indexOf(code) >= 0) return '斜め天井C面（400×800）と内組平天井（廻し縁なし）は同時選択不可（P.145）';
+    // ④ 斜め天井B面 ↔ 1624サイズ／S1216×ドア位置RC・LC／1216・13□□×ドア位置移動RC□・LC□
+    if (dimId === 'misc_options' && code === 'C33' && sizeIs(['1624'])) return '斜め天井B面は1624サイズでは選択不可（P.145）';
+    if (dimId === 'door_position' && p145SlopeB && sizeIs(['S1216']) && /^(RC|LC)/.test(code)) return 'S1216×ドア位置RC/LCでは斜め天井B面は選択不可（P.145）';
+    if (dimId === 'door_position' && p145SlopeB && p145Small && p145MvRC.indexOf(code) >= 0) return '1216・13□□×ドア位置移動RC□/LC□では斜め天井B面は選択不可（P.145）';
+    // ⑤ 斜め天井B面 ↔ ダウンライト／フルフォールスライドバー1160L／タテ長ミラー30120／間仕切り（RC・LC）
+    if (dimId === 'lighting' && p145SlopeB) return '斜め天井B面とダウンライトは同時選択不可（P.145）';
+    if (dimId === 'lighting_add' && p145SlopeB) return '斜め天井B面と追加ダウンライトは同時選択不可（P.145）';
+    if (dimId === 'shower_hook' && code === 'DB' && p145SlopeB) return '斜め天井B面とフルフォールスライドバー（1160L）は同時選択不可（P.145）';
+    if (dimId === 'mirror' && code === 'AD' && p145SlopeB) return '斜め天井B面とタテ長ミラー（30120）は同時選択不可（P.145）';
+    if (dimId === 'door' && p145Part.indexOf(code) >= 0 && p145SlopeB && /^(RC|LC)$/.test(p145Dp)) return 'ドア位置RC/LCでは斜め天井B面と間仕切りユニットは同時選択不可（P.145）';
+    // ⑥ 壁高2000 × 斜め天井B面 ↔ フルフォールスライドバー／スライドフック付握りバー1000L／タテ長ミラー30100／Mタイプ×サポートパック
+    if (dimId === 'shower_hook' && ['GB', 'HB', 'JB'].indexOf(code) >= 0 && p145SlopeB && p145Wh === 2000) return '壁高2000では斜め天井B面とスライドフック付握りバー（1000L）は同時選択不可（P.145）';
+    if (dimId === 'mirror' && code === 'AB' && p145SlopeB && p145Wh === 2000) return '壁高2000では斜め天井B面とタテ長ミラー（30100）は同時選択不可（P.145）';
+    if (dimId === 'support_pack' && p145SlopeB && p145Wh === 2000 && typeCode() === 'M') return 'Mタイプ×壁高2000では斜め天井B面とサポートパックは同時選択不可（P.145）';
+    // ⑦ フリーサイズ梁パネルキットC面（S79）↔ サウンドシステム
+    if (dimId === 'bathroom_tv' && code === 'K28' && p145BeamC) return '自由梁板套件C面とサウンドシステムは同時選択不可（P.145）';
+    // ⑧ フリーサイズ梁パネルキットB面（S80）↔ ダウンライト／シャワーシステム／フルフォール1160L／握りバー1000L／サポートパック
+    if (dimId === 'lighting' && p145BeamB) return '自由梁板套件B面とダウンライトは同時選択不可（P.145）';
+    if (dimId === 'lighting_add' && p145BeamB) return '自由梁板套件B面と追加ダウンライトは同時選択不可（P.145）';
+    if (dimId === 'faucet' && p145ShowerSys && p145BeamB) return '自由梁板套件B面とシャワーシステム（OG1）は同時選択不可（P.145）';
+    if (dimId === 'shower_hook' && (code === 'DB' || ['GB', 'HB', 'JB'].indexOf(code) >= 0) && p145BeamB) return '自由梁板套件B面とスライドバー／握りバー（1000L）は同時選択不可（P.145）';
+    if (dimId === 'support_pack' && p145BeamB) return '自由梁板套件B面とサポートパックは同時選択不可（P.145）';
+    // ⑨ フリーサイズ梁パネルキットB面 × 1216・13□□・S1216 ↔ 各種換気乾燥暖房機／サウンドシステム
+    if (dimId === 'fan' && p145BeamB && p145Small && p145VentDry.indexOf(code) >= 0) return '1216・13□□・S1216では自由梁板套件B面と換気乾燥暖房機は同時選択不可（P.145）';
+    if (dimId === 'bathroom_tv' && code === 'K28' && p145BeamB && p145Small) return '1216・13□□・S1216では自由梁板套件B面とサウンドシステムは同時選択不可（P.145）';
+    // ⑩ Bタイプ × フリーサイズ梁パネルキットB面 ↔ スライドフック付握りバー 700L/800L
+    if (dimId === 'shower_hook' && ['GE', 'GC', 'HC', 'JC'].indexOf(code) >= 0 && p145BeamB && typeCode() === 'B') return 'Bタイプでは自由梁板套件B面とスライドフック付握りバー（700L/800L）は同時選択不可（P.145）';
+    // ⑪ 斜め天井 ↔ フリーサイズ梁パネルキット（相互）
+    if (dimId === 'misc_options' && (code === 'S79' || code === 'S80') && (p145SlopeC || p145SlopeB)) return '斜め天井とは同時選択不可（P.145）';
+    if (dimId === 'misc_options' && (code === 'C01' || code === 'C02' || code === 'C33') && (p145BeamC || p145BeamB)) return 'フリーサイズ梁パネルキットとは同時選択不可（P.145）';
+
+    // ⑫ 反向：选择斜め天井/自由梁板时，已有冲突项应被禁用（P.145）
+    if (dimId === 'misc_options' && (code === 'C01' || code === 'C02')) {
+      if (p145HasDl) return '斜め天井C面とダウンライトは同時選択不可（P.145）';
+      if (p145Sound) return '斜め天井C面とサウンドシステムは同時選択不可（P.145）';
+      if (p145ShowerSys) return '斜め天井C面とシャワーシステム（OG1）は同時選択不可（P.145）';
+      if (code === 'C01' && p145VentDry.indexOf(state.sel.fan) >= 0) return '斜め天井C面（200×400）と換気乾燥暖房機は同時選択不可（P.145）';
+      if (code === 'C01' && (state.sel.fan === 'D' || state.sel.fan === 'E')) return '斜め天井C面（200×400）と2室/3室天井換気扇は同時選択不可（P.145）';
+      if (code === 'C01' && p145Wh === 1900) return '斜め天井C面（200×400）と壁高1900は同時選択不可（P.145）';
+      if (code === 'C02' && ['E2', 'E0', 'E9'].indexOf(state.sel.ceiling) >= 0) return '斜め天井C面（400×800）と内組平天井（廻し縁なし）は同時選択不可（P.145）';
+      if (p145Slide.indexOf(state.sel.door) >= 0 && p145MvRL.indexOf(p145Dp) >= 0) return 'ドア位置移動RL□/LR□では斜め天井C面と各種引き戸は同時選択不可（P.145）';
+    }
+    if (dimId === 'misc_options' && code === 'C33') {
+      if (sizeIs(['S1216']) && /^(RC|LC)/.test(p145Dp)) return 'S1216×ドア位置RC/LCでは斜め天井B面は選択不可（P.145）';
+      if (p145Small && p145MvRC.indexOf(p145Dp) >= 0) return '1216・13□□×ドア位置移動RC□/LC□では斜め天井B面は選択不可（P.145）';
+      if (p145HasDl) return '斜め天井B面とダウンライトは同時選択不可（P.145）';
+      if (state.sel.shower_hook === 'DB') return '斜め天井B面とフルフォールスライドバー（1160L）は同時選択不可（P.145）';
+      if (state.sel.mirror === 'AD') return '斜め天井B面とタテ長ミラー（30120）は同時選択不可（P.145）';
+      if (p145Part.indexOf(state.sel.door) >= 0 && /^(RC|LC)$/.test(p145Dp)) return 'ドア位置RC/LCでは斜め天井B面と間仕切りユニットは同時選択不可（P.145）';
+      if (p145Wh === 2000 && ['GB', 'HB', 'JB'].indexOf(state.sel.shower_hook) >= 0) return '壁高2000では斜め天井B面とスライドフック付握りバー（1000L）は同時選択不可（P.145）';
+      if (p145Wh === 2000 && state.sel.mirror === 'AB') return '壁高2000では斜め天井B面とタテ長ミラー（30100）は同時選択不可（P.145）';
+      if (p145Wh === 2000 && typeCode() === 'M' && selected('support_pack') && !isVirtualBasic(state.sel.support_pack)) return 'Mタイプ×壁高2000では斜め天井B面とサポートパックは同時選択不可（P.145）';
+    }
+    if (dimId === 'misc_options' && code === 'S79' && p145Sound) return '自由梁板套件C面とサウンドシステムは同時選択不可（P.145）';
+    if (dimId === 'misc_options' && code === 'S80') {
+      if (p145HasDl) return '自由梁板套件B面とダウンライトは同時選択不可（P.145）';
+      if (p145ShowerSys) return '自由梁板套件B面とシャワーシステム（OG1）は同時選択不可（P.145）';
+      if (state.sel.shower_hook === 'DB' || ['GB', 'HB', 'JB'].indexOf(state.sel.shower_hook) >= 0) return '自由梁板套件B面とスライドバー／握りバー（1000L）は同時選択不可（P.145）';
+      if (selected('support_pack') && !isVirtualBasic(state.sel.support_pack)) return '自由梁板套件B面とサポートパックは同時選択不可（P.145）';
+      if (p145Small && p145VentDry.indexOf(state.sel.fan) >= 0) return '1216・13□□・S1216では自由梁板套件B面と換気乾燥暖房機は同時選択不可（P.145）';
+      if (p145Small && p145Sound) return '1216・13□□・S1216では自由梁板套件B面とサウンドシステムは同時選択不可（P.145）';
+      if (typeCode() === 'B' && ['GE', 'GC', 'HC', 'JC'].indexOf(state.sel.shower_hook) >= 0) return 'Bタイプでは自由梁板套件B面とスライドフック付握りバー（700L/800L）は同時選択不可（P.145）';
     }
 
     if (isVB) return null;

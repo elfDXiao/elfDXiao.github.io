@@ -1,5 +1,5 @@
 // dom-test.js — LIXIL シャワーユニット NS 报价系统 UI 渲染自测（jsdom，真实数据）
-// 覆盖：11 步条/默认合计/壁パネル两段式（3クラス分组+ベース）/タイプ联动/品番 NSPB/汇率 0.8/报价单/双语/无公式/无「无该型号」
+// 覆盖：11 步条/默认合计/壁パネル两段式（3クラス分组+ベース）/タイプ联动/品番 NSPB/汇率 0.65/报价单/双语/无公式/无「无该型号」
 'use strict';
 const path = require('path');
 const { JSDOM } = require(path.join(__dirname, '..', '..', '..', 'rakuviac-bathroom', 'scripts', 'node_modules', 'jsdom'));
@@ -96,7 +96,7 @@ function waitFor(win, check, ms) {
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_bodyhug"]').length >= 1; }, 2000);
   assert('FZ 时 bodyhug 选项禁用', doc.querySelector('#wizBody input[name="dim_bodyhug"][data-code="A"]').disabled);
 
-  console.log('== 汇率 / 人民币（0.8 计价，页面无公式） ==');
+  console.log('== 汇率 / 人民币（0.65 计价，页面无公式） ==');
   const rate = doc.querySelector('#rate');
   rate.value = '0.05';
   rate.dispatchEvent(new win.Event('input', { bubbles: true }));
@@ -104,7 +104,7 @@ function waitFor(win, check, ms) {
   const rmbTxt = doc.querySelector('#sumRMB').textContent;
   assert('人民币合计已计算（非 —）', rmbTxt !== '—', rmbTxt);
   const rateHint = doc.querySelector('.rate-hint').textContent;
-  assert('rate-hint 无公式（仅含安装费描述）', rateHint.indexOf('安装') >= 0 && rateHint.indexOf('0.8') < 0 && rateHint.indexOf('×') < 0, rateHint);
+  assert('rate-hint 无公式（仅含安装费描述）', rateHint.indexOf('安装') >= 0 && rateHint.indexOf('0.65') < 0 && rateHint.indexOf('×') < 0, rateHint);
 
   console.log('== 生成报价单 ==');
   doc.querySelector('#wizStepper .wstep[data-step="10"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
@@ -117,7 +117,7 @@ function waitFor(win, check, ms) {
   const qtext = doc.querySelector('#quoteDoc').textContent;
   assert('报价单含品番 NSPB', qtext.indexOf('NSPB-1216LB') >= 0);
   assert('报价单含税込合計', qtext.indexOf('税込') >= 0);
-  assert('报价单无公式（不含 0.8 / rmbRate / ×汇率）', qtext.indexOf('0.8') < 0 && qtext.indexOf('rmbRate') < 0 && qtext.indexOf('×汇率') < 0, qtext.slice(0, 200));
+  assert('报价单无公式（不含 0.65 / rmbRate / ×汇率）', qtext.indexOf('0.65') < 0 && qtext.indexOf('rmbRate') < 0 && qtext.indexOf('×汇率') < 0, qtext.slice(0, 200));
   assert('报价单含安装费描述', qtext.indexOf('安装人工费') >= 0 || qtext.indexOf('据付人工費') >= 0);
 
   console.log('== 返回选型 + 语言切换 ==');

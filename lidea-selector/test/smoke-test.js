@@ -49,7 +49,7 @@ assert('默认 totalEx = 1,379,000', r.totalEx === 1379000, r.totalEx);
 assert('默认 tax = 137,900', r.tax === 137900, r.tax);
 assert('默认 totalInc = 1,516,900', r.totalInc === 1516900, r.totalInc);
 assert('默认无 unknown', r.unknown.length === 0, r.unknown);
-assert('默认品番 = BDUS-1616M-A+H(C)RL', Q.productNo() === 'BDUS-1616M-A+H(C)RL', Q.productNo());
+assert('默认品番 = BDUS-1616LBM-A+H（C）RL（P.41 含壁パネルL・FRP床B）', Q.productNo() === 'BDUS-1616LBM-A+H（C）RL', Q.productNo());
 
 console.log('== ★ 人民币计价 rmbRate=0.65（税込×汇率×0.65） ==');
 Q.setRate(0.05);
@@ -157,7 +157,7 @@ console.log('== CSV ==');
 const csv = Q.toCSV();
 assert('CSV 含 BOM', csv.charCodeAt(0) === 0xFEFF);
 assert('CSV 含税込合計行', csv.indexOf('税込合計') >= 0);
-assert('CSV 含品番 BDUS', csv.indexOf('BDUS-1616M') >= 0);
+assert('CSV 含品番 BDUS', csv.indexOf('BDUS-1616LBM') >= 0);
 
 console.log('\n' + (fails === 0 ? '✅ 全部通过' : '❌ ' + fails + ' 项失败'));
 process.exit(fails === 0 ? 0 : 1);
