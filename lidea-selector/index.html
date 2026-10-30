@@ -85,6 +85,7 @@
                 <div class="sum-row"><span class="k">门位 / ドア位置</span><span class="v" id="sumDoor">RL</span></div>
                 <div class="sum-row"><span class="k">基本规格价 / 標準仕様</span><span class="v" id="sumBase">—</span></div>
                 <div class="sum-row"><span class="k">选项合计 / オプション</span><span class="v" id="sumOpt">—</span></div>
+                <div class="sum-row" id="sumPromoRow" hidden><span class="k">官方限时优惠 / 公式キャンペーン</span><span class="v" id="sumPromo">—</span></div>
                 <div class="sum-row"><span class="k">日元合计(税抜) / 円(税抜)</span><span class="v" id="sumJPY">—</span></div>
                 <div class="sum-row"><span class="k">日元合计(税込) / 円(税込)</span><span class="v" id="sumInc">—</span></div>
                 <div class="sum-row sum-total"><span class="k">大陆地区价格(人民币·含安装) / 中国本土価格</span><span class="v" id="sumRMB">—</span></div>
@@ -185,13 +186,85 @@
       var wrap = document.getElementById('hobbyNotice');
       if (!wrap) return;
       function show() { wrap.classList.add('show'); wrap.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
-      function hide() { wrap.classList.remove('show'); wrap.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+      function hide() {
+        wrap.classList.remove('show'); wrap.setAttribute('aria-hidden', 'true'); document.body.style.overflow = '';
+        if (typeof window.__promoShow === 'function') window.__promoShow();
+      }
       var btn = wrap.querySelector('[data-close]');
       if (btn) btn.addEventListener('click', hide);
       wrap.addEventListener('click', function (e) { if (e.target === wrap) hide(); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) hide(); });
       window.__hobbyShow = show;   // 密码解锁后再弹「业余时间制作」提示
       show();
+    })();
+  </script>
+
+  <!-- 官方限时优惠（进入系统时弹出，二选一） -->
+  <div id="promoNotice" class="pm-wrap" aria-hidden="true">
+    <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+      <div class="pm-icon">🎁</div>
+      <h3 class="pm-title" id="pmTitle">官方限时优惠</h3>
+      <p class="pm-amount">150,000 日元</p>
+      <p class="pm-text">是否使用本次优惠？<br><span class="pm-sub">使用后将从税前总价中扣除该金额，再计算含税价与人民币价格。<br>今回のキャンペーンを適用しますか？</span></p>
+      <div class="pm-btns">
+        <button type="button" class="pm-btn pm-yes" id="pmUse">使用优惠</button>
+        <button type="button" class="pm-btn pm-no" id="pmSkip">不使用</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    .pm-wrap{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(33,31,27,.55);padding:20px;}
+    .pm-wrap.show{display:flex;}
+    .pm-card{background:#f6f4ef;color:#211f1b;max-width:440px;width:100%;border-radius:14px;padding:30px 32px 26px;text-align:center;box-shadow:0 18px 50px rgba(33,31,27,.35);border:1px solid #d8d2c6;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",system-ui,sans-serif;}
+    .pm-icon{font-size:38px;line-height:1;margin-bottom:8px;}
+    .pm-title{font-family:Georgia,"Songti SC","SimSun",serif;font-size:22px;letter-spacing:.06em;margin:0 0 6px;color:#211f1b;}
+    .pm-amount{font-family:Georgia,"Songti SC","SimSun",serif;font-size:26px;letter-spacing:.04em;color:#a65b33;margin:0 0 10px;font-weight:700;}
+    .pm-text{margin:0;font-size:14px;line-height:1.75;color:#211f1b;}
+    .pm-sub{font-size:12.5px;color:#6b655c;}
+    .pm-btns{display:flex;gap:12px;justify-content:center;margin-top:20px;}
+    .pm-btn{padding:10px 26px;border-radius:999px;font-size:14px;letter-spacing:.1em;cursor:pointer;font-family:inherit;border:1px solid transparent;}
+    .pm-yes{background:#a65b33;color:#f6f4ef;}
+    .pm-yes:hover{background:#8f4a27;}
+    .pm-no{background:transparent;color:#6b655c;border-color:#c9c2b4;}
+    .pm-no:hover{background:#ece7dc;}
+    @media print{.pm-wrap{display:none!important;}}
+  </style>
+  <script>
+    (function () {
+      var wrap = document.getElementById('promoNotice');
+      if (!wrap) return;
+      var shown = false, decided = false;
+      function show() {
+        if (decided || wrap.classList.contains('show')) return;
+        shown = true;
+        wrap.classList.add('show');
+        wrap.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+      function hide() {
+        wrap.classList.remove('show');
+        wrap.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      function choose(use) {
+        decided = true;
+        try {
+          if (window.LIDEA && window.LIDEA.quote) window.LIDEA.quote.setPromo(use);
+          if (window.LIDEA && window.LIDEA.wizard) { window.LIDEA.wizard.renderAll(); window.LIDEA.wizard.renderQuote(); }
+        } catch (e) { /* 静默降级 */ }
+        hide();
+      }
+      document.getElementById('pmUse').addEventListener('click', function () { choose(true); });
+      document.getElementById('pmSkip').addEventListener('click', function () { choose(false); });
+      wrap.addEventListener('click', function (e) { if (e.target === wrap) choose(false); });
+      window.__promoShow = function () { setTimeout(show, 220); };
+      // 兜底：若「业余时间」提示未出现（例如被跳过），进入后直接弹优惠
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var hobby = document.getElementById('hobbyNotice');
+          if (!shown && !decided && (!hobby || !hobby.classList.contains('show'))) show();
+        }, 900);
+      });
     })();
   </script>
 

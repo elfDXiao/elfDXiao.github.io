@@ -127,6 +127,9 @@
     { id: 'misc_options', step: 15, cat: 'misc_options', kind: 'multi', codes: 'ALL', titleJa: '保温材・その他', titleZh: '保温材·其他' }
   ];
 
+  /** 官方限时优惠金额（日元・税前扣除） */
+  var PROMO_JPY = 150000;
+
   /* ---------------- 状态 ---------------- */
   var state = {
     step: 0,
@@ -134,6 +137,7 @@
     doorPos: 'RL',           // ドア位置（默认 RL；由 door_position 维度同步）
     sel: {},                 // { dimId: option code }   radio 维度
     multi: {},               // { dimId: { code: true } }  multi 维度
+    promo: null,             // 官方限时优惠：null=未选择 / true=使用 / false=不使用
     rate: null,              // 汇率（1日元=人民币）
     quoteHead: { no: '', date: '', valid: '', customer: '', address: '', dealer: '', person: '', remark: '' },
     lang: 'both'
@@ -646,15 +650,26 @@
         extra: desc.extra, diff: diff, base: false
       });
     });
-    var tax = Math.round(total * (DATA.meta.taxRate || 0.10));
-    var totalInc = total + tax;
+    // 官方限时优惠：从税前总价中扣除 ¥150,000，之后再计算消费税与人民币价
+    var promoAmt = state.promo ? Math.min(PROMO_JPY, total) : 0;
+    var totalEx = total - promoAmt;
+    if (promoAmt > 0) {
+      lines.push({
+        step: 16, stepZh: '官方限时优惠', stepJa: '公式期間限定キャンペーン',
+        nameZh: '官方限时优惠（税前扣除）', nameJa: '公式期間限定キャンペーン（税抜控除）',
+        code: 'PROMO', model: '', extra: '', diff: -promoAmt, base: false, promo: true
+      });
+    }
+    var tax = Math.round(totalEx * (DATA.meta.taxRate || 0.10));
+    var totalInc = totalEx + tax;
     // 大陆地区价格（人民币含安装费）= 日元税込 × 汇率 × rmbRate(0.6)；无有效汇率时为 null
     var rmbRate = (DATA.meta.rmbRate != null) ? DATA.meta.rmbRate : 0.6;
     var rmbAllIn = (state.rate && state.rate > 0) ? Math.round(totalInc * state.rate * rmbRate) : null;
     return {
       base: base, basePrice: basePriceValue,
       lines: lines, unknown: unknown,
-      totalEx: total, tax: tax, totalInc: totalInc,
+      totalEx: totalEx, tax: tax, totalInc: totalInc,
+      prePromoEx: total, promo: { used: !!state.promo, amount: promoAmt },
       rmbAllIn: rmbAllIn,
       size: sizeCode(), type: typeCode(), doorPos: doorPosCode()
     };
@@ -1120,7 +1135,11 @@
     reset: function () {
       state.sel = {}; state.multi = {};
       state.size = '1616';
+      state.promo = null;
     },
+    setPromo: function (v) { state.promo = (v === true) ? true : (v === false ? false : null); },
+    getPromo: function () { return state.promo; },
+    PROMO_JPY: PROMO_JPY,
     setQuoteHead: function (k, v) { state.quoteHead[k] = v; },
     setRate: function (v) {
       var n = Number(v);

@@ -60,6 +60,21 @@ r = Q.computeQuote();
 assert('rate=0 → rmbAllIn null', r.rmbAllIn === null, r.rmbAllIn);
 Q.setRate(null);
 
+console.log('== ★ 官方限时优惠 150,000 日元（税前扣除后再计税） ==');
+Q.setPromo(true);
+Q.setRate(0.05);
+r = Q.computeQuote();
+assert('优惠后税抜 = 1,379,000−150,000 = 1,229,000', r.totalEx === 1229000, r.totalEx);
+assert('优惠后消费税 = 122,900（按扣除后金额计）', r.tax === 122900, r.tax);
+assert('优惠后税込 = 1,351,900', r.totalInc === 1351900, r.totalInc);
+assert('优惠行存在 diff = −150,000', r.lines.some(function (l) { return l.promo && l.diff === -150000; }), r.lines.map(function (l) { return l.diff; }));
+assert('优惠后 RMB = round(1,351,900×0.05×0.6) = 40,557', r.rmbAllIn === 40557, r.rmbAllIn);
+Q.setPromo(false);
+r = Q.computeQuote();
+assert('不使用优惠回到 1,516,900 / 45,507', r.totalInc === 1516900 && r.rmbAllIn === 45507, [r.totalInc, r.rmbAllIn]);
+Q.setRate(null);
+assert('reset 清空优惠状态', (Q.reset(), Q.getPromo() === null), Q.getPromo());
+
 console.log('== 寒冷地（region C）标准价 +5,000 ==');
 Q.state.sel.region = 'C';
 r = Q.computeQuote();

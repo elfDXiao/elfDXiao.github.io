@@ -58,6 +58,8 @@
       sumJPY: document.querySelector('#sumJPY'),
       sumInc: document.querySelector('#sumInc'),
       sumRMB: document.querySelector('#sumRMB'),
+      sumPromo: document.querySelector('#sumPromo'),
+      sumPromoRow: document.querySelector('#sumPromoRow'),
       btnPrev: document.querySelector('#btnPrev'),
       btnNext: document.querySelector('#btnNext'),
       btnFinish: document.querySelector('#btnFinish'),
@@ -467,7 +469,7 @@
   /* ---------------- 合计栏 ---------------- */
   function renderSummary() {
     var r = Q.computeQuote();
-    var optTotal = r.totalEx - r.basePrice;
+    var optTotal = r.totalEx + (r.promo ? r.promo.amount : 0) - r.basePrice;
     if (els.sumType) els.sumType.textContent = r.type + 'タイプ';
     if (els.sumSize) els.sumSize.textContent = r.size;
     if (els.sumDoor) els.sumDoor.textContent = r.doorPos;
@@ -475,6 +477,14 @@
     if (els.sumOpt) els.sumOpt.textContent = optTotal !== 0 ? P.yen(optTotal) : '—';
     if (els.sumJPY) els.sumJPY.textContent = P.yen(r.totalEx);
     if (els.sumInc) els.sumInc.textContent = P.yen(r.totalInc);
+    if (els.sumPromoRow) {
+      if (r.promo && r.promo.used) {
+        els.sumPromoRow.hidden = false;
+        if (els.sumPromo) els.sumPromo.textContent = '－' + P.yen(r.promo.amount);
+      } else {
+        els.sumPromoRow.hidden = true;
+      }
+    }
     if (els.sumRMB) {
       els.sumRMB.textContent = r.rmbAllIn != null ? '¥' + Number(r.rmbAllIn).toLocaleString() : '—';
       els.sumRMB.parentNode.classList.toggle('has-rmb', r.rmbAllIn != null);
