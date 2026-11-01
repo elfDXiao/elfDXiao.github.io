@@ -297,7 +297,7 @@
   </style>
   <script>
     (function () {
-      var KEY = 'lidea_selector_pw_ok';
+      var KEY = 'lidea_selector_pw_ok_v2';
       var gate = document.getElementById('pwGate');
       if (!gate) return;
       function stored() { try { return window.localStorage && localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
@@ -323,7 +323,7 @@
         if (typeof window.__hobbyShow === 'function') window.__hobbyShow();
       }
       function submit() {
-        if (inp.value === 'elff') { unlock(); return; }
+        if (inp.value === 'elf') { unlock(); return; }
         err.style.display = 'block';
         card.classList.remove('shake');
         void card.offsetWidth;
