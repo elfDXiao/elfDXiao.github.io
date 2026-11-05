@@ -736,19 +736,57 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.35; }
 .doc-footer { margin-top: 30px; border-top: 1px solid var(--line); padding-top: 14px; font-size: 12px; color: var(--ink-3); line-height: 1.8; }
 .doc-footer p:first-child { font-family: var(--serif); color: var(--accent); letter-spacing: .1em; }
 
-/* 导出 PDF：只打印需求表文档 */
+/* ---------- 极简 A4 文档（调查表 / 报价单共用） ---------- */
+.doc-clean {
+  background: #fff; border: 0; box-shadow: none;
+  max-width: 190mm; margin: 0 auto; padding: 0;
+  color: #111; font-family: var(--sans);
+  font-size: 9.5pt; line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.doc-clean .doc-header { border-bottom: .6pt solid #111; padding-bottom: 5mm; margin-bottom: 6mm; }
+.doc-clean .doc-brand { display: none; }
+.doc-clean .doc-header h1 { font-size: 16pt; font-weight: 600; letter-spacing: .04em; margin: 0; }
+.doc-clean .doc-sub { display: none; }
+.doc-clean .doc-meta { display: flex; flex-wrap: wrap; gap: 1mm 6mm; margin-top: 3mm; font-size: 8.5pt; color: #555; }
+.doc-clean .doc-section { margin-bottom: 5mm; }
+.doc-clean .doc-sec-title { font-size: 10pt; font-weight: 600; border-bottom: .4pt solid #bbb; padding-bottom: 1.5mm; margin-bottom: 2mm; gap: 3mm; }
+.doc-clean .doc-sec-title span { color: #777; font-size: 8pt; letter-spacing: .04em; }
+.doc-clean .doc-row { border-bottom: .3pt solid #eee; padding: 1.8mm 0; }
+.doc-clean .doc-q { font-size: 8.8pt; color: #666; }
+.doc-clean .doc-a { font-size: 9.5pt; }
+.doc-clean .doc-footer { border-top: .4pt solid #bbb; padding-top: 3mm; margin-top: 6mm; font-size: 7.5pt; color: #777; line-height: 1.7; }
+.doc-clean .doc-footer p:first-child { color: #555; font-family: var(--sans); letter-spacing: 0; }
+
+/* 调查表：每题两栏（问题 / 答案），比上下两行更紧凑 */
+.doc-clean.doc-survey .doc-row {
+  display: grid; grid-template-columns: 52mm 1fr; gap: 4mm;
+  border-bottom: .3pt solid #f0f0f0; padding: 1.8mm 0;
+}
+.doc-clean.doc-survey .doc-row:last-child { border-bottom: 0; }
+.doc-clean.doc-survey .doc-q { font-size: 8.6pt; color: #666; }
+.doc-clean.doc-survey .doc-a { margin-top: 0; font-size: 9.2pt; }
+
+/* 导出 PDF：旧版 .doc-clean 文档的打印保护
+   （客户调查已改用 .quote-doc，自带 A4 分页，见 css/survey-export.css） */
 @media print {
-  @page { size: A4; margin: 14mm 12mm; }
-  body { background: #fff !important; }
-  body * { visibility: hidden; }
-  #surveyDoc, #surveyDoc *, [data-doc-root], [data-doc-root] * { visibility: visible; }
-  #surveyDoc, [data-doc-root] {
+  @page { size: A4; margin: 16mm 14mm 18mm; }
+  html, body { background: #fff !important; }
+
+  /* 户型测量表 / 卫浴施工文档：沿用「只打印 [data-doc-root]」的旧规则。
+     客户调查页没有 .doc-page，不会走到这里。 */
+  body.doc-page * { visibility: hidden; }
+  body.doc-page [data-doc-root],
+  body.doc-page [data-doc-root] * { visibility: visible; }
+  body.doc-page [data-doc-root] {
     position: absolute; left: 0; top: 0; width: 100%;
     max-width: 100%; border: 0; box-shadow: none; padding: 0;
   }
-  .doc-section { break-inside: auto; }
-  .doc-sec-title { break-after: avoid; }
-  .doc-row { break-inside: avoid; }
+
+  .doc-clean { max-width: none; margin: 0; padding: 0 !important; border: 0 !important; box-shadow: none !important; font-size: 9.5pt; }
+  .doc-clean .doc-section { break-inside: auto; }
+  .doc-clean .doc-sec-title { break-after: avoid; }
+  .doc-clean .doc-row { break-inside: avoid; }
 }
 
 /* 响应式 */
