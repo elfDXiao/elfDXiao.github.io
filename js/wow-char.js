@@ -32,7 +32,7 @@
     { id: 'db',   n: '产品资料库', m: '等级 5/5 · 被动', d: '系统厨房、整体卫浴等产品资料，按分类检索可查。', cd: '施法时间：即时 · 冷却：无', href: 'database.html' },
     { id: 'kt',   n: '选型系统',   m: '等级 5/5 · 主动', d: '日系厨房与整体浴室在线选型，中日双语对照，选完直接出全含报价。', cd: '施法时间：1 个工作日 · 冷却：无', href: 'kitchen.html' },
     { id: 'doc',  n: '卡拉赞图书馆',   m: '等级 5/5 · 被动', d: '需求调查 → 测量 → 方案 → 报价 → 施工 → 验收，成套文档在线确认可导出。', cd: '施法时间：即时 · 冷却：无', href: 'docs.html' },
-    { id: 'lab',  n: '地精实验室', m: '等级 3/5 · 主动', d: '自研小工具与仿真：新风走向、公共烟道止逆阀与倒灌，先在浏览器里跑一遍。', cd: '施法时间：即时 · 冷却：无', href: 'lab.html' }
+    { id: 'lab',  n: '地精实验室', m: '等级 1/5 · 主动', d: '自研小工具与仿真：暖通、声环境、电器、无障碍、灯光五棵天赋树，上线一个就点亮一格。', cd: '施法时间：即时 · 冷却：无', href: 'lab.html' }
   ];
 
   /* ---------- 各页角色卡文案 ---------- */
@@ -52,7 +52,7 @@
     docs:      { face: 'img/wow/portraits/docs.jpg', name: '麦迪文', sub: 'KARAZHAN LIBRARY', now: 'doc',
                  role: '成套文档：从需求调查到施工交底，可在线逐项确认与导出' },
     lab:       { face: 'img/wow/portraits/lab.jpg', name: '地精实验室', sub: 'GOBLIN LAB', now: 'lab',
-                 role: '自研小工具与仿真：新风、烟道、选型，先在浏览器里跑一遍再落地' }
+                 role: '自研小工具与仿真：五棵天赋树先留空位，上线一个程序就点亮一格' }
   };
   /* 工具页/子页归到最近的板块（名字与专精跟着走） */
   SECT.panorama = SECT.bathroom; SECT.inspection = SECT.docs; SECT.survey = SECT.docs;

@@ -1,13 +1,18 @@
 /* ============================================================
    wow-talent.js — 地精实验室 · 天赋树渲染
    <div id="talentPanel"></div> + <script src="js/wow-talent.js" defer>
-   点亮的技能（live / beta）点击直接进入程序；在造的弹提示
+   点亮的天赋（live / beta）点击直接进入程序
+   2026-11-17 老肖定的规则：天赋一律不命名，默认全是「空位」（暗框、无图标）；
+   上线一个仿真程序 → 点亮一个空位并填上图标。五棵树：暖通空调 / 声环境 /
+   电器 / 无障碍 / 灯光照明。油烟机、公共烟道两个仿真已下线（文件保留未删除）。
    ============================================================ */
 (function () {
   var G = {   /* 树头图标（分层：f 面 / l 线 / h 高光） */
     hvac:   '<circle class="f" cx="12" cy="12" r="3.4"/><path class="l" d="M12 3.4v17.2M4.6 7.7l14.8 8.6M19.4 7.7 4.6 16.3M12 8.5a3.5 3.5 0 1 0 .01 0M12 3.4l-1.5 1.9M12 3.4l1.5 1.9M12 20.6l-1.5-1.9M12 20.6l1.5-1.9M4.6 7.7l2.4.3M4.6 7.7l.3-2.4M19.4 16.3l-2.4-.3M19.4 16.3l-.3 2.4"/><circle class="h" cx="12" cy="12" r=".9"/>',
     elec:   '<path class="f" d="M13.8 3.4 7.6 13.2h3.7l-.9 7.4 6.4-9.9h-3.8z"/><path class="l" d="M13.8 3.4 7.6 13.2h3.7l-.9 7.4 6.4-9.9h-3.8z"/><path class="h" d="M12.4 6.4 9.8 10.8h2"/>',
-    light:  '<path class="f" d="M12 3.6a5.6 5.6 0 0 1 3.4 10.1c-.6.5-.9 1.1-.9 1.8H9.5c0-.7-.3-1.3-.9-1.8A5.6 5.6 0 0 1 12 3.6z"/><path class="l" d="M12 3.6a5.6 5.6 0 0 1 3.4 10.1c-.6.5-.9 1.1-.9 1.8H9.5c0-.7-.3-1.3-.9-1.8A5.6 5.6 0 0 1 12 3.6zM9.4 17.6h5.2M10.2 20.4h3.6"/><path class="h" d="M10.4 8.8c.9-1 2.3-1 3.2 0"/>'
+    light:  '<path class="f" d="M12 3.6a5.6 5.6 0 0 1 3.4 10.1c-.6.5-.9 1.1-.9 1.8H9.5c0-.7-.3-1.3-.9-1.8A5.6 5.6 0 0 1 12 3.6z"/><path class="l" d="M12 3.6a5.6 5.6 0 0 1 3.4 10.1c-.6.5-.9 1.1-.9 1.8H9.5c0-.7-.3-1.3-.9-1.8A5.6 5.6 0 0 1 12 3.6zM9.4 17.6h5.2M10.2 20.4h3.6"/><path class="h" d="M10.4 8.8c.9-1 2.3-1 3.2 0"/>',
+    sound:  '<path class="f" d="M4.4 9.4h3L11 6.2v11.6L7.4 14.6h-3z"/><path class="l" d="M4.4 9.4h3L11 6.2v11.6L7.4 14.6h-3zM14.2 9a4.4 4.4 0 0 1 0 6M16.9 6.4a8 8 0 0 1 0 11.2"/><path class="h" d="M6.2 11.2h1.4"/>',
+    access: '<circle class="f" cx="10.4" cy="15" r="5.2"/><circle class="l" cx="10.4" cy="15" r="5.2"/><circle class="l" cx="13.6" cy="4.2" r="1.8"/><path class="l" d="M13.2 7.2v4.6h4.2l2.4 4.4M13.2 9.4h3.6"/><circle class="h" cx="10.4" cy="15" r=".8"/>'
   };
   /* 天赋图标 */
   var ICON = {
@@ -29,88 +34,127 @@
     dimmer:   '<path class="f" d="M12 6.4a5.6 5.6 0 1 0 .01 11.2A5.6 5.6 0 0 0 12 6.4z"/><path class="l" d="M12 6.4a5.6 5.6 0 1 0 .01 11.2A5.6 5.6 0 0 0 12 6.4M12 12l3.2-3.2M12 4.2v1.2M19.8 12h-1.2M12 19.8v-1.2M4.2 12h1.2M17.5 6.5l-.85.85M6.5 17.5l.85-.85"/><circle class="h" cx="12" cy="12" r=".9"/>'
   };
 
-  /* ====== 天赋数据（名字按老肖给的） ====== */
+  /* ====== 天赋树数据 ======
+     规则（老肖 2026-11-17 定）：
+       1) 格子里的天赋一律不命名 —— 默认全是「空位」：暗框、无名字、无图标。
+       2) 上线一个仿真程序 → 挑一个空位，给它补上 n / ic / d / href / st:'live'，
+          这一格就点亮并填上图标（图标键在上面的 ICON 里挑，或新加一个）。
+       3) 五棵树：暖通空调 / 声环境 / 电器 / 无障碍 / 灯光照明。
+     空位字段：row 层(0 起) · col 列(0~2) · par 前置格序号(可省) · pips [已点, 总级数]
+     点亮追加：n 名字 · ic 图标键 · d 说明 · href 程序地址 · st 'live' 或 'beta'
+     ============================================================ */
   var TREES = [
     {
       id: 'hvac', name: '暖通空调', en: 'HVAC', icon: 'hvac',
       talents: [
-        { n: '建筑节能分析',   ic: 'energy',   st: 'todo', pips: [0, 3], row: 0, col: 1,
-          d: '围护结构、门窗与体形系数对全年能耗的影响，先算清楚再决定这笔钱花不花。' },
-        { n: '氟机多联机选型', ic: 'vrf',      st: 'todo', pips: [0, 2], row: 1, col: 0, par: 0,
-          d: '按房间冷热负荷选室内机型号与配比，核对室外机能力、管长与落差衰减。' },
-        { n: '新风仿真',       ic: 'fresh',    st: 'wip', pips: [0, 1], row: 1, col: 1, par: 0,
-          d: '上传户型图 → 画房间/门窗 → 布送风回风口 → 2D 风速图 + 3D 粒子流，可导出 PDF 报告。' },
-        { n: '地暖敷设优化',   ic: 'floorheat',st: 'todo', pips: [0, 2], row: 1, col: 2, par: 0,
-          d: '盘管间距、分集水器回路划分与地面温度分布，避免一间热一间凉。' },
-        { n: '暖气片布置优化', ic: 'radiator', st: 'todo', pips: [0, 2], row: 2, col: 0, par: 1,
-          d: '窗下还是外墙？片数、进出水方式与散热量，按房间算件数而不是按经验报。' },
-        { n: '水力分配系统',   ic: 'hydro',    st: 'todo', pips: [0, 3], row: 2, col: 2, par: 3,
-          d: '各回路流量与阻力平衡，末端与主机匹配，杜绝近热远冷、水泵白做功。' }
+        { row: 0, col: 1, pips: [0, 3] },
+        { row: 1, col: 0, par: 0, pips: [0, 2] },
+        { row: 1, col: 1, par: 0, pips: [0, 3] },
+        { row: 1, col: 2, par: 0, pips: [0, 2] },
+        { row: 2, col: 0, par: 1, pips: [0, 2] },
+        { row: 2, col: 2, par: 3, pips: [0, 3] }
       ]
     },
     {
-      id: 'elec', name: '电器设备', en: 'ELECTRICAL', icon: 'elec',
+      id: 'sound', name: '声环境', en: 'ACOUSTICS', icon: 'sound',
       talents: [
-        { n: '公共烟道仿真',   ic: 'flue',  st: 'live', pips: [1, 3], row: 0, col: 0, href: '老肖公共烟道仿真V1.0.html',
-          d: '整栋楼共用一个烟道时，楼层压差、止逆阀开度与邻居开机状况如何互相影响，倒灌多少。' },
-        { n: '油烟机排烟仿真', ic: 'hood',  st: 'live', pips: [1, 2], row: 0, col: 2, href: 'hood-sim.html'  /* 新文件名绕开 CDN 缓存 */,
-          d: '不同机型、锅位、墙距与风量下的捕集率：油烟到底抓没抓住，看得见。' },
-        { n: '视听环境仿真',   ic: 'av',    st: 'todo', pips: [0, 2], row: 1, col: 1, par: 0,
-          d: '音箱摆位、听音位与房间比例，先算一遍再决定沙发和插座在哪。' },
-        { n: 'WiFi 信号仿真',  ic: 'wifi',  st: 'todo', pips: [0, 2], row: 2, col: 0, par: 2,
-          d: '承重墙、金属柜与楼层对信号的衰减，AP 放哪儿覆盖最省、死角最少。' },
-        { n: '家居智能化',     ic: 'smart', st: 'todo', pips: [0, 3], row: 2, col: 2, par: 2,
-          d: '灯光、窗帘、空调、新风与安防的场景联动编排，一键回家 / 离家 / 观影。' }
+        { row: 0, col: 1, pips: [0, 3] },
+        { row: 1, col: 0, par: 0, pips: [0, 2] },
+        { row: 1, col: 2, par: 0, pips: [0, 2] },
+        { row: 2, col: 0, par: 1, pips: [0, 3] },
+        { row: 2, col: 2, par: 2, pips: [0, 2] }
+      ]
+    },
+    {
+      id: 'elec', name: '电器', en: 'ELECTRICAL', icon: 'elec',
+      talents: [
+        { row: 0, col: 0, pips: [0, 2] },
+        { row: 0, col: 2, pips: [0, 3] },
+        { row: 1, col: 1, par: 0, pips: [0, 2] },
+        { row: 2, col: 0, par: 2, pips: [0, 2] },
+        { row: 2, col: 1, par: 2, pips: [0, 3] },
+        { row: 2, col: 2, par: 2, pips: [0, 2] }
+      ]
+    },
+    {
+      id: 'access', name: '无障碍', en: 'ACCESSIBILITY', icon: 'access',
+      talents: [
+        { row: 0, col: 1, pips: [0, 3] },
+        { row: 1, col: 0, par: 0, pips: [0, 2] },
+        { row: 1, col: 2, par: 0, pips: [0, 2] },
+        { row: 2, col: 1, par: 1, pips: [0, 3] }
       ]
     },
     {
       id: 'light', name: '灯光照明', en: 'LIGHTING', icon: 'light',
       talents: [
-        { n: '照度模拟',       ic: 'lux',    st: 'todo', pips: [0, 3], row: 0, col: 1,
-          d: '按面积与用途算需要多少光通量，落到灯具数量、瓦数与分布间距。' },
-        { n: '色温与显色搭配', ic: 'cct',    st: 'todo', pips: [0, 2], row: 1, col: 0, par: 0,
-          d: '客厅、餐桌、橱柜下与镜前灯的色温与显色指数怎么配才不打架。' },
-        { n: '灯带长度与电源', ic: 'strip',  st: 'todo', pips: [0, 2], row: 1, col: 2, par: 0,
-          d: '灯带长度、功率与电源位置，压降、接头与检修口一次算清。' },
-        { n: '回路分组与调光', ic: 'dimmer', st: 'todo', pips: [0, 2], row: 2, col: 1, par: 0,
-          d: '哪些灯一组、能不能调、开关放哪儿，按生活动线而不是按图纸分。' }
+        { row: 0, col: 1, pips: [0, 3] },
+        { row: 1, col: 0, par: 0, pips: [0, 2] },
+        { row: 1, col: 2, par: 0, pips: [0, 2] },
+        { row: 2, col: 1, par: 2, pips: [0, 2] }
       ]
     }
+  ];
+
+  /* ====== 已下线的程序：文件仍在仓库里，没有删除 ======
+     2026-11-17 老肖要求下线（天赋树里不再有入口，也不显示名字）：
+       · 公共烟道仿真   → 老肖公共烟道仿真V1.0.html
+       · 油烟机排烟仿真 → hood-sim.html
+     要重新上线：把某一项的字段贴回上面对应树的一个空位，加 st:'live' 即点亮。 */
+  var OFFLINE = [
+    { tree: 'elec', n: '公共烟道仿真', ic: 'flue', pips: [1, 3], href: '老肖公共烟道仿真V1.0.html',
+      d: '整栋楼共用一个烟道时，楼层压差、止逆阀开度与邻居开机状况如何互相影响，倒灌多少。' },
+    { tree: 'elec', n: '油烟机排烟仿真', ic: 'hood', pips: [1, 2], href: 'hood-sim.html',
+      d: '不同机型、锅位、墙距与风量下的捕集率：油烟到底抓没抓住，看得见。' }
   ];
 
   var STT = {
     live: { t: '已上线 · 点击进入程序', go: '点击进入系统 →' },
     beta: { t: '测试中 · 可以进，数值可能有出入', go: '进入实验分支 →' },
     wip:  { t: '施工中 · 改版重制中', go: '推倒重做中，先点亮别的天赋' },
-    todo: { t: '排队中 · 还没开始造', go: '还在排队，先点亮别的天赋' }
+    todo: { t: '排队中 · 还没开始造', go: '还在排队，先点亮别的天赋' },
+    empty:{ t: '空位 · 待上线', go: '想先要哪一个？说一声，我按你的顺序造。' }
   };
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
 
+  /* 点亮 = 有名字且状态是 live / beta；其余一律当「空位」渲染 */
+  function isLit(t) { return !!(t.n && (t.st === 'live' || t.st === 'beta')); }
+
   function nodeHTML(t, ti, idx) {
+    var lit = isLit(t);
+    var st = lit ? t.st : 'empty';
+    var name = lit ? t.n : '空天赋位';
     var pip = '';
     for (var i = 0; i < t.pips[1]; i++) pip += '<i class="' + (i < t.pips[0] ? 'on' : '') + '"></i>';
-    var req = t.par === undefined ? '天赋树第 ' + (t.row + 1) + ' 层 · 前置：无' : '天赋树第 ' + (t.row + 1) + ' 层 · 需投入 ' + (t.par + 1) + ' 点';
-    var rank = t.pips[0] + ' / ' + t.pips[1] + (t.pips[0] === t.pips[1] && t.pips[1] ? ' · 已点满' : '');
-    return '<div class="tw-node ' + t.st + '" data-ti="' + ti + '" data-i="' + idx + '" data-name="' + esc(t.n) + '"' +
-      (t.href ? ' data-href="' + t.href + '"' : '') + '>' +
-      '<div class="tw-ic" tabindex="0" role="button" aria-label="' + esc(t.n) + '">' +
-        '<svg viewBox="0 0 24 24">' + ICON[t.ic] + '</svg>' +
+    var req = t.par === undefined ? '天赋树第 ' + (t.row + 1) + ' 层 · 前置：无'
+                                  : '天赋树第 ' + (t.row + 1) + ' 层 · 需投入 ' + (t.par + 1) + ' 点';
+    var mid = lit
+      ? '<span class="rank' + (t.pips[0] === t.pips[1] && t.pips[1] ? ' max' : '') + '">等级 ' +
+          t.pips[0] + ' / ' + t.pips[1] + (t.pips[0] === t.pips[1] && t.pips[1] ? ' · 已点满' : '') + '</span>' +
+        '<p>' + esc(t.d) + '</p>'
+      : '<span class="rank">未点亮 · 位置保留</span>' +
+        '<p>这一格还没有名字。上线一个仿真程序，就在这里点亮一格、填上图标。</p>';
+    return '<div class="tw-node ' + st + '" data-ti="' + ti + '" data-i="' + idx + '" data-name="' + esc(name) + '"' +
+      (lit && t.href ? ' data-href="' + t.href + '"' : '') +
+      ' style="grid-row:' + (t.row + 1) + ';grid-column:' + (t.col + 1) + '">' +
+      '<div class="tw-ic" tabindex="0" role="button" aria-label="' +
+        esc(lit ? t.n : '空天赋位 · 第 ' + (t.row + 1) + ' 层') + '">' +
+        (lit ? '<svg viewBox="0 0 24 24">' + ICON[t.ic] + '</svg>' : '') +
       '</div>' +
       '<div class="tw-pips">' + pip + '</div>' +
-      '<div class="tw-tip"><h4>' + esc(t.n) + '</h4>' +
+      '<div class="tw-tip"><h4>' + esc(name) + '</h4>' +
         '<span class="req">' + req + '</span>' +
-        '<span class="rank' + (t.pips[0] === t.pips[1] && t.pips[1] ? ' max' : '') + '">等级 ' + rank + '</span>' +
-        '<p>' + esc(t.d) + '</p>' +
-        '<span class="st">' + STT[t.st].t + '</span>' +
-        '<span class="go' + (t.href ? '' : ' wait') + '">' + STT[t.st].go + '</span>' +
+        mid +
+        '<span class="st">' + STT[st].t + '</span>' +
+        '<span class="go' + (lit && t.href ? '' : ' wait') + '">' + STT[st].go + '</span>' +
       '</div></div>';
   }
 
   function render(host) {
     var totalLive = 0, totalAll = 0;
     TREES.forEach(function (tr) {
-      tr.live = tr.talents.filter(function (t) { return t.st === 'live' || t.st === 'beta'; }).length;
+      tr.live = tr.talents.filter(isLit).length;
       totalLive += tr.live; totalAll += tr.talents.length;
     });
 
@@ -118,7 +162,7 @@
       '<h2>天赋 · 地精实验室</h2>' +
       '<span class="tw-pts">已点亮 <b>' + totalLive + '</b> / ' + totalAll + ' 点</span>' +
       '<span class="tw-spacer"></span>' +
-      '<span class="tw-side">点亮的天赋可以直接进程序</span>' +
+      '<span class="tw-side">亮着的格子点进去就是程序</span>' +
       '<button class="tw-reset" type="button">重置天赋</button>' +
       '</div><div class="tw-trees">';
 
@@ -135,8 +179,8 @@
     });
     html += '</div>' +
       '<div class="tw-legend">' +
-        '<span><i class="on"></i><b>已点亮</b> = 程序能跑，点进去就能用</span>' +
-        '<span><i></i><b>暗的</b> = 在造或排队，点一下会有提示</span>' +
+        '<span><i class="on"></i><b>已点亮</b> = 程序已上线，点进去就能用</span>' +
+        '<span><i></i><b>空位</b> = 天赋还没命名，上线一个仿真程序就点亮一格、填上图标</span>' +
         '<span>想先要哪一个？说一声，我按你的顺序造。</span>' +
       '</div>';
     host.classList.add('tw-panel');
@@ -161,7 +205,7 @@
         if (t.par === undefined) return;
         var a = centers[t.par], b = centers[i];
         var midY = (a.cy + 34 + b.cy - 34) / 2;
-        var on = (t.st === 'live' || t.st === 'beta') ? ' class="on"' : '';
+        var on = isLit(t) ? ' class="on"' : '';
         d += '<path' + on + ' d="M' + a.x + ' ' + (a.cy + 34) + ' V' + midY + ' H' + b.x + ' V' + (b.cy - 34) + '"/>';
       });
       svg.setAttribute('viewBox', '0 0 ' + base.width + ' ' + base.height);
@@ -194,7 +238,11 @@
       var node = ic.parentNode;
       var name = node.dataset.name, href = node.dataset.href;
       if (href) { location.href = href; return; }
-      toast('「<b>' + name + '</b>」还在锻造中 —— 等它上线，先试试已点亮的天赋。');
+      if (node.classList.contains('empty')) {
+        toast('这一格还<b>空着</b> —— 上线一个仿真程序，就点亮一格并填上图标。');
+      } else {
+        toast('「<b>' + name + '</b>」还在锻造中 —— 等它上线，先试试已点亮的天赋。');
+      }
       var tip = node.querySelector('.tw-tip');
       if (tip) tip.classList.add('pin');
       setTimeout(function () { if (tip) tip.classList.remove('pin'); }, 1800);
@@ -202,6 +250,7 @@
     var reset = host.querySelector('.tw-reset');
     if (reset) reset.addEventListener('click', function () {
       var nodes = host.querySelectorAll('.tw-node.live, .tw-node.beta');
+      if (!nodes.length) { toast('天赋树还<b>没有点亮</b>的格子 —— 上线一个仿真程序，就点亮一格。'); return; }
       [].forEach.call(nodes, function (n) { n.style.animation = 'none'; void n.offsetWidth; n.style.animation = ''; });
       toast('天赋已重置 · <b>' + nodes.length + '</b> 个已点亮的天赋重新闪了一下');
     });
