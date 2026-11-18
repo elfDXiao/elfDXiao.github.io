@@ -58,7 +58,9 @@
     {
       id: 'sound', name: '声环境', en: 'ACOUSTICS', icon: 'sound',
       talents: [
-        { row: 0, col: 1, pips: [0, 3] },
+        { row: 0, col: 1, pips: [1, 3], st: 'live', n: '室内声环境仿真', ic: 'sound',
+          href: 'indoor-sound-sim-lite-v1.0.html',
+          d: '楼上卧室/客厅/乐器房/儿童房四类声源，剖面动画演示撞击与空气声传递，源头与受体治理实时对比。' },
         { row: 1, col: 0, par: 0, pips: [0, 2] },
         { row: 1, col: 2, par: 0, pips: [0, 2] },
         { row: 2, col: 0, par: 1, pips: [0, 3] },
