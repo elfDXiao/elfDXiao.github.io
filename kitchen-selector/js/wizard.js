@@ -196,6 +196,7 @@
         var wu3 = wuUnit(Number(tgt.getAttribute('data-wu-idx')));
         wu3.subtype = tgt.getAttribute('data-wu-subtype');
         wuEyeAutoFix(wu3);
+        wuAutoFixWidth(wu3);
         renderStep(); renderSummary(); return;
       }
       if (tgt.hasAttribute('data-wu-rack')) {
@@ -514,12 +515,21 @@
 
   function optPriceText(d, oi, o) {
     if (!o) return '—';
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
+    if (o.planDiffs && o.planDiffs[Q.state.plan] && typeof o.planDiffs[Q.state.plan][Q.state.layout] === 'number')
+      return P.fmtDiff(o.planDiffs[Q.state.plan][Q.state.layout]);
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
     if (o.isBasic === true) return tp('基本', '基本仕様');
     if (o.pricesBySize) {
-      // 台面差价是Ⅰ型基准；非Ⅰ型布局置「价格待核」（reviewer P1 方案 b）
-      if (d.id === 'worktop' && Q.state.layout !== 'i') return tp('价格待核', '価格未定');
+      // 台面：按当前プラン×レイアウト取差价（2026.10 版 planPrices）
+      if (d.id === 'worktop') {
+        var wv = Q.contributionFor('worktop');
+        if (wv === 0) return tp('基本', '基本仕様');
+        if (typeof wv === 'number') return P.fmtDiff(wv);
+        return tp('价格待核', '価格未定');
+      }
       var v = P.priceBySize(o, Q.state.width);
       if (v != null) return typeof v === 'number' ? P.fmtDiff(v) : String(v);
       // pricesBySize 缺当前间口格 → 待核（如 cabinet 配件按柜体自身间口，非厨房整体间口）
@@ -631,6 +641,8 @@
     if (region === '寒冷地' && o.priceDiffCold != null) {
       return typeof o.priceDiffCold === 'number' ? P.fmtDiff(o.priceDiffCold) : String(o.priceDiffCold);
     }
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
     if (o.isBasic) return tp('基本', '基本仕様');
@@ -756,6 +768,8 @@
       var it = o.items[idx];
       return it && typeof it.price === 'number' ? P.fmtDiff(it.price) : tp('价格待核', '価格未定');
     }
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
     if (o.isBasic) return tp('基本', '基本仕様');
@@ -827,11 +841,25 @@
     u.racks = u.racks || {}; u.extras = u.extras || {};
     if (type === 'handmove') { u.width = '75'; u.lighting = '照明無'; }
     else if (type === 'eyearea') { u.subtype = 'seasoning'; u.width = '75'; u.lighting = '照明無'; }
-    else if (type === 'automove') { u.subtype = (WU.automove && WU.automove.types && WU.automove.types[0]) || null; u.width = '75'; }
+    else if (type === 'automove') {
+      u.subtype = (WU.automove && WU.automove.types && WU.automove.types[0]) || null;
+      u.width = '75';
+      wuAutoFixWidth(u);
+    }
     else if (type === 'standard') { u.height = '70'; }
     else if (type === 'seethrough') { u.width = '60'; u.height = '70'; }
     else if (type === 'movedown') { u.width = '60'; u.height = '70'; }
   }
+  /** タイプ変更時に対応間口へ校正（automove は P.157 のタイプ×間口表） */
+  function wuAutoFixWidth(u) {
+    if (u.type !== 'automove') return;
+    var am = (DATA.wallCabinetUnits || {}).automove;
+    if (!am || !am.widthsByType) return;
+    var ok = am.widthsByType[u.subtype];
+    if (!ok || !ok.length) return;
+    if (ok.indexOf(u.width) < 0) u.width = ok[0];
+  }
+
   /** eyearea 间口/タイプ变化时校正 subtype/lighting（45cm 仅調味料棚、无照明付） */
   function wuEyeAutoFix(u) {
     if (u.type !== 'eyearea') return;
@@ -896,7 +924,9 @@
       html += wuChips(idx, '照明', 'data-wu-lighting', lightingOpts, u.lighting, '');
     } else if (wt === 'automove') {
       html += wuChips(idx, 'タイプ', 'data-wu-subtype', WU.automove.types, u.subtype, '');
-      html += wuChips(idx, '间口/間口', 'data-wu-width', WU.automove.widths, u.width, 'cm');
+      // タイプ別対応間口（P.157）：食器乾燥=75/90、除菌乾燥&食器乾燥=120/135 等
+      var amW = (WU.automove.widthsByType && WU.automove.widthsByType[u.subtype]) || WU.automove.widths;
+      html += wuChips(idx, '间口/間口', 'data-wu-width', amW, u.width, 'cm');
     } else if (wt === 'standard') {
       html += wuChips(idx, '高さ', 'data-wu-height', WU.standard.heights, u.height, 'cm');
     } else if (wt === 'seethrough') {

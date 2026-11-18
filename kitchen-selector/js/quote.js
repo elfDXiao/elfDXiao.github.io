@@ -162,9 +162,15 @@
     return null;
   }
 
-  /** 通用选项差价（priceDiff / isBasic / pricesBySize / priceMatrix / prices） */
+  /** 通用选项差价（planDiffs / priceDiff / isBasic / basicFor / pricesBySize / priceMatrix / prices） */
   function optionDiff(o) {
     if (!o) return null;
+    if (o.planDiffs && o.planDiffs[state.plan]) {          // プラン×レイアウト別加算（食洗機等）
+      var pd = o.planDiffs[state.plan][state.layout];
+      if (typeof pd === 'number') return pd;
+    }
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(state.plan) >= 0) return 0;  // 当該プランの基本仕様
+    if (isBaseSpec(o)) return 0;                              // プラン×レイアウト别基本仕様
     if (typeof o.priceDiff === 'number') return o.priceDiff;
     if (o.priceDiff === null) return null;            // 显式「差价待核」
     if (o.isBasic === true) return 0;                 // 基本仕様 → 0
@@ -202,13 +208,40 @@
     return optionDiff(o);
   }
 
-  /** 台面差价：pricesBySize 是Ⅰ型基准（键 180–300）；非Ⅰ型布局差价待核 → null 不计价（reviewer P1 方案 b） */
+  /** baseSpec：{plan: true | [layouts]} —— 当該プラン(×レイアウト)の基本仕様なら 0 */
+  function isBaseSpec(o) {
+    if (!o || !o.baseSpec) return false;
+    var bs = o.baseSpec[state.plan];
+    if (bs === true) return true;
+    return Array.isArray(bs) && bs.indexOf(state.layout) >= 0;
+  }
+
+  /** 台面所选布局的差价表键（planPrices 内） */
+  function worktopLayoutKey() {
+    if (state.layout === 'dual') return 'dual_kitchen';   // デュアルトップ対面：キッチン側（ダイニング側は diningCounter 参考表）
+    return state.layout;                                   // i / l / flat（tworow 单独处理）
+  }
+  /** 台面差价：planPrices[plan][layout] 按间口/奥行取值；2列型=コンロ側+シンク側合计 */
   function worktopContribution() {
     var o = selOption('worktop');
     if (!o) return null;
-    if (o.isBasic === true) return 0;         // 基本台面（basic plan 基准），任何布局 0
-    if (state.layout !== 'i') return null;    // 非Ⅰ型：Ⅰ型基准差价不适用，置 null 待核
-    return optionDiff(o);
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(state.plan) >= 0) return 0;  // 当該プラン基本仕様台面
+    var pp = o.planPrices && o.planPrices[state.plan];
+    if (!pp) return null;                                    // 当該プランで選択不可 → 待核
+    if (state.layout === 'tworow') {
+      var a = pp.tworow_conro, b = pp.tworow_sink;
+      if (!a || !b) return null;
+      var va = a['180'], vb = b['181.5'];
+      return (typeof va === 'number' && typeof vb === 'number') ? va + vb : null;
+    }
+    var t = pp[worktopLayoutKey()];
+    if (!t) return null;
+    if (state.layout === 'flat') {
+      var dv = t[state.depth];
+      return typeof dv === 'number' ? dv : null;
+    }
+    var v = t[state.width];
+    return typeof v === 'number' ? v : null;
   }
 
   /** 周辺収納单价表查找：ref 形如 "peripheralPrices.pantry_basic" */
@@ -433,7 +466,11 @@
    * state.cabunit = [ { pos, t, w, d, acc:{code:sub} }, ... ]；pos∈sink/base/cooktop/corner
    * 类型（t）为基本仕様 0 差价；配件（acc，来自 cabinet category 9 项）按类型显示并计价。
    */
-  var CAB_ACC_TYPES = { sink_outlet: ['sink'], cooktop_drawer: ['cooktop'], frypan_rack: ['cooktop'] };
+  var CAB_ACC_TYPES = {
+    sink_outlet: ['sink'], cooktop_drawer: ['cooktop'], frypan_rack: ['cooktop'],
+    slidebox_sink: ['sink'], slidebox_base: ['base'], slidebox_cooktop: ['cooktop'],
+    towel_holder: ['sink']            // P.127「シンクキャビネット引出し用タオル掛け」
+  };
   function cabUnitPositions() { return ['sink', 'base', 'cooktop', 'corner']; }
   function cabUnitPosName(pos, lang) {
     var CT = DATA.cabinetTypes || {}, C = CT[pos];
@@ -737,17 +774,63 @@
     var o = catOption(dimId, oi);
     if (!o) return null;
 
-    // シンク 対応間口（数据 sizes 字段；SY/SA 已含，其余按手册 §4 无数据不额外硬编码）
-    if (dimId === 'sink' && Array.isArray(o.sizes) && o.sizes.length) {
-      if (o.sizes.indexOf(state.width) < 0) {
-        return '该间口不可选此水槽（対応間口 ' + o.sizes.join('/') + 'cm）';
+    // 选项限定布局（o.layouts，如 シンプルスリムJ=対面専用）
+    if (Array.isArray(o.layouts) && o.layouts.length && o.layouts.indexOf(state.layout) < 0) {
+      return '该布局不提供此选项（対応レイアウト ' + o.layouts.join('/') + '）';
+    }
+    // 选项限定プラン（o.plans，如 レンジフード幕板=スタイリッシュのみ P.82）
+    // 注：layout/plan 维度自身不参与此判定（layout.options 的 plans 是「该布局可选方案」语义）
+    if (dimId !== 'layout' && dimId !== 'plan' &&
+        Array.isArray(o.plans) && o.plans.length && o.plans.indexOf(state.plan) < 0) {
+      return '该方案不提供此选项（対応プラン ' + o.plans.join('/') + '）';
+    }
+
+    // シンク：対応間口按 P.114（SY 180–225 / SA·RW·AE·AK 225–300 / SV 195–255）
+    // 但対面/2列型不适用该表：各パッケージ表の基本仕様は SA（W750）（P.86/90/91/96/97），
+    // 且 P.81 共通オプション明示为「基本・シンプル・L型プラン共通」，対面系的水槽变更加算額手册未载。
+    if (dimId === 'sink') {
+      if (state.layout === 'flat' || state.layout === 'dual' || state.layout === 'tworow') {
+        if (o.code !== 'SA') {
+          return '该布局套餐标配 SA（W750）水槽；变更水槽需向クリナップ営業所确认（手册未载加算額）';
+        }
+      } else if (Array.isArray(o.sizes) && o.sizes.length && o.sizes.indexOf(state.width) < 0) {
+        return '该间口不可选此水槽（対応間口 ' + o.sizes.join('/') + 'cm、P.114）';
       }
     }
     // 食洗機：间口 240cm 未满不可（L型シンク側同理，均以 width 判断）
     if (dimId === 'dishwasher' && o.code !== 'none' && Number(state.width) < 240) {
-      return '间口 240cm 未满不可安装洗碗机';
+      return '间口 240cm 未满不可安装洗碗机（P.98：シンク側間口240cm以上で組み込み可）';
+    }
+    // 台面：プラン別可选范围（P.80/82/83/86/90/91/96/98）
+    if (dimId === 'worktop') {
+      if (Array.isArray(o.notOfferedFor) && o.notOfferedFor.indexOf(state.plan) >= 0) {
+        return '该方案不提供此台面（2026.10版 P.80–98）';
+      }
+      var pp = o.planPrices && o.planPrices[state.plan];
+      if (!pp) return '该方案不提供此台面（2026.10版 P.80–98）';
+      if (state.layout === 'tworow') {
+        if (!pp.tworow_conro || !pp.tworow_sink) return '该布局不提供此台面';
+      } else if (!pp[worktopLayoutKey()]) {
+        return '该布局不提供此台面（如 L型无天然木、フラット対面无コイニング/サテン）';
+      }
     }
     return null;
+  }
+
+  /** 若该単選维度当前选项已不可选，按优先级回落到第一个匹配项 */
+  function resetDimToBase(dimId) {
+    var c = cat(dimId);
+    if (!c) return;
+    var cur = selOption(dimId);
+    if (!cur || !disabledReason(dimId, c.options.indexOf(cur))) return;
+    var pickers = Array.prototype.slice.call(arguments, 1);
+    for (var i = 0; i < pickers.length; i++) {
+      var idx = c.options.findIndex(pickers[i]);
+      if (idx >= 0 && !disabledReason(dimId, idx)) {
+        state.sel[dimId] = optionId(dimId, idx);
+        return;
+      }
+    }
   }
 
   /** 选中后的自动修复（推荐组合 / 联动重置） */
@@ -764,6 +847,14 @@
         var depths = depthList();
         if (!state.depth || depths.indexOf(state.depth) < 0) state.depth = depths[0];
       }
+      // 切换プラン/レイアウト后，把已失效的単選回落到基本仕様
+      resetDimToBase('worktop', function (o) {
+        return Array.isArray(o.basicFor) && o.basicFor.indexOf(state.plan) >= 0;
+      });
+      resetDimToBase('sink', function (o) { return o.code === 'SA'; }, function (o) { return o.code === 'SY'; });
+      resetDimToBase('hood', function (o) { return isBaseSpec(o); });
+      resetDimToBase('faucet', function (o) { return isBaseSpec(o); });
+      resetDimToBase('cooktop', function (o) { return isBaseSpec(o); });
     }
     if (dimId === 'grade') {
       var colors = currentDoorColors();
@@ -864,7 +955,7 @@
     wu: wu, wuUnits: wuUnits, wuSetHood: wuSetHood, wallUnitBasePrice: wallUnitBasePrice, wallUnitRacksPrice: wallUnitRacksPrice, wallUnitLedPrice: wallUnitLedPrice, wallUnitPriceFor: wallUnitPriceFor, wallUnitContribution: wallUnitContribution, wallUnitTypeName: wallUnitTypeName, wallUnitLabelFor: wallUnitLabelFor, wallUnitExtraLabelFor: wallUnitExtraLabelFor,
     parseWidthCm: parseWidthCm, sumWallUnitWidth: sumWallUnitWidth, sumCabUnitWidth: sumCabUnitWidth,
     cabUnitPositions: cabUnitPositions, cabUnitPosName: cabUnitPosName, cabAccessoriesFor: cabAccessoriesFor, cabUnitContribution: cabUnitContribution, cabUnitTotal: cabUnitTotal, cabAddUnit: cabAddUnit, cabDelUnit: cabDelUnit, cabUnitLabelFor: cabUnitLabelFor,
-    disabledReason: disabledReason, autoFix: autoFix,
+    disabledReason: disabledReason, autoFix: autoFix, isBaseSpec: isBaseSpec, worktopLayoutKey: worktopLayoutKey,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
       state.sel = {}; state.sub = {}; state.toggles = {};
