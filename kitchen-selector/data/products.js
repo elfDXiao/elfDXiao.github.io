@@ -4,7 +4,7 @@
  */
 window.KITCHEN_DATA = {
  "meta": {
-  "source": "クリナップ Cleanup STEDIA（ステディア）システムキッチン プランニングガイド 2026.10 価格改定版（0259_stediaca_unlocked.pdf，188 頁）",
+  "source": "クリナップ Cleanup STEDIA（ステディア）システムキッチン プランニングガイド 2026.10 価格改定版（0259_stediaca.pdf，188 頁）",
   "brand": "クリナップ Cleanup",
   "product": "システムキッチン（系统厨房）",
   "series": "ステディア（Stedia）",
@@ -160,8 +160,14 @@ window.KITCHEN_DATA = {
    "デュアルトップ対面 サイド化粧板 class別加算（P.90/91）与 キッチン側扉グレード加算（P.90/91，キッチン側は class5 固定）。",
    "デュアルトップ対面 ダイニング側カウンター（基准メラミン）——价格已存于 diningCounter，但未做成可选维度。",
    "周辺収納の未建模表：P.178 カップボード+片面フロアカウンター4分割構成／カフェスタイル収納の上台あり・吊戸棚あり/なし 4variant（现 cafe_counter 固定取「上台なし」）、P.179 全表、P.180 各2variant、P.181 全表。",
-   "スライドボックス シンクキャビネットの単独加算額（P.81 に記載なし）。"
-  ]
+   "スライドボックス シンクキャビネットの単独加算額（P.81 に記載なし）。",
+   "オートムーブ 底面コンセント等の専用オプション価格（手册未載単価；該オプションは間口75cm非対応、P.156）。"
+  ],
+  "manualShare": {
+   "url": "https://pan.baidu.com/s/10M37F8PTtY_zOkbmR9Xfvw?pwd=hfba",
+   "code": "hfba",
+   "file": "0259_stediaca.pdf"
+  }
  },
  "doorColors": {
   "class1": [
@@ -2924,7 +2930,7 @@ window.KITCHEN_DATA = {
      "name_ja": "流レールアクリストンシンク（AE）",
      "name_zh": "流轨人造大理石水槽（AE）",
      "priceDiff": 40000,
-     "note": "SA→AE / SY→AE ともに ＋40,000（P.81）；対応間口225～300cm（P.114）",
+     "note": "SA→AE / SY→AE ともに ＋40,000（P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -2939,7 +2945,7 @@ window.KITCHEN_DATA = {
      "name_ja": "流レールフォルテックスシンク（AK）",
      "name_zh": "流轨硬质人造大理石水槽（AK）",
      "priceDiff": 66000,
-     "note": "SA→AK / SY→AK ともに ＋66,000（P.81）；対応間口225～300cm（P.114）",
+     "note": "SA→AK / SY→AK ともに ＋66,000（P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -2954,7 +2960,7 @@ window.KITCHEN_DATA = {
      "name_ja": "流レールシンクワイド（RW）",
      "name_zh": "流轨宽水槽（RW）",
      "priceDiff": 55000,
-     "note": "SA→RW ＋55,000（間口255cm の場合、P.81）；対応間口225～300cm（P.114）",
+     "note": "SA→RW ＋55,000（間口255cm の場合、P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -3773,8 +3779,9 @@ window.KITCHEN_DATA = {
    ],
    "downloads": [
     {
-     "label": "Stedia プランニングガイド（手册 PDF）",
-     "file": "manual/0259_stediaca_unlocked.pdf"
+     "label": "Stedia プランニングガイド（手册 PDF・2026.10 価格改定版）",
+     "url": "https://pan.baidu.com/s/10M37F8PTtY_zOkbmR9Xfvw?pwd=hfba",
+     "linkNote": "提取码：hfba"
     },
     {
      "label": "Cleanup Stedia 官网",
