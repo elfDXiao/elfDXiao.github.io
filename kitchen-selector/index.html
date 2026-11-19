@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cleanup Stedia（ステディア）系统厨房选型与报价：按官方手册步骤选配（布局/套餐/间口/门板等级），中日双语，输入汇率后换算人民币纯物料价格，导出报价 PDF。">
+  <meta name="description" content="Cleanup Stedia（ステディア）系统厨房选型与报价：按官方手册步骤选配（布局/间口/门板等级），中日双语，输入汇率后换算人民币纯物料价格，导出报价 PDF。">
   <title>Cleanup Stedia 系统厨房选型 · elf_D老肖的世界</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23211f1b'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%23f6f4ef' font-family='serif'>老</text></svg>">
   <link rel="stylesheet" href="css/style.css">
@@ -36,7 +36,7 @@
       <div class="container">
         <p class="breadcrumb">Section 03 · Kitchen Select</p>
         <h1 class="sec-title">Cleanup Stedia 系统厨房选型</h1>
-        <p class="sec-sub">Cleanup ステディア（Stedia）系统厨房在线选型：按官方手册步骤选配（布局 / 套餐 / 间口 / 门板等级），中日双语，填入当日汇率自动生成大陆地区纯物料价格表。</p>
+        <p class="sec-sub">Cleanup ステディア（Stedia）系统厨房在线选型：按官方手册步骤选配（布局 / 间口 / 门板等级），中日双语，填入当日汇率自动生成大陆地区纯物料价格表。</p>
         <div class="hero-actions" id="langBar">
           <button type="button" class="btn btn-line lang-btn active" data-lang="both">中日双语</button>
           <button type="button" class="btn btn-line lang-btn" data-lang="zh">中文</button>
@@ -63,23 +63,23 @@
               <div class="wiz-body" id="wizBody"></div>
 
               <div class="wizard-buttons">
-                <button type="button" class="btn btn-line" id="btnPrev">← 上一步</button>
+                <button type="button" class="btn btn-line" id="btnPrev">← <span data-zh="上一步" data-ja="前へ">上一步</span></button>
                 <span class="spacer"></span>
-                <button type="button" class="btn btn-solid" id="btnNext">下一步 →</button>
-                <button type="button" class="btn btn-accent" id="btnFinish" hidden>生成报价单</button>
+                <button type="button" class="btn btn-solid" id="btnNext"><span data-zh="下一步" data-ja="次へ">下一步</span> →</button>
+                <button type="button" class="btn btn-accent" id="btnFinish" hidden data-zh="生成报价单" data-ja="見積書を作成">生成报价单</button>
               </div>
 
             </div>
 
             <aside class="wizard-summary">
               <div class="rate-box">
-                <label for="rate">汇率 / 為替（1日元 = 人民币）</label>
-                <input id="rate" type="number" step="0.0001" min="0.0001" placeholder="请手动输入当日汇率">
-                <p class="rate-hint">大陆地区价格为纯物料价格（不含安装/工事费）</p>
+                <label for="rate" data-zh="汇率（1日元 = 人民币）" data-ja="為替レート（1円 = 人民元）">汇率 / 為替（1日元 = 人民币）</label>
+                <input id="rate" type="number" step="0.0001" min="0.0001" placeholder="请手动输入当日汇率" data-zh-ph="请手动输入当日汇率" data-ja-ph="当日のレートを入力してください">
+                <p class="rate-hint" data-zh="大陆地区价格为纯物料价格（不含安装/工事费）" data-ja="中国本土価格は部材価格のみ（取付・工事費を含まず）">大陆地区价格为纯物料价格（不含安装/工事费）</p>
               </div>
 
               <div class="sum-box" id="sumBox">
-                <h4>报价合计 / 見積合計</h4>
+                <h4 data-zh="报价合计" data-ja="見積合計">报价合计 / 見積合計</h4>
                 <div class="sum-row"><span class="k" data-zh="类型" data-ja="タイプ">类型 / タイプ</span><span class="v" id="sumType">ステディア</span></div>
                 <div class="sum-row"><span class="k" data-zh="布局" data-ja="レイアウト">布局 / レイアウト</span><span class="v" id="sumLayout">—</span></div>
                 <div class="sum-row"><span class="k" data-zh="套餐" data-ja="プラン">套餐 / プラン</span><span class="v" id="sumPlan">—</span></div>
@@ -97,15 +97,15 @@
               </div>
 
               <div class="dl-box">
-                <div class="dl-box-title">Cleanup 资料下载 / 資料DL</div>
-                <a class="download-link" href="https://pan.baidu.com/s/10M37F8PTtY_zOkbmR9Xfvw?pwd=hfba" target="_blank" rel="noopener">系统厨房手册 PDF（百度网盘）</a>
-                <div style="font-size:12px;color:var(--ink-3);margin-top:6px;">提取码：hfba</div>
+                <div class="dl-box-title" data-zh="Cleanup 资料下载" data-ja="Cleanup 資料ダウンロード">Cleanup 资料下载 / 資料DL</div>
+                <a class="download-link" href="https://pan.baidu.com/s/10M37F8PTtY_zOkbmR9Xfvw?pwd=hfba" target="_blank" rel="noopener" data-zh="系统厨房手册 PDF（百度网盘）" data-ja="カタログ PDF（百度网盘）">系统厨房手册 PDF（百度网盘）</a>
+                <div style="font-size:12px;color:var(--ink-3);margin-top:6px;" data-zh="提取码：hfba" data-ja="DLコード：hfba">提取码：hfba</div>
                 <a class="download-link" href="https://cleanup.jp/" target="_blank" rel="noopener" style="display:block;margin-top:6px;" data-zh="Cleanup 官网" data-ja="公式サイト">Cleanup 官网 / 公式サイト</a>
               </div>
 
               <div class="summary-actions">
-                <button type="button" class="btn btn-accent" id="sumToQuote">生成报价单</button>
-                <button type="button" class="btn btn-line" id="sumCopy">复制选型清单</button>
+                <button type="button" class="btn btn-accent" id="sumToQuote" data-zh="生成报价单" data-ja="見積書を作成">生成报价单</button>
+                <button type="button" class="btn btn-line" id="sumCopy" data-zh="复制选型清单" data-ja="選定リストをコピー">复制选型清单</button>
               </div>
             </aside>
           </div>
@@ -114,14 +114,14 @@
         <!-- ============ 视图 2：报价单（見積書） ============ -->
         <section id="view-quote" class="view-panel">
           <div class="quote-toolbar no-print">
-            <button type="button" class="btn btn-line" id="btnPrint">🖨 打印 / PDF</button>
-            <button type="button" class="btn btn-line" id="btnCsv">⬇ CSV 导出</button>
-            <button type="button" class="btn btn-line" id="btnBack">← 返回选型</button>
+            <button type="button" class="btn btn-line" id="btnPrint">🖨 <span data-zh="打印 / PDF" data-ja="印刷 / PDF">打印 / PDF</span></button>
+            <button type="button" class="btn btn-line" id="btnCsv">⬇ <span data-zh="CSV 导出" data-ja="CSV 出力">CSV 导出</span></button>
+            <button type="button" class="btn btn-line" id="btnBack">← <span data-zh="返回选型" data-ja="選定に戻る">返回选型</span></button>
           </div>
           <div class="customer-form no-print">
-            <div class="field"><label>客户名称 / お名前</label><input id="customerName" type="text" placeholder="（选填）"></div>
-            <div class="field"><label>联系电话 / 電話番号</label><input id="customerPhone" type="text" placeholder="（选填）"></div>
-            <div class="field"><label>备注 / 備考</label><input id="customerNote" type="text" placeholder="（选填）"></div>
+            <div class="field"><label data-zh="客户名称" data-ja="お名前">客户名称 / お名前</label><input id="customerName" type="text" placeholder="（选填）" data-zh-ph="（选填）" data-ja-ph="（任意）"></div>
+            <div class="field"><label data-zh="联系电话" data-ja="電話番号">联系电话 / 電話番号</label><input id="customerPhone" type="text" placeholder="（选填）" data-zh-ph="（选填）" data-ja-ph="（任意）"></div>
+            <div class="field"><label data-zh="备注" data-ja="備考">备注 / 備考</label><input id="customerNote" type="text" placeholder="（选填）" data-zh-ph="（选填）" data-ja-ph="（任意）"></div>
           </div>
           <article class="survey-doc" id="quoteDoc"></article>
         </section>
