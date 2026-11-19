@@ -252,3 +252,9 @@ img { max-width: 100%; display: block; }
 .opt-card.has-swatch { gap: 7px; }
 .doc-name-swatch { display: inline-flex; align-items: center; gap: 8px; }
 .doc-name-swatch .opt-swatch { width: 22px; height: 22px; flex: 0 0 22px; border-radius: 3px; }
+
+/* 把手（取手）实物缩略图：手册 P.103 图鉴 */
+.handle-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; }
+.handle-thumb { width: 58px; height: 34px; object-fit: contain; background: #fff;
+  border: 1px solid var(--line); border-radius: 3px; flex: 0 0 58px; }
+.handle-chip .handle-txt { line-height: 1.35; }

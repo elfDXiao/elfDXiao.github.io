@@ -56,6 +56,21 @@
   var PREFERRED_WIDTH = { i: '255', l: '255', flat: '258', dual: '257.5', tworow: '181.5' };
 
   /* ---------------- 工具 ---------------- */
+  /** 显示语言（由 wizard 暴露；quote 层不持有 UI 状态） */
+  function lang() {
+    try {
+      var w = window.KITCHEN && window.KITCHEN.wizard;
+      return (w && w.state && w.state.lang) || 'both';
+    } catch (e) { return 'both'; }
+  }
+  /** 规格文案本地化：zh 只中文 / ja 只日文 / both 中文（日文） */
+  function L(zh, ja) {
+    var l = lang();
+    if (l === 'ja') return ja;
+    if (l === 'zh') return zh;
+    return zh + '（' + ja + '）';
+  }
+
   function cat(id) { return DATA.categories.find(function (c) { return c.id === id; }); }
   function catOption(catId, oi) { var c = cat(catId); return c ? c.options[oi] : null; }
   function optionId(catId, oi) { return catId + '::' + oi; }
@@ -115,7 +130,7 @@
     STEPS.length = 0;
     keys.forEach(function (k) {
       var s = stepMap[k];
-      STEPS.push({ n: k, title: s.ja.join('・'), titleZh: s.zh.join('・'), note: s.note[0] });
+      STEPS.push({ n: k, title: s.ja.join('・'), titleZh: s.zh.join('·'), note: s.note[0] });
     });
 
     var KIND = { layout: 'layout', plan: 'plan', size: 'size', grade: 'grade', door: 'door', faucet: 'faucet', peripheral: 'peripheral', other: 'other', wallcabinet: 'wallunit' };
@@ -136,7 +151,7 @@
     if (cabCat) {
       var cabStep = cabCat.step;
       var cabIdx = DIMS.findIndex(function (d) { return d.step > cabStep; });
-      var cabDim = { id: 'cabunit', step: cabStep, cat: null, kind: 'cabunit', titleJa: '地柜（フロアキャビネット）', titleZh: '地柜' };
+      var cabDim = { id: 'cabunit', step: cabStep, cat: null, kind: 'cabunit', titleJa: '下戸棚（フロアキャビネット）', titleZh: '地柜' };
       if (cabIdx < 0) DIMS.push(cabDim);
       else DIMS.splice(cabIdx, 0, cabDim);
     }
@@ -419,9 +434,9 @@
     if (s.subtype && s.type === 'eyearea') parts.push(W.eyearea && W.eyearea.types && W.eyearea.types[s.subtype] ? W.eyearea.types[s.subtype] : s.subtype);
     else if (s.subtype) parts.push(s.subtype);
     if (s.width) parts.push(s.width + 'cm');
-    if (s.height) parts.push('高さ' + s.height + 'cm');
+    if (s.height) parts.push(L('高度', '高さ') + s.height + 'cm');
     if (s.lighting) parts.push(s.lighting);
-    var label = parts.join('・');
+    var label = parts.join(' · ');
     if (s.isHood) label += (lang === 'ja' ? '（レンジフード用）' : '（油烟机用）');
     return label;
   }
@@ -629,13 +644,13 @@
       parts.push(lang === 'ja' ? (tp.name_ja || '') : (tp.name_zh || tp.name_ja || ''));
     }
     if (unit.w) parts.push(unit.w + 'cm');
-    if (unit.d) parts.push('奥行' + String(unit.d).replace(/^D/, '') + 'cm');
+    if (unit.d) parts.push(L('进深', '奥行') + String(unit.d).replace(/^D/, '') + 'cm');
     var acc = unit.acc || {};
     cat('cabinet').options.forEach(function (o) {
       if (acc[o.code] == null) return;
       parts.push(multiLabel(o, acc[o.code], lang));
     });
-    return parts.join('・');
+    return parts.join(' · ');
   }
 
   function contributionFor(dimId) {
@@ -669,7 +684,7 @@
         var co = doorColorObj();
         if (co) { out.nameZh = co.name_zh || co.name_ja || ''; out.nameJa = co.name_ja || ''; out.code = co.code || ''; }
         var h = handleNames()[state.doorHandle];
-        if (h) out.extra = '取手 ' + (h.name_zh || h.name_ja || '') + ' / ' + (h.name_ja || '');
+        if (h) out.extra = L('拉手 ', '取手 ') + (lang() === 'ja' ? (h.name_ja || '') : (h.name_zh || h.name_ja || ''));
         out.diff = 0;
         return out;
       }
@@ -694,7 +709,7 @@
         var size = s.size || (Array.isArray(o2.sizes) ? o2.sizes[0] : '');
         var depth = s.depth || (Array.isArray(o2.depth) ? o2.depth[0] : '');
         var missing = !peripheralTable(o2);
-        out.extra = (size ? '間口' + size + 'cm' : '') + (depth ? ' / 奥行' + depth + 'cm' : '') + (missing ? '（价格未标注）' : '');
+        out.extra = (size ? L('间口', '間口') + size + 'cm' : '') + (depth ? ' / ' + L('进深', '奥行') + depth + 'cm' : '') + (missing ? L('（价格未标注）', '（価格未記載）') : '');
         out.diff = contributionFor('peripheral');
         return out;
       }
@@ -706,7 +721,7 @@
         out.code = o3.code || '';
         out.model = o3.model || '';
         var sz = (state.sub.other && state.sub.other.size) || '30';
-        out.extra = '間口' + sz + 'cm';
+        out.extra = L('间口', '間口') + sz + 'cm';
         out.diff = contributionFor('other');
         return out;
       }
@@ -757,9 +772,9 @@
   /** 基本价规格文字（报价单/合计用） */
   function baseSpecText() {
     var g = gradeLabel();
-    if (state.layout === 'tworow') return '固定組合せ（コンロ側180cm＋シンク側181.5cm）・' + g;
-    var s = '間口' + state.width + 'cm・' + g;
-    if (hasDepth()) s += '・奥行' + state.depth + 'cm';
+    if (state.layout === 'tworow') return L('固定组合（灶具侧180cm＋水槽侧181.5cm）', '固定組合せ（コンロ側180cm＋シンク側181.5cm）') + ' · ' + g;
+    var s = L('间口', '間口') + state.width + 'cm · ' + g;
+    if (hasDepth()) s += ' · ' + L('进深', '奥行') + state.depth + 'cm';
     return s;
   }
 
@@ -774,7 +789,7 @@
       step: 0, stepZh: stepMeta(0).titleZh, stepJa: stepMeta(0).title,
       nameZh: layoutNameZh() + ' · ' + planNameZh(),
       nameJa: layoutNameJa() + ' ' + planNameJa(),
-      code: state.layout, model: '', extra: baseSpecText() + '（取付・設置費別）',
+      code: state.layout, model: '', extra: baseSpecText() + L('（不含安装与设置费）', '（取付・設置費別）'),
       diff: 0, base: true
     });
     if (base == null) {
@@ -880,13 +895,13 @@
 
     // 选项限定布局（o.layouts，如 シンプルスリムJ=対面専用）
     if (Array.isArray(o.layouts) && o.layouts.length && o.layouts.indexOf(state.layout) < 0) {
-      return '该布局不提供此选项（対応レイアウト ' + o.layouts.join('/') + '）';
+      return '该布局不提供此选项（适用布局：' + o.layouts.map(layoutNameZh).join('、') + '）';
     }
     // 选项限定プラン（o.plans，如 レンジフード幕板=スタイリッシュのみ P.82）
     // 注：layout/plan 维度自身不参与此判定（layout.options 的 plans 是「该布局可选方案」语义）
     if (dimId !== 'layout' && dimId !== 'plan' &&
         Array.isArray(o.plans) && o.plans.length && o.plans.indexOf(state.plan) < 0) {
-      return '该方案不提供此选项（対応プラン ' + o.plans.join('/') + '）';
+      return '该方案不提供此选项（适用方案：' + o.plans.map(planNameZh).join('、') + '）';
     }
 
     // シンク：対応間口按 P.114（SY 180–225 / SA·RW·AE·AK 225–300 / SV 195–255）
@@ -1011,7 +1026,7 @@
       ['顧客名', state.quoteHead.customer], ['施工住所', state.quoteHead.address],
       ['販売店/担当', (state.quoteHead.dealer || '') + ' ' + (state.quoteHead.person || '')],
       ['レイアウト', layoutNameJa()], ['プラン', planNameJa()],
-      ['間口(cm)', state.width], ['奥行(cm)', hasDepth() ? state.depth : '—'], ['グレード', gradeLabel()],
+      [L('间口(cm)', '間口(cm)'), state.width], [L('进深(cm)', '奥行(cm)'), hasDepth() ? state.depth : '—'], [L('等级', 'グレード'), gradeLabel()],
       ['', ''], ['区分', '品名（日）', '品名（中）', '記号', '型番', '仕様', '差額(税抜)', '金額']
     ];
     r.lines.forEach(function (l) {

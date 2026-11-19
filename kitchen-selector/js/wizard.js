@@ -42,6 +42,32 @@
     return zh + ' / ' + ja;
   }
 
+  /* 数据中以日文为键的选项值（照明/タイプ/ラック/配件）中文对照。
+     键保持日文不动（与手册/数据一致），仅显示层翻译。 */
+  var JA_ZH = {
+    '照明付': '带照明', '照明無': '无照明',
+    '収納タイプ': '收纳型', '水切りタイプ': '沥水型',
+    '水切り＆収納タイプ': '沥水+收纳型',
+    '除菌乾燥＆水切り＆収納タイプ': '除菌干燥+沥水+收纳型',
+    '食器乾燥タイプ': '餐具干燥型',
+    '除菌乾燥＆食器乾燥タイプ': '除菌干燥+餐具干燥型',
+    'サポートラック': '支撑架', 'サポートラック(W300)': '支撑架(W300)', 'サポートラック(W500)': '支撑架(W500)',
+    'ペーパーラック': '纸巾架', '皿立てラック': '盘碟立架', 'レードルラック': '长柄勺架',
+    'まな板ラック': '砧板架', 'カトラリーラック': '餐具架', 'ふきんラック': '抹布架',
+    '天井幕板': '顶封板', '梁欠き対応': '梁缺口适配', '開放防止部品付': '防开启部件'
+  };
+  /** 日文键 → 随语言显示（中文/日文/双语） */
+  function jaLabel(ja) {
+    var zh = JA_ZH[ja];
+    if (!zh) return esc(ja);
+    return t(zh, ja);
+  }
+  /** 副标题：纯中文模式不显示日文原名（型号仍显示，下单核对不受影响） */
+  function subJa(ja) {
+    if (!ja || LANG === 'zh') return '';
+    return '<em>' + esc(ja) + '</em>';
+  }
+
   /* ---------------- 初始化（事件只绑一次） ---------------- */
   function init(data) {
     Q = window.KITCHEN.quote;
@@ -311,7 +337,12 @@
 
     // 吊柜单元 添加/删除（click 委托，仅绑一次）
     body.addEventListener('click', function (e) {
-      var tgt = e.target;
+      // 按钮内含双语 <span class="ja">，点到日文那半时 e.target 是 span 而非 button，
+      // 必须用 closest() 上溯到带动作属性的元素，否则「点一下不行要点两下」。
+      var tgt = e.target && e.target.closest
+        ? e.target.closest('[data-wu-add],[data-wu-del],[data-cab-add],[data-cab-del]')
+        : null;
+      if (!tgt) return;
       if (tgt.hasAttribute('data-wu-add')) {
         var units = Q.wuUnits();
         units.push({ type: 'standard', height: '70' });
@@ -441,7 +472,17 @@
   }
 
   /* ---------------- 主渲染 ---------------- */
+  /** 汇总栏等静态双语标签随语言切换（index.html 里带 data-zh/data-ja 的元素） */
+  function applyStaticLang() {
+    var nodes = document.querySelectorAll('[data-zh][data-ja]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      el.textContent = tp(el.getAttribute('data-zh'), el.getAttribute('data-ja'));
+    }
+  }
+
   function renderAll() {
+    applyStaticLang();
     renderStepper();
     renderStep();
     renderSummary();
@@ -482,7 +523,7 @@
     var total = Q.STEPS.length;
     var last = total - 1;
     var html = '<div class="wiz-step-head">' +
-      '<span class="wiz-step-no">' + t('步骤 / STEP', 'ステップ') + ' ' + st.n + ' / ' + total + '</span>' +
+      '<span class="wiz-step-no">' + t('步骤', 'ステップ') + ' ' + st.n + ' / ' + total + '</span>' +
       '<h3>' + t(st.titleZh, st.title) + '</h3>' +
       '<p class="wiz-note">' + esc(st.note) + '</p></div>';
 
@@ -533,7 +574,7 @@
       '<input type="radio" name="dim_' + dimId + '" data-dim="' + dimId + '" data-val="' + esc(val) + '"' +
       (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
       (leadHtml || '') +
-      '<span class="opt-name">' + esc(nameZh) + '<em>' + esc(nameJa) + '</em></span>' +
+      '<span class="opt-name">' + esc(nameZh) + subJa(nameJa) + '</span>' +
       codeHtml + (priceHtml || '') + note + '</label>';
   }
 
@@ -573,18 +614,18 @@
 
   function optPriceText(d, oi, o) {
     if (!o) return '—';
-    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
-    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本规格', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本规格', '基本仕様');
     if (o.planDiffs && o.planDiffs[Q.state.plan] && typeof o.planDiffs[Q.state.plan][Q.state.layout] === 'number')
       return P.fmtDiff(o.planDiffs[Q.state.plan][Q.state.layout]);
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
-    if (o.isBasic === true) return tp('基本', '基本仕様');
+    if (o.isBasic === true) return tp('基本规格', '基本仕様');
     if (o.pricesBySize) {
       // 台面：按当前プラン×レイアウト取差价（2026.10 版 planPrices）
       if (d.id === 'worktop') {
         var wv = Q.contributionFor('worktop');
-        if (wv === 0) return tp('基本', '基本仕様');
+        if (wv === 0) return tp('基本规格', '基本仕様');
         if (typeof wv === 'number') return P.fmtDiff(wv);
         return tp('价格待核', '価格未定');
       }
@@ -648,13 +689,13 @@
     });
     html += '</div>';
     if (Q.state.layout === 'tworow') {
-      html += '<p class="muted">' + t('2列型为固定组合：コンロ側180cm＋シンク側181.5cm。', '2列型は固定組合せ（コンロ側180cm＋シンク側181.5cm）です。') + '</p>';
+      html += '<p class="muted">' + t('双排型为固定组合：灶具侧180cm＋水槽侧181.5cm。', '2列型は固定組合せ（コンロ側180cm＋シンク側181.5cm）です。') + '</p>';
     }
     return html;
   }
 
   function depthHtml(d) {
-    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('进深 / 奥行：', '奥行：') + '</span>';
+    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('进深：', '奥行：') + '</span>';
     Q.depthList().forEach(function (dp) {
       var on = Q.state.depth === dp;
       html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="depth_sel" data-dim="depth" data-val="' + esc(dp) + '"' + (on ? ' checked' : '') + '>' + esc(dp) + 'cm</label>';
@@ -683,11 +724,12 @@
     html += '</div>';
     var handles = Q.doorHandles();
     if (handles.length) {
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('拉手 / 取手：', '取手：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('拉手：', '取手：') + '</span>';
       handles.forEach(function (h) {
         var hn = Q.handleNames()[h] || {};
         var on = Q.state.doorHandle === h;
-        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="door_handle" data-handle="' + esc(h) + '"' + (on ? ' checked' : '') + '>' + esc(h + ' ' + (hn.name_ja || '')) + '</label>';
+        var himg = hn.img ? '<img class="handle-thumb" src="' + esc(hn.img) + '" alt="' + esc(hn.name_zh || h) + '" loading="lazy">' : '';
+        html += '<label class="sub-chip handle-chip' + (on ? ' on' : '') + '"><input type="radio" name="door_handle" data-handle="' + esc(h) + '"' + (on ? ' checked' : '') + '>' + himg + '<span class="handle-txt">' + esc(h) + ' ' + t(hn.name_zh || hn.name_ja || '', hn.name_ja || '') + '</span></label>';
       });
       html += '</div>';
     }
@@ -699,17 +741,17 @@
     if (region === '寒冷地' && o.priceDiffCold != null) {
       return typeof o.priceDiffCold === 'number' ? P.fmtDiff(o.priceDiffCold) : String(o.priceDiffCold);
     }
-    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
-    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本规格', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本规格', '基本仕様');
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
-    if (o.isBasic) return tp('基本', '基本仕様');
+    if (o.isBasic) return tp('基本规格', '基本仕様');
     return '—';
   }
 
   function faucetHtml(d) {
     var region = (Q.state.sub.faucet && Q.state.sub.faucet.region) || '一般地';
-    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('地区 / 地域：', '地域：') + '</span>';
+    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('地区：', '地域：') + '</span>';
     ['一般地', '寒冷地'].forEach(function (r) {
       var on = region === r;
       html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="faucet_region" data-region="' + esc(r) + '"' + (on ? ' checked' : '') + '>' + esc(r) + '</label>';
@@ -735,7 +777,7 @@
     var noneOn = Q.state.sel.peripheral == null;
     html += '<label class="opt-card' + (noneOn ? ' on' : '') + '">' +
       '<input type="radio" name="dim_peripheral" data-dim="peripheral" data-val=""' + (noneOn ? ' checked' : '') + '>' +
-      '<span class="opt-name">' + t('不添加', 'なし') + '<em>なし</em></span></label>';
+      '<span class="opt-name">' + t('不添加', 'なし') + subJa('なし') + '</span></label>';
     Q.cat('peripheral').options.forEach(function (o, oi) {
       var oid = Q.optionId('peripheral', oi);
       var on = Q.state.sel.peripheral === oid;
@@ -750,7 +792,7 @@
       var depths = so.depth || [];
       if (sizes.length) {
         var curSize = s.size || sizes[0];
-        html += '<div class="sub-row"><span class="dim-sub-title">' + t('间口 / 間口：', '間口：') + '</span>';
+        html += '<div class="sub-row"><span class="dim-sub-title">' + t('间口：', '間口：') + '</span>';
         sizes.forEach(function (sz) {
           var on = curSize === sz;
           html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="peri_size" data-peri-size="' + esc(sz) + '"' + (on ? ' checked' : '') + '>' + esc(sz) + 'cm</label>';
@@ -759,7 +801,7 @@
       }
       if (depths.length) {
         var curDepth = s.depth || depths[0];
-        html += '<div class="sub-row"><span class="dim-sub-title">' + t('进深 / 奥行：', '奥行：') + '</span>';
+        html += '<div class="sub-row"><span class="dim-sub-title">' + t('进深：', '奥行：') + '</span>';
         depths.forEach(function (dp) {
           var on = curDepth === dp;
           html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="peri_depth" data-peri-depth="' + esc(dp) + '"' + (on ? ' checked' : '') + '>' + esc(dp) + 'cm</label>';
@@ -780,7 +822,7 @@
     var noneOn = Q.state.sel.other == null;
     html += '<label class="opt-card' + (noneOn ? ' on' : '') + '">' +
       '<input type="radio" name="dim_other" data-dim="other" data-val=""' + (noneOn ? ' checked' : '') + '>' +
-      '<span class="opt-name">' + t('不添加', 'なし') + '<em>なし</em></span></label>';
+      '<span class="opt-name">' + t('不添加', 'なし') + subJa('なし') + '</span></label>';
     Q.cat('other').options.forEach(function (o, oi) {
       var oid = Q.optionId('other', oi);
       var on = Q.state.sel.other === oid;
@@ -791,7 +833,7 @@
     var so = Q.selOption('other');
     if (so) {
       var cur = (Q.state.sub.other && Q.state.sub.other.size) || '30';
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('尺寸 / サイズ：', 'サイズ：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('尺寸：', 'サイズ：') + '</span>';
       ['30', '45'].forEach(function (sz) {
         var on = cur === sz;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="other_size" data-other-size="' + esc(sz) + '"' + (on ? ' checked' : '') + '>' + esc(sz) + 'cm</label>';
@@ -826,11 +868,11 @@
       var it = o.items[idx];
       return it && typeof it.price === 'number' ? P.fmtDiff(it.price) : tp('价格待核', '価格未定');
     }
-    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本', '基本仕様');
-    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本', '基本仕様');
+    if (Array.isArray(o.basicFor) && o.basicFor.indexOf(Q.state.plan) >= 0) return tp('基本规格', '基本仕様');
+    if (Q.isBaseSpec && Q.isBaseSpec(o)) return tp('基本规格', '基本仕様');
     if (typeof o.priceDiff === 'number') return P.fmtDiff(o.priceDiff);
     if (o.priceDiff === null) return tp('价格待核', '価格未定');
-    if (o.isBasic) return tp('基本', '基本仕様');
+    if (o.isBasic) return tp('基本规格', '基本仕様');
     return '—';
   }
 
@@ -844,12 +886,12 @@
       html += '<div class="multi-item">' +
         '<label class="check-row' + (checked ? ' on' : '') + '">' +
         '<input type="checkbox" data-multi="' + d.id + '" data-val="' + esc(o.code) + '"' + (checked ? ' checked' : '') + '>' +
-        '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
+        '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + subJa(o.name_ja || '') + '</span>' +
         codeHtml + priceSpan(price) + '</label>';
 
       if (checked && o.pricesBySize) {
         var w = sub && sub.w;
-        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('柜体间口 / 間口：', '間口：') + '</span>';
+        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('柜体间口：', '間口：') + '</span>';
         html += '<label class="sub-chip' + (w == null ? ' on' : '') + '"><input type="radio" name="multi_w_' + o.code + '" data-multi-w="' + d.id + '" data-code="' + esc(o.code) + '" data-val=""' + (w == null ? ' checked' : '') + '>' + t('未选', '未選択') + '</label>';
         Object.keys(o.pricesBySize).forEach(function (wk) {
           var on = w === wk;
@@ -859,7 +901,7 @@
       }
       if (checked && Array.isArray(o.items) && o.items.length) {
         var i = (sub && typeof sub.i === 'number') ? sub.i : null;
-        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('子项 / タイプ：', 'タイプ：') + '</span>';
+        html += '<div class="sub-row multi-sub"><span class="dim-sub-title">' + t('子项：', 'タイプ：') + '</span>';
         html += '<label class="sub-chip' + (i == null ? ' on' : '') + '"><input type="radio" name="multi_i_' + o.code + '" data-multi-i="' + d.id + '" data-code="' + esc(o.code) + '" data-val=""' + (i == null ? ' checked' : '') + '>' + t('未选', '未選択') + '</label>';
         o.items.forEach(function (it, ii) {
           var on = i === ii;
@@ -877,9 +919,9 @@
   function wuChips(idx, label, attr, values, cur, suffix, displayMap) {
     var html = '<div class="sub-row"><span class="dim-sub-title">' + esc(label) + '：</span>';
     (values || []).forEach(function (v) {
-      var disp = (displayMap && displayMap[v]) ? displayMap[v] : v;
+      var dispHtml = (displayMap && displayMap[v]) ? t(displayMap[v], v) : esc(v);
       var on = cur === v;
-      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="wu_' + idx + '_' + attr + '" data-wu-idx="' + idx + '" ' + attr + '="' + esc(v) + '"' + (on ? ' checked' : '') + '>' + esc(disp) + (suffix || '') + '</label>';
+      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="wu_' + idx + '_' + attr + '" data-wu-idx="' + idx + '" ' + attr + '="' + esc(v) + '"' + (on ? ' checked' : '') + '>' + dispHtml + (suffix || '') + '</label>';
     });
     html += '</div>';
     return html;
@@ -943,7 +985,7 @@
   function wuPriceBadge(u) {
     var v = Q.wallUnitPriceFor(u);
     if (v == null) return '<span class="unit-price pending">' + t('价格待核', '価格未定') + '</span>';
-    if (v === 0) return '<span class="unit-price">' + t('基本仕様', '基本仕様') + '</span>';
+    if (v === 0) return '<span class="unit-price">' + t('基本规格', '基本仕様') + '</span>';
     return '<span class="unit-price">' + t('单元价', 'ユニット価格') + ' ' + P.yen(v) + '</span>';
   }
 
@@ -954,21 +996,21 @@
       '<span class="wu-right">' + wuPriceBadge(u) +
       (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-wu-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
       '</span></div>';
-    html += '<div class="sub-row"><span class="dim-sub-title">' + t('单元类型 / タイプ：', 'タイプ：') + '</span>';
-    WU_TYPE_OPTS.forEach(function (tp) {
-      var on = u.type === tp.code;
-      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="wu_type_' + idx + '" data-wu-idx="' + idx + '" data-wu-type="' + tp.code + '"' + (on ? ' checked' : '') + '>' + esc(tp.zh) + ' <span class="ja">' + esc(tp.ja) + '</span></label>';
+    html += '<div class="sub-row"><span class="dim-sub-title">' + t('单元类型：', 'タイプ：') + '</span>';
+    WU_TYPE_OPTS.forEach(function (ot) {
+      var on = u.type === ot.code;
+      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="wu_type_' + idx + '" data-wu-idx="' + idx + '" data-wu-type="' + ot.code + '"' + (on ? ' checked' : '') + '>' + t(ot.zh, ot.ja) + '</label>';
     });
     html += '</div>';
     // 油烟机用标记（互斥，最多 1 个）
-    html += '<div class="sub-row"><span class="dim-sub-title">' + t('油烟机用 / レンジフード用：', 'レンジフード用：') + '</span>';
+    html += '<div class="sub-row"><span class="dim-sub-title">' + t('油烟机用：', 'レンジフード用：') + '</span>';
     html += '<label class="check-row' + (u.isHood ? ' on' : '') + '" style="display:inline-flex;margin:0;padding:5px 12px;"><input type="checkbox" data-wu-idx="' + idx + '" data-wu-hood="1"' + (u.isHood ? ' checked' : '') + '>' + t('油烟机用（位于油烟机上方，最多1个）', 'レンジフード用（レンジフード上に設置、最大1個）') + '</label>';
     html += '</div>';
 
     var wt = u.type;
     if (wt === 'handmove') {
-      html += wuChips(idx, '间口/間口', 'data-wu-width', WU.handmove.widths, u.width, 'cm');
-      html += wuChips(idx, '照明', 'data-wu-lighting', WU.handmove.lighting, u.lighting, '');
+      html += wuChips(idx, t('间口', '間口'), 'data-wu-width', WU.handmove.widths, u.width, 'cm');
+      html += wuChips(idx, t('照明', '照明'), 'data-wu-lighting', WU.handmove.lighting, u.lighting, '', JA_ZH);
     } else if (wt === 'eyearea') {
       var eye = WU.eyearea || {};
       var eyeTypes = eye.types || {};
@@ -977,24 +1019,24 @@
       var subOpts = Object.keys(eye.prices[curWidth] || {});               // 45→仅 seasoning；75/90→seasoning+draining
       var curSub = u.subtype || subOpts[0];
       var lightingOpts = (eye.prices[curWidth] && eye.prices[curWidth][curSub]) ? Object.keys(eye.prices[curWidth][curSub]) : ['照明無'];
-      html += wuChips(idx, 'タイプ', 'data-wu-subtype', subOpts, u.subtype, '', eyeTypes);
-      html += wuChips(idx, '间口/間口', 'data-wu-width', widthOpts, u.width, 'cm');
-      html += wuChips(idx, '照明', 'data-wu-lighting', lightingOpts, u.lighting, '');
+      html += wuChips(idx, t('类型', 'タイプ'), 'data-wu-subtype', subOpts, u.subtype, '', eyeTypes);
+      html += wuChips(idx, t('间口', '間口'), 'data-wu-width', widthOpts, u.width, 'cm');
+      html += wuChips(idx, t('照明', '照明'), 'data-wu-lighting', lightingOpts, u.lighting, '', JA_ZH);
     } else if (wt === 'automove') {
-      html += wuChips(idx, 'タイプ', 'data-wu-subtype', WU.automove.types, u.subtype, '');
+      html += wuChips(idx, t('类型', 'タイプ'), 'data-wu-subtype', WU.automove.types, u.subtype, '', JA_ZH);
       // タイプ別対応間口（P.157）：食器乾燥=75/90、除菌乾燥&食器乾燥=120/135 等
       var amW = (WU.automove.widthsByType && WU.automove.widthsByType[u.subtype]) || WU.automove.widths;
-      html += wuChips(idx, '间口/間口', 'data-wu-width', amW, u.width, 'cm');
+      html += wuChips(idx, t('间口', '間口'), 'data-wu-width', amW, u.width, 'cm');
     } else if (wt === 'standard') {
       // 間口は柜体总长校验に必要（従来は高さのみで幅を持てなかった）
-      if (WU.standard.widths) html += wuChips(idx, '间口/間口', 'data-wu-width', WU.standard.widths, u.width, 'cm');
-      html += wuChips(idx, '高さ', 'data-wu-height', WU.standard.heights, u.height, 'cm');
+      if (WU.standard.widths) html += wuChips(idx, t('间口', '間口'), 'data-wu-width', WU.standard.widths, u.width, 'cm');
+      html += wuChips(idx, t('高度', '高さ'), 'data-wu-height', WU.standard.heights, u.height, 'cm');
     } else if (wt === 'seethrough') {
-      html += wuChips(idx, '间口/間口', 'data-wu-width', WU.seethrough.widths, u.width, 'cm');
-      html += wuChips(idx, '高さ', 'data-wu-height', WU.seethrough.heights, u.height, 'cm');
+      html += wuChips(idx, t('间口', '間口'), 'data-wu-width', WU.seethrough.widths, u.width, 'cm');
+      html += wuChips(idx, t('高度', '高さ'), 'data-wu-height', WU.seethrough.heights, u.height, 'cm');
     } else if (wt === 'movedown') {
-      html += wuChips(idx, '间口/間口', 'data-wu-width', WU.movedown.widths, u.width, 'cm');
-      html += wuChips(idx, '高さ', 'data-wu-height', WU.movedown.heights, u.height, 'cm');
+      html += wuChips(idx, t('间口', '間口'), 'data-wu-width', WU.movedown.widths, u.width, 'cm');
+      html += wuChips(idx, t('高度', '高さ'), 'data-wu-height', WU.movedown.heights, u.height, 'cm');
     }
     if (wt === 'automove' || wt === 'standard' || wt === 'seethrough' || wt === 'movedown') {
       html += '<p class="muted">' + t('基本仕様（价格含于套装，类型差价在别册，本系统暂不计价）', '基本仕様（価格はセットに含まれ、タイプ差額は別冊）') + '</p>';
@@ -1007,17 +1049,17 @@
     if (wt === 'handmove') racks = WU.handmove.racks;
     else if (wt === 'automove') racks = WU.automove.racks;
     if (racks) {
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('拉篮 / ラック：', 'ラック：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('拉篮：', 'ラック：') + '</span>';
       Object.keys(racks).forEach(function (rk) {
         var on = !!(u.racks && u.racks[rk]);
-        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-wu-idx="' + idx + '" data-wu-rack="' + esc(rk) + '"' + (on ? ' checked' : '') + '>' + esc(rk) + ' <b>' + esc(P.fmtDiff(racks[rk])) + '</b></label>';
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-wu-idx="' + idx + '" data-wu-rack="' + esc(rk) + '"' + (on ? ' checked' : '') + '>' + jaLabel(rk) + ' <b>' + esc(P.fmtDiff(racks[rk])) + '</b></label>';
       });
       html += '</div>';
     }
 
     if (wt !== 'none') {
       var ledOpts = WU.led || {};
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('LED灯 / LED：', 'LED：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('LED灯：', 'LED：') + '</span>';
       var ledNoneOn = !(u.led && u.led.code);
       html += '<label class="sub-chip' + (ledNoneOn ? ' on' : '') + '"><input type="radio" name="wu_led_' + idx + '" data-wu-idx="' + idx + '" data-wu-led=""' + (ledNoneOn ? ' checked' : '') + '>' + t('无', 'なし') + '</label>';
       Object.keys(ledOpts).forEach(function (lk) {
@@ -1034,10 +1076,10 @@
         });
         html += '</div>';
       }
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('配件 / オプション：', 'オプション：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('配件：', 'オプション：') + '</span>';
       Object.keys(WU.extras || {}).forEach(function (ek) {
         var on = !!(u.extras && u.extras[ek]);
-        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-wu-idx="' + idx + '" data-wu-extra="' + esc(ek) + '"' + (on ? ' checked' : '') + '>' + esc(ek) + '</label>';
+        html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-wu-idx="' + idx + '" data-wu-extra="' + esc(ek) + '"' + (on ? ' checked' : '') + '>' + jaLabel(ek) + '</label>';
       });
       html += '</div>';
     }
@@ -1088,7 +1130,7 @@
     var checked = sub != null;
     var html = '<div class="multi-item"><label class="check-row' + (checked ? ' on' : '') + '">' +
       '<input type="checkbox" data-cab-idx="' + idx + '" data-cab-acc="' + esc(o.code) + '"' + (checked ? ' checked' : '') + '>' +
-      '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
+      '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + subJa(o.name_ja || '') + '</span>' +
       priceSpan(multiPriceText(o, sub)) + '</label>';
     if (checked && o.pricesBySize) {
       var w = (sub && sub.w) || null;
@@ -1129,15 +1171,15 @@
       (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-cab-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
       '</span></div>';
     // 位置
-    html += '<div class="sub-row"><span class="dim-sub-title">' + t('位置 / タイプ：', 'タイプ：') + '</span>';
+    html += '<div class="sub-row"><span class="dim-sub-title">' + t('位置：', 'タイプ：') + '</span>';
     Q.cabUnitPositions().forEach(function (pos) {
       var on = u.pos === pos;
-      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_pos_' + idx + '" data-cab-idx="' + idx + '" data-cab-pos="' + pos + '"' + (on ? ' checked' : '') + '>' + esc(Q.cabUnitPosName(pos, 'zh')) + ' <span class="ja">' + esc(Q.cabUnitPosName(pos, 'ja')) + '</span></label>';
+      html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_pos_' + idx + '" data-cab-idx="' + idx + '" data-cab-pos="' + pos + '"' + (on ? ' checked' : '') + '>' + t(Q.cabUnitPosName(pos, 'zh'), Q.cabUnitPosName(pos, 'ja')) + '</label>';
     });
     html += '</div>';
     var C = CT[u.pos];
     if (C && C.types && C.types.length) {
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('类型 / 種類：', '種類：') + '</span>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('类型：', '種類：') + '</span>';
       C.types.forEach(function (tp, ti) {
         var on = u.t === ti;
         html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="cab_type_' + idx + '" data-cab-idx="' + idx + '" data-cab-type="' + ti + '"' + (on ? ' checked' : '') + '>' + esc(tp.name_zh || tp.name_ja) + (tp.isBasic ? ' <b>基本</b>' : '') + '</label>';
@@ -1163,7 +1205,7 @@
     // 配件（按位置过滤）
     var accs = Q.cabAccessoriesFor(u.pos);
     if (accs.length) {
-      html += '<div class="sub-row"><span class="dim-sub-title">' + t('配件 / オプション：', 'オプション：') + '</span></div>';
+      html += '<div class="sub-row"><span class="dim-sub-title">' + t('配件：', 'オプション：') + '</span></div>';
       accs.forEach(function (o) {
         var sub = (u.acc && u.acc[o.code]) || null;
         html += cabAccHtml(o, sub, idx);
@@ -1188,7 +1230,7 @@
   function renderSummary() {
     var r = Q.computeQuote();
     var optTotal = r.totalEx - (r.basePrice != null ? r.basePrice : 0);
-    if (els.sumType) els.sumType.textContent = (DATA.meta && DATA.meta.series) || (DATA.meta && DATA.meta.product) || '';
+    if (els.sumType) els.sumType.textContent = (LANG !== 'ja' && DATA.meta && DATA.meta.seriesZh) || (DATA.meta && DATA.meta.series) || (DATA.meta && DATA.meta.product) || '';
     if (els.sumLayout) els.sumLayout.textContent = tp(Q.layoutNameZh(), Q.layoutNameJa());
     if (els.sumPlan) els.sumPlan.textContent = tp(Q.planNameZh(), Q.planNameJa());
     if (els.sumSize) els.sumSize.textContent = Q.state.layout === 'tworow' ? tp('固定组合', '固定組合せ') : (Q.state.width + 'cm');
@@ -1251,17 +1293,21 @@
 
     html += '<div class="doc-header">' +
       '<div class="doc-brand">elf_D老肖的世界<span>DESIGN STUDIO</span></div>' +
-      '<h1>' + t('報 价 单', '見 積 書') + '</h1>' +
-      '<div class="doc-sub">' + esc(meta.brand || 'クリナップ Cleanup') + ' ' + esc(meta.series || 'ステディア（Stedia）') + ' システムキッチン ／ 系统厨房</div>' +
+      '<h1>' + t('报 价 单', '見 積 書') + '</h1>' +
+      '<div class="doc-sub">' + (LANG === 'ja'
+        ? esc(meta.brand || 'クリナップ Cleanup') + ' ' + esc(meta.series || 'ステディア（Stedia）') + ' システムキッチン'
+        : (LANG === 'zh'
+          ? 'Cleanup ' + esc(meta.seriesZh || 'Stedia 系统厨房')
+          : esc(meta.brand || 'クリナップ Cleanup') + ' ' + esc(meta.series || 'ステディア（Stedia）') + ' システムキッチン ／ 系统厨房')) + '</div>' +
       '<div class="doc-meta">' +
-      '<span>' + t('日期 / 日付：', '日付：') + esc(head.date || dateNow()) + '</span>' +
-      '<span>' + t('布局 / レイアウト：', 'レイアウト：') + tp(Q.layoutNameZh(), Q.layoutNameJa()) + '</span>' +
-      '<span>' + t('套餐 / プラン：', 'プラン：') + tp(Q.planNameZh(), Q.planNameJa()) + '</span>' +
-      '<span>' + t('宽度 / 間口：', '間口：') + esc(Q.state.width) + 'cm</span>' +
-      (Q.hasDepth() ? '<span>' + t('进深 / 奥行：', '奥行：') + esc(Q.state.depth) + 'cm</span>' : '') +
-      '<span>' + t('等级 / グレード：', 'グレード：') + esc(Q.gradeLabel()) + '</span>' +
-      (head.customer ? '<span>' + t('客户 / お客様：', 'お客様：') + esc(head.customer) + '</span>' : '') +
-      (head.phone ? '<span>' + t('电话 / TEL：', 'TEL：') + esc(head.phone) + '</span>' : '') +
+      '<span>' + t('日期：', '日付：') + esc(head.date || dateNow()) + '</span>' +
+      '<span>' + t('布局：', 'レイアウト：') + tp(Q.layoutNameZh(), Q.layoutNameJa()) + '</span>' +
+      '<span>' + t('套餐：', 'プラン：') + tp(Q.planNameZh(), Q.planNameJa()) + '</span>' +
+      '<span>' + t('宽度：', '間口：') + esc(Q.state.width) + 'cm</span>' +
+      (Q.hasDepth() ? '<span>' + t('进深：', '奥行：') + esc(Q.state.depth) + 'cm</span>' : '') +
+      '<span>' + t('等级：', 'グレード：') + esc(Q.gradeLabel()) + '</span>' +
+      (head.customer ? '<span>' + t('客户：', 'お客様：') + esc(head.customer) + '</span>' : '') +
+      (head.phone ? '<span>' + t('电话：', 'TEL：') + esc(head.phone) + '</span>' : '') +
       '</div></div>';
 
     var byStep = {};
@@ -1272,13 +1318,13 @@
       html += '<div class="doc-section">' +
         '<div class="doc-sec-title"><span>STEP ' + s + '</span>' + t(zh, ja) + '</div>' +
         '<table class="quote-table"><thead><tr>' +
-        '<th>' + t('品名', '品名') + '</th><th>' + t('記号', '記号') + '</th><th>' + t('型番', '型番') + '</th><th>' + t('仕様', '仕様') + '</th><th class="num">' + t('金额(税抜)', '金額(税抜)') + '</th>' +
+        '<th>' + t('品名', '品名') + '</th><th>' + t('符号', '記号') + '</th><th>' + t('型号', '型番') + '</th><th>' + t('规格', '仕様') + '</th><th class="num">' + t('金额(不含税)', '金額(税抜)') + '</th>' +
         '</tr></thead><tbody>';
       lines.forEach(function (l) {
         var chip = swatchForCode(l.code);
         var nameCell = (l.base
-          ? '<b>' + esc(l.nameZh) + '</b><div class="ja">' + esc(l.nameJa) + '</div>'
-          : esc(l.nameZh) + '<div class="ja">' + esc(l.nameJa) + '</div>');
+          ? '<b>' + esc(l.nameZh) + '</b>' + (LANG === 'zh' ? '' : '<div class="ja">' + esc(l.nameJa) + '</div>')
+          : esc(l.nameZh) + (LANG === 'zh' ? '' : '<div class="ja">' + esc(l.nameJa) + '</div>'));
         if (chip) nameCell = '<span class="doc-name-swatch">' + chip + '<span>' + nameCell + '</span></span>';
         var amount = l.base ? P.yen(r.basePrice != null ? r.basePrice : 0) : (l.diff > 0 ? '＋' : l.diff < 0 ? '－' : '') + P.yen(Math.abs(l.diff));
         html += '<tr>' +
@@ -1292,11 +1338,11 @@
     });
 
     html += '<div class="doc-section">' +
-      '<div class="doc-sec-title"><span>SUM</span>' + t('合计 / 合計', '合計') + '</div>' +
-      '<div class="doc-row big"><div class="doc-q">' + t('日元合计（税抜）/ 本体価格（税抜）', '本体価格（税抜）') + '</div><div class="doc-a">' + P.yen(r.totalEx) + '</div></div>' +
-      '<div class="doc-row big"><div class="doc-q">' + t('消費税（10%）/ 消费税（10%）', '消費税（10%）') + '</div><div class="doc-a">' + P.yen(r.tax) + '</div></div>' +
-      '<div class="doc-row big"><div class="doc-q">' + t('日元合计（税込）/ 税込合計', '税込合計') + '</div><div class="doc-a">' + P.yen(r.totalInc) + '</div></div>' +
-      '<div class="doc-row big"><div class="doc-q">' + t('合計（漢数字大写）', '合計（漢数字）') + '</div><div class="doc-a">' + esc(Q.kanjiYen(r.totalInc)) + '</div></div>' +
+      '<div class="doc-sec-title"><span>SUM</span>' + t('合计', '合計') + '</div>' +
+      '<div class="doc-row big"><div class="doc-q">' + t('日元合计（不含税）', '本体価格（税抜）') + '</div><div class="doc-a">' + P.yen(r.totalEx) + '</div></div>' +
+      '<div class="doc-row big"><div class="doc-q">' + t('消费税（10%）', '消費税（10%）') + '</div><div class="doc-a">' + P.yen(r.tax) + '</div></div>' +
+      '<div class="doc-row big"><div class="doc-q">' + t('日元合计（含税）', '税込合計') + '</div><div class="doc-a">' + P.yen(r.totalInc) + '</div></div>' +
+      '<div class="doc-row big"><div class="doc-q">' + t('合计（大写）', '合計（漢数字）') + '</div><div class="doc-a">' + esc(Q.kanjiYen(r.totalInc)) + '</div></div>' +
       '<div class="doc-row big accent"><div class="doc-q">' + t('大陆地区价格（人民币 · 纯物料）/ 中国本土価格（純物料）', '中国本土価格（純物料）') + '</div>' +
       '<div class="doc-a">' + (r.rmbAllIn != null ? '¥' + Number(r.rmbAllIn).toLocaleString() : t('请输入汇率', '為替を入力してください')) + '</div></div>' +
       (rate ? '<div class="doc-formula">' + t('使用汇率：1日元 = ' + rate + ' 人民币 ｜ 大陆地区价格为纯物料价格（不含安装/工事费）', '為替：1円 = ' + rate + ' RMB ｜ 中国本土価格は純物料価格（据付・工事費別）') + '</div>' : '') +
@@ -1305,7 +1351,7 @@
     var wckErrs = Q.activeWidthErrors();
     if (wckErrs.length) {
       html += '<div class="doc-section"><div class="doc-sec-title"><span>✖</span>' +
-        t('柜体总长错误 / 幅合計エラー', '幅合計エラー') + '</div>' +
+        t('柜体总长错误', '幅合計エラー') + '</div>' +
         '<div class="width-err">' + wckErrs.map(function (e) {
           return '<div class="width-err-item">' + esc(e.text) + '</div>';
         }).join('') + '</div>' +
@@ -1316,15 +1362,15 @@
     }
 
     if (r.unknown.length) {
-      html += '<div class="doc-section"><div class="doc-sec-title"><span>⚠</span>' + t('未计价项 / 未計上', '未計上') + '</div>' +
+      html += '<div class="doc-section"><div class="doc-sec-title"><span>⚠</span>' + t('未计价项', '未計上') + '</div>' +
         '<div class="doc-row"><div class="doc-q">' + t('以下项价格未标注/需查表，未计入合计：', '以下の項目は価格未記載のため合計に含まれません：') +
         r.unknown.map(function (u) { return esc(u.name); }).join('、') + '</div></div></div>';
     }
 
     html += '<div class="doc-footer">' +
-      '<p>' + t('※ 所示价格为不含税参考价，最终以クリナップ正式見積書为准', '※ 表示価格は税抜きの参考価格です。正式な見積はお見積書でご確認ください') + '</p>' +
-      '<p>※ ' + t('基本セット価格は取付・設置費別（不含安装费）', '基本セット価格（取付・設置費別）') + '</p>' +
-      '<p>※ ' + t('大陸地区価格は純物料価格です（据付・工事費別；大陆地区价格为纯物料价格，不含安装/工事费）', '中国本土価格は純物料価格（据付・工事費別）') + '</p>' +
+      '<p>' + t('※ 所示价格为不含税参考价，最终以 Cleanup 正式报价单为准', '※ 表示価格は税抜きの参考価格です。正式な見積はお見積書でご確認ください') + '</p>' +
+      '<p>※ ' + t('基本套装价格不含安装与设置费', '基本セット価格（取付・設置費別）') + '</p>' +
+      '<p>※ ' + t('大陆地区价格为纯物料价格（不含安装与工事费）', '中国本土価格は純物料価格（据付・工事費別）') + '</p>' +
       (head.remark ? '<p>' + t('備考：' + head.remark, '備考：' + head.remark) + '</p>' : '') +
       '</div>';
 
@@ -1350,8 +1396,8 @@
       lines.push((l.base ? '套装价  ' : '        ') + l.nameZh + (l.extra ? '（' + l.extra + '）' : '') + (l.base ? '' : '  ' + P.fmtDiff(l.diff)));
     });
     lines.push('—'.repeat(30));
-    lines.push('日元合计（税抜）：' + P.yen(r.totalEx));
-    lines.push('日元合计（税込）：' + P.yen(r.totalInc));
+    lines.push('日元合计（不含税）：' + P.yen(r.totalEx));
+    lines.push('日元合计（含税）：' + P.yen(r.totalInc));
     if (r.rmbAllIn != null) lines.push('大陆地区价格（人民币，纯物料）：¥' + Number(r.rmbAllIn).toLocaleString());
     var text = lines.join('\n');
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1389,7 +1435,7 @@
     renderAll: renderAll,
     renderQuote: renderQuote,
     renderSummary: renderSummary,
-    setLang: function (l) { if (l === 'zh' || l === 'ja' || l === 'both') LANG = l; renderAll(); renderQuote(); },
+    setLang: function (l) { if (l === 'zh' || l === 'ja' || l === 'both') LANG = l; applyStaticLang(); renderAll(); renderQuote(); },
     state: { get lang() { return LANG; } }
   };
 })();
