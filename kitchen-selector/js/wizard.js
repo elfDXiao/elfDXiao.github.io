@@ -472,6 +472,23 @@
   }
 
   /* ---------------- 主渲染 ---------------- */
+  /** 汇总行自适应：标签+值自然宽度超出面板时，改为上下堆叠（双语长文本必需） */
+  function fitSumRows() {
+    var rows = document.querySelectorAll('.sum-row');
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i], k = r.querySelector('.k'), v = r.querySelector('.v');
+      if (!k || !v || r.hidden) continue;
+      r.classList.remove('stack');
+      // flex 拉伸后的 scrollWidth 不是文字自然宽度：临时解除 flex 与 nowrap 再量
+      var ks = k.getAttribute('style') || '', vs = v.getAttribute('style') || '';
+      k.style.flex = '0 0 auto'; k.style.whiteSpace = 'nowrap';
+      v.style.flex = '0 0 auto'; v.style.whiteSpace = 'nowrap';
+      var need = k.offsetWidth + v.offsetWidth + 12;
+      k.setAttribute('style', ks); v.setAttribute('style', vs);
+      if (need > r.clientWidth + 1) r.classList.add('stack');
+    }
+  }
+
   /** 汇总栏等静态双语标签随语言切换（index.html 里带 data-zh/data-ja 的元素） */
   function applyStaticLang() {
     var nodes = document.querySelectorAll('[data-zh][data-ja]');
@@ -1254,7 +1271,7 @@
     var actCab = act.some(function (e) { return e.side === 'cab'; });
     if (els.sumWallWidth) {
       els.sumWallWidth.textContent = wc.wallExempt
-        ? tp('不选吊柜（仅地柜）', '吊戸棚なし（下戸棚のみ）')
+        ? tp('不选吊柜', '吊戸棚なし')
         : wc.wallUnits + '+机' + wc.hood + '=' + wc.wallTotal + ' / ' + wc.target + 'cm';
       if (els.sumWallWidthRow) {
         els.sumWallWidthRow.classList.toggle('warn', actWall);
@@ -1290,6 +1307,7 @@
       els.sumRMB.textContent = r.rmbAllIn != null ? '¥' + Number(r.rmbAllIn).toLocaleString() : '—';
       els.sumRMB.parentNode.classList.toggle('has-rmb', r.rmbAllIn != null);
     }
+    fitSumRows();
   }
 
   /* ---------------- 报价单（見積書） ---------------- */

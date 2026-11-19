@@ -162,7 +162,9 @@ img { max-width: 100%; display: block; }
 .sum-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
 .sum-row:last-child { border-bottom: 0; }
 .sum-row .k { color: var(--ink-2); }
-.sum-row .v { font-family: var(--serif); letter-spacing: .02em; white-space: nowrap; }
+.sum-row .k { flex: 1 1 auto; min-width: 5.5em; }
+.sum-row .v { font-family: var(--serif); letter-spacing: .02em; flex: 0 1 auto; min-width: 0;
+  white-space: normal; text-align: right; }
 .sum-total { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--ink); border-bottom: 0; }
 .sum-total .v { color: var(--accent); font-size: 20px; font-weight: 600; }
 .summary-actions { display: flex; flex-direction: column; gap: 10px; }
@@ -262,3 +264,8 @@ img { max-width: 100%; display: block; }
 /* 水槽/台面实物图（手册小样） */
 .opt-photo { width: 100%; height: 62px; object-fit: cover; border-radius: 4px;
   border: 1px solid rgba(0,0,0,.14); background: #fff; }
+
+/* 汇总行：文本过长时改为「标签在上、值在下」，避免中日双语被挤成竖排或词中断行 */
+.sum-row.stack { flex-direction: column; align-items: stretch; gap: 3px; }
+.sum-row.stack .k { min-width: 0; }
+.sum-row.stack .v { text-align: left; }
