@@ -578,6 +578,16 @@
       codeHtml + (priceHtml || '') + note + '</label>';
   }
 
+  /** 选项实物图（水槽/台面）：手册小样，失败时静默隐藏不留碎图 */
+  function optPhoto(o) {
+    if (!o || !o.img) return '';
+    var tip = (o.imgSrc ? o.imgSrc + ' ' : '') + (LANG === 'ja'
+      ? 'カタログ画像（照明を含む。実物はショールームサンプルでご確認ください）'
+      : '手册图片（含光照，实物以展厅样板为准）');
+    return '<img class="opt-photo" src="' + esc(o.img) + '" alt="' + esc(o.name_zh || o.code || '') +
+      '" title="' + esc(tip) + '" onerror="this.style.display=\'none\'">';
+  }
+
   /** 按扉色型号取色卡（报价单行用） */
   function swatchForCode(code) {
     if (!code) return '';
@@ -849,7 +859,7 @@
       var oid = Q.optionId(d.id, oi);
       var on = Q.state.sel[d.id] === oid;
       var dis = Q.disabledReason(d.id, oi);
-      html += optCard(d.id, o.name_zh || o.name_ja, o.name_ja || '', o.code, oid, on, dis, priceSpan(optPriceText(d, oi, o)));
+      html += optCard(d.id, o.name_zh || o.name_ja, o.name_ja || '', o.code, oid, on, dis, priceSpan(optPriceText(d, oi, o)), optPhoto(o));
     });
     html += '</div>';
     return html;

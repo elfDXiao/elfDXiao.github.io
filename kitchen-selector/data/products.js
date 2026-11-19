@@ -188,7 +188,8 @@ window.KITCHEN_DATA = {
   "translationNote": "中文译名于 2026-11-18 按 188 頁手册逐条复核：修正対面/ツールポケット/ワゴン/開き扉/シロッコファン/シーソースイッチ/ラジエントヒーター/インセットパネル 等术语误译，补译「美コート」「横幕板」，并统一「吊柜/地柜/进深」用语。扉カラー色名为品牌音译，手册无命名释义，未作改动。",
   "colorNamingNote": "扉カラー中文名于 2026-11-19 重做：从手册 P.102–105 渲染图裁取下柜门板区域实测色相并逐张目视校对，按实际颜色/材质命名（日文原名与型号并列显示，下单核对不受影响）。纠正 4 处与实物不符的旧译：ブルードゥパリ(青绿非蓝)、ペアウッドアッシュ(浅黄木非灰)、ミースアッシュ(暖白非灰)、ミクスドラテ(淡米绿非拿铁)。swatchHex 为手册渲染图取样近似值（含光照），非材料标准色号。",
   "i18nNote": "2026-11-19 补漏：照明/タイプ/ラック/配件 等以日文为键的选项值加中文对照词典；取手 chips 原只显示日文已改中文；吊柜类型/地柜位置/高さ 等硬编码双语改为随语言切换；纯中文模式隐藏日文副标题（型号仍显示）；分类说明与禁用提示去除日文残留。",
-  "seriesZh": "Stedia 系统厨房"
+  "seriesZh": "Stedia 系统厨房",
+  "optionImgNote": "水槽实物图取自手册 P.114 阵容图；台面取自 P.108/110/111/112/113 材质小样，每个系列取代表色（ソリッド=ナチュラルホワイトN、パウダー=シュクルホワイトA、グラン=グランホワイトL、スレート=スレートホワイトW、エルデ=エルデベージュG、セラミック=アルバリウムE、天然木=オークJ）。图片为手册渲染/实拍，含光照，实物以展厅样板为准。plain サテン 手册无小样，未配图。"
  },
  "doorColors": {
   "class1": [
@@ -1979,7 +1980,9 @@ window.KITCHEN_DATA = {
       "270": 0,
       "285": 0,
       "300": 0
-     }
+     },
+     "img": "assets/worktops/worktop_acrystone_solid.jpg",
+     "imgSrc": "P.112 ナチュラルホワイト(N)"
     },
     {
      "code": "stainless_coining",
@@ -2090,7 +2093,9 @@ window.KITCHEN_DATA = {
         "181.5": -56000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_stainless_coining.jpg",
+     "imgSrc": "P.113 ドット柄コイニング(S)"
     },
     {
      "code": "stainless_hairline",
@@ -2190,7 +2195,9 @@ window.KITCHEN_DATA = {
         "181.5": 2000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_stainless_hairline.jpg",
+     "imgSrc": "P.113 ヘアライン(L)"
     },
     {
      "code": "stainless_satin_emboss",
@@ -2215,7 +2222,9 @@ window.KITCHEN_DATA = {
         "300": 0
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_stainless_satin_emboss.jpg",
+     "imgSrc": "P.113 サテンエンボス(E)"
     },
     {
      "code": "stainless_satin",
@@ -2300,7 +2309,8 @@ window.KITCHEN_DATA = {
         "181.5": 29000
        }
       }
-     }
+     },
+     "imgNote": "手册 P.113 仅刊登サテンエンボス小样，无 plain サテン 实物图，故不配图。"
     },
     {
      "code": "stainless_vibration",
@@ -2401,7 +2411,9 @@ window.KITCHEN_DATA = {
        }
       }
      },
-     "note": "注意：フラット対面基本プランは 奥行80cm ⊕322,000 / 奥行98cm ⊕214,000（P.86 原文如此，与其他材质「奥行越大越贵」相反，疑为手册印刷错误；本系统按手册原值录入）。2列型フラット対面は 212,000/213,000（P.97）。"
+     "note": "注意：フラット対面基本プランは 奥行80cm ⊕322,000 / 奥行98cm ⊕214,000（P.86 原文如此，与其他材质「奥行越大越贵」相反，疑为手册印刷错误；本系统按手册原值录入）。2列型フラット対面は 212,000/213,000（P.97）。",
+     "img": "assets/worktops/worktop_stainless_vibration.jpg",
+     "imgSrc": "P.113 バイブレーション(Z)"
     },
     {
      "code": "acrystone_powder",
@@ -2501,7 +2513,9 @@ window.KITCHEN_DATA = {
         "181.5": 58000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_acrystone_powder.jpg",
+     "imgSrc": "P.112 シュクルホワイト(A)"
     },
     {
      "code": "acrystone_gran",
@@ -2601,7 +2615,9 @@ window.KITCHEN_DATA = {
         "181.5": 93000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_acrystone_gran.jpg",
+     "imgSrc": "P.112 グランホワイト(L)"
     },
     {
      "code": "fortex_slate",
@@ -2701,7 +2717,9 @@ window.KITCHEN_DATA = {
         "181.5": 147000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_fortex_slate.jpg",
+     "imgSrc": "P.111 スレートホワイト(W)"
     },
     {
      "code": "fortex_elde",
@@ -2801,7 +2819,9 @@ window.KITCHEN_DATA = {
         "181.5": 191000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_fortex_elde.jpg",
+     "imgSrc": "P.111 エルデベージュ(G)"
     },
     {
      "code": "ceramic",
@@ -2902,7 +2922,9 @@ window.KITCHEN_DATA = {
         "181.5": 334000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_ceramic.jpg",
+     "imgSrc": "P.110 アルバリウム(E)"
     },
     {
      "code": "wood",
@@ -2984,7 +3006,9 @@ window.KITCHEN_DATA = {
         "181.5": 192000
        }
       }
-     }
+     },
+     "img": "assets/worktops/worktop_wood.jpg",
+     "imgSrc": "P.108 オーク(J)"
     }
    ]
   },
@@ -3015,7 +3039,9 @@ window.KITCHEN_DATA = {
       "210",
       "225"
      ],
-     "note": "対応間口180～225cm（P.114）；Ⅰ型/L型パッケージ表では225cm以上は SA が基本仕様（P.80/98）"
+     "note": "対応間口180～225cm（P.114）；Ⅰ型/L型パッケージ表では225cm以上は SA が基本仕様（P.80/98）",
+     "img": "assets/sinks/sink_SY.jpg",
+     "imgSrc": "P.114 xref4960"
     },
     {
      "code": "SA",
@@ -3030,7 +3056,9 @@ window.KITCHEN_DATA = {
       "285",
       "300"
      ],
-     "note": "対応間口225～300cm（P.114）；フラット対面/デュアルトップ対面/2列型の基本仕様水槽（P.86/90/91/96/97）"
+     "note": "対応間口225～300cm（P.114）；フラット対面/デュアルトップ対面/2列型の基本仕様水槽（P.86/90/91/96/97）",
+     "img": "assets/sinks/sink_SA.jpg",
+     "imgSrc": "P.114 xref4959"
     },
     {
      "code": "SV",
@@ -3044,7 +3072,9 @@ window.KITCHEN_DATA = {
       "225",
       "240",
       "255"
-     ]
+     ],
+     "img": "assets/sinks/sink_SV.jpg",
+     "imgSrc": "P.114 xref4964"
     },
     {
      "code": "AE",
@@ -3059,7 +3089,9 @@ window.KITCHEN_DATA = {
       "270",
       "285",
       "300"
-     ]
+     ],
+     "img": "assets/sinks/sink_AE.jpg",
+     "imgSrc": "P.114 xref4958"
     },
     {
      "code": "AK",
@@ -3074,7 +3106,9 @@ window.KITCHEN_DATA = {
       "270",
       "285",
       "300"
-     ]
+     ],
+     "img": "assets/sinks/sink_AK.jpg",
+     "imgSrc": "P.114 xref4957"
     },
     {
      "code": "RW",
@@ -3089,7 +3123,9 @@ window.KITCHEN_DATA = {
       "270",
       "285",
       "300"
-     ]
+     ],
+     "img": "assets/sinks/sink_RW.jpg",
+     "imgSrc": "P.114 xref4962"
     }
    ]
   },
