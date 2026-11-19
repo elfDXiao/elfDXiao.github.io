@@ -41,10 +41,11 @@
     grade: 'class5',        // 扉グレード（class1..class5）
     doorColor: null,        // 扉カラー code
     doorHandle: null,       // 取手 code
+    widthErr: {},           // 柜体总长：仅「点下一步校验未通过」的项（wall/cab）
     sel: {},                // { catId: optionId } 单选选项维度（worktop/sink/.../peripheral/other）
     sub: {},                // { faucet:{region}, peripheral:{size,depth}, other:{size}, wallcabinet:{type,width,height,lighting,subtype,racks:{},led:{code,width},extras:{}} }
-    toggles: {},            // { catId: { optionCode: true } } 多选维度（如 cabinet 下柜加装）
-    cabunit: {},            // { sink:{t,w,d}, base:{t,w,d}, cooktop:{t,w,d}, corner:{t,w,d} } 下柜单元类型选择（基本仕様）
+    toggles: {},            // { catId: { optionCode: true } } 多选维度（如 cabinet 地柜加装）
+    cabunit: {},            // { sink:{t,w,d}, base:{t,w,d}, cooktop:{t,w,d}, corner:{t,w,d} } 地柜单元类型选择（基本仕様）
     rate: null,             // 汇率（1日元=人民币）；<=0/null 时不计算人民币
     quoteHead: {            // 报价单头部（可编辑）
       no: '', date: '', valid: '', customer: '', address: '', dealer: '', person: '', remark: ''
@@ -120,7 +121,7 @@
     var KIND = { layout: 'layout', plan: 'plan', size: 'size', grade: 'grade', door: 'door', faucet: 'faucet', peripheral: 'peripheral', other: 'other', wallcabinet: 'wallunit' };
     DIMS.length = 0;
     DATA.categories.forEach(function (c) {
-      if (c.id === 'cabinet') return;   // 下柜配件已并入 cabunit，不再单独渲染
+      if (c.id === 'cabinet') return;   // 地柜配件已并入 cabunit，不再单独渲染
       // additive:true 的分类 = 多选加购，其余按 KIND 映射，缺省 radio
       var kind = c.additive === true ? 'multi' : (KIND[c.id] || 'radio');
       DIMS.push({ id: c.id, step: c.step, cat: c.id, kind: kind, titleJa: c.name_ja, titleZh: c.name_zh });
@@ -128,14 +129,14 @@
     // 合成「奥行」维（仅 flat/dual 显示），插到 size 之后、grade 之前
     var sizeIdx = DIMS.findIndex(function (d) { return d.id === 'size'; });
     if (sizeIdx >= 0) {
-      DIMS.splice(sizeIdx + 1, 0, { id: 'depth', step: DIMS[sizeIdx].step, cat: null, kind: 'depth', titleJa: '奥行', titleZh: '深度' });
+      DIMS.splice(sizeIdx + 1, 0, { id: 'depth', step: DIMS[sizeIdx].step, cat: null, kind: 'depth', titleJa: '奥行', titleZh: '进深' });
     }
-    // 合成「下柜单元」维（多单元列表），放在原 cabinet step 位置（cabinet 分类已跳过渲染）
+    // 合成「地柜单元」维（多单元列表），放在原 cabinet step 位置（cabinet 分类已跳过渲染）
     var cabCat = cat('cabinet');
     if (cabCat) {
       var cabStep = cabCat.step;
       var cabIdx = DIMS.findIndex(function (d) { return d.step > cabStep; });
-      var cabDim = { id: 'cabunit', step: cabStep, cat: null, kind: 'cabunit', titleJa: '下柜（フロアキャビネット）', titleZh: '下柜' };
+      var cabDim = { id: 'cabunit', step: cabStep, cat: null, kind: 'cabunit', titleJa: '地柜（フロアキャビネット）', titleZh: '地柜' };
       if (cabIdx < 0) DIMS.push(cabDim);
       else DIMS.splice(cabIdx, 0, cabDim);
     }
@@ -288,7 +289,7 @@
     return cellAmount(v);
   }
 
-  /* ---- 多选维度（multi，additive:true，如 cabinet 下柜加装）----
+  /* ---- 多选维度（multi，additive:true，如 cabinet 地柜加装）----
    * state.toggles[catId] = { code: sub }；sub 可为：
    *   true            —— 固定差价（priceDiff / priceDiff:null 待核）
    *   { w: "90" }     —— pricesBySize 项（w=柜体自身间口）
@@ -347,11 +348,11 @@
     return name;
   }
 
-  /* ---- 上柜单元（wallunit，wallcabinet 分类，多单元列表）+ 下柜单元（cabunit） ---- */
+  /* ---- 吊柜单元（wallunit，wallcabinet 分类，多单元列表）+ 地柜单元（cabunit） ---- */
   function wu() { return DATA.wallCabinetUnits || {}; }
-  /** 上柜单元列表：state.sub.wallcabinet = { units: [ {type,width,height,lighting,subtype,racks:{},led:{code,width},extras:{}}, ... ] } */
+  /** 吊柜单元列表：state.sub.wallcabinet = { units: [ {type,width,height,lighting,subtype,racks:{},led:{code,width},extras:{}}, ... ] } */
   function wuUnits() { return (state.sub.wallcabinet && state.sub.wallcabinet.units) || []; }
-  /** 单个上柜单元基本价：handmove/eyearea 查表，none 查旧吊戸棚なし减价表，其余基本仕様=0；未选子项/间口缺格 → null 待核 */
+  /** 单个吊柜单元基本价：handmove/eyearea 查表，none 查旧吊戸棚なし减价表，其余基本仕様=0；未选子项/间口缺格 → null 待核 */
   function wallUnitBasePrice(s) {
     var W = wu(), t = s.type;
     if (t === 'handmove') {
@@ -391,13 +392,13 @@
     var v = led.pricesBySize[s.led.width];
     return typeof v === 'number' ? v : 0;
   }
-  /** 单个上柜单元的差价（base + racks + led） */
+  /** 单个吊柜单元的差价（base + racks + led） */
   function wallUnitPriceFor(s) {
     var base = wallUnitBasePrice(s);
     if (base == null) return null;
     return base + wallUnitRacksPrice(s) + wallUnitLedPrice(s);
   }
-  /** 全部上柜单元差价之和 */
+  /** 全部吊柜单元差价之和 */
   function wallUnitContribution() {
     var sum = 0;
     wuUnits().forEach(function (s) {
@@ -449,20 +450,123 @@
     var m = String(w).match(/\d+(?:\.\d+)?/);
     return m ? Number(m[0]) : 0;
   }
-  /** 上柜单元宽度总和 */
+  /** 吊柜单元宽度总和 */
   function sumWallUnitWidth() {
     var sum = 0;
     wuUnits().forEach(function (s) { sum += parseWidthCm(s.width); });
     return sum;
   }
-  /** 下柜单元宽度总和（数组各单元间口） */
+  /** 地柜单元宽度总和（数组各单元间口） */
   function sumCabUnitWidth() {
     var sum = 0;
     (state.cabunit || []).forEach(function (u) { sum += parseWidthCm(u.w); });
     return sum;
   }
 
-  /* ---- 下柜单元（cabunit，多单元列表，对齐 wallunit） ----
+  /* ---- 柜体总长 = 所选間口 的硬约束 ----------------------------
+   * 吊柜侧：Σ（非「油烟机上方」单元間口）＋ 油烟机占位（套餐品番均 ZRS90…＝90cm）
+   * 地柜侧：Σ（各地柜单元間口）
+   * 两者均需等于所选間口；不等 → 报错。
+   * L型/2列型は脚が分かれるため参考表示（meta.widthRule.advisoryLayouts）。
+   */
+  /** 油烟机占位宽（cm）；レンジフードなし=0 */
+  function hoodWidthCm() {
+    var o = selOption('hood');
+    if (o && typeof o.hoodWidth === 'number') return o.hoodWidth;
+    if (o && o.code === 'none') return 0;
+    var r = (DATA.meta && DATA.meta.widthRule) || {};
+    return typeof r.hoodWidth === 'number' ? r.hoodWidth : 90;
+  }
+  /** 吊柜横並び合計（「レンジフード用」＝機体上方の柜は横方向を占有しないので除外） */
+  function wallRunWidth() {
+    var sum = 0;
+    wuUnits().forEach(function (s) { if (!s.isHood) sum += parseWidthCm(s.width); });
+    return sum;
+  }
+  /** 是否选了吊柜：可以一个都不选（只买地柜）——老肖 2026-11-18 补充规则 */
+  function wallHasCabinets() {
+    return wuUnits().some(function (s) { return s.type && s.type !== 'none'; });
+  }
+  /** 目标总长：直線配置=間口；L型=シンク側+コンロ側165；2列型=181.5+180 */
+  function runTargetCm() {
+    if (state.layout === 'tworow') return 181.5 + 180;
+    if (state.layout === 'l') return parseWidthCm(state.width) + 165;
+    return parseWidthCm(state.width);
+  }
+  function isStrictWidthLayout() {
+    var r = (DATA.meta && DATA.meta.widthRule) || {};
+    return (r.strictLayouts || ['i', 'flat', 'dual']).indexOf(state.layout) >= 0;
+  }
+  /* ---- 校验时机：仅在点「下一步」离开该页时触发（老肖 2026-11-18 定）
+   * state.widthErr = { wall: errObj, cab: errObj }；仅保存「已触发且未通过」的项。
+   * 平时编辑不报错；任何修改会清除标记，下次点下一步重新校验。
+   */
+  /** 该步骤涵盖哪些侧（wall / cab） */
+  function widthSidesOfStep(n) {
+    var sides = [];
+    DIMS.forEach(function (d) {
+      if (d.step !== n) return;
+      if (d.kind === 'wallunit' && sides.indexOf('wall') < 0) sides.push('wall');
+      if (d.kind === 'cabunit' && sides.indexOf('cab') < 0) sides.push('cab');
+    });
+    return sides;
+  }
+  /** 点下一步时调用：校验当前页，返回错误数组（非空 = 不应翻页） */
+  function validateWidthStep(n) {
+    var sides = widthSidesOfStep(n);
+    if (!sides.length) return [];
+    var wc = widthCheck(), errs = [];
+    sides.forEach(function (s) {
+      var e = wc.errors.filter(function (x) { return x.side === s; })[0];
+      if (e) { state.widthErr[s] = e; errs.push(e); }
+      else { delete state.widthErr[s]; }
+    });
+    return errs;
+  }
+  function clearWidthErr() { state.widthErr = {}; }
+  function activeWidthErrors() {
+    var o = state.widthErr || {};
+    return Object.keys(o).map(function (k) { return o[k]; });
+  }
+
+  /** 柜体总长校验（纯计算，不管显示时机） */
+  function widthCheck() {
+    var target = runTargetCm();
+    var hood = hoodWidthCm();
+    var wu = wallRunWidth();
+    var wallTotal = wu + hood;
+    var cabTotal = sumCabUnitWidth();
+    var strict = isStrictWidthLayout();
+    // 吊柜可以一个都不选（只买地柜）→ 吊柜侧豁免校验；地柜侧仍須等于間口
+    var wallExempt = !wallHasCabinets();
+    var out = {
+      target: target, hood: hood, wallUnits: wu, wallTotal: wallTotal, cabTotal: cabTotal,
+      strict: strict, wallExempt: wallExempt, wallOk: true, cabOk: true, errors: [], advisories: []
+    };
+    function detail(side, sum) {
+      return side === 'wall'
+        ? ('吊柜 ' + wu + 'cm ＋ 油烟机 ' + hood + 'cm ＝ ' + sum + 'cm')
+        : ('地柜合计 ' + sum + 'cm');
+    }
+    function text(side, sum) {
+      var d = sum - target, name = side === 'wall' ? '吊柜' : '地柜';
+      return name + '总长与所选間口不符：' + detail(side, sum) + '，应为 ' + target + 'cm（' +
+        (d > 0 ? '超出 ' + d : '缺少 ' + (-d)) + 'cm）。请调整' + name + '单元的间口或数量。';
+    }
+    if (strict && target > 0) {
+      out.wallOk = wallExempt || wallTotal === target;
+      out.cabOk = cabTotal === target;
+      if (!out.wallOk) out.errors.push({ side: 'wall', sum: wallTotal, target: target, diff: wallTotal - target, text: text('wall', wallTotal) });
+      if (!out.cabOk) out.errors.push({ side: 'cab', sum: cabTotal, target: target, diff: cabTotal - target, text: text('cab', cabTotal) });
+    } else if (target > 0) {
+      var why = (DATA.meta && DATA.meta.widthRule && DATA.meta.widthRule.advisoryReason) || '';
+      out.advisories.push('该布局柜体分属不同列/脚，合计仅供参考：吊柜 ' + wallTotal + 'cm（含油烟机 ' + hood +
+        'cm）、地柜 ' + cabTotal + 'cm，参考总长 ' + target + 'cm。' + why);
+    }
+    return out;
+  }
+
+  /* ---- 地柜单元（cabunit，多单元列表，对齐 wallunit） ----
    * state.cabunit = [ { pos, t, w, d, acc:{code:sub} }, ... ]；pos∈sink/base/cooktop/corner
    * 类型（t）为基本仕様 0 差价；配件（acc，来自 cabinet category 9 项）按类型显示并计价。
    */
@@ -484,7 +588,7 @@
       return !types || types.indexOf(pos) >= 0;
     });
   }
-  /** 单个下柜单元的差价 = Σ配件价（类型本身 0） */
+  /** 单个地柜单元的差价 = Σ配件价（类型本身 0） */
   function cabUnitContribution(unit) {
     var sum = 0;
     var acc = unit.acc || {};
@@ -495,13 +599,13 @@
     });
     return sum;
   }
-  /** 全部下柜单元差价之和 */
+  /** 全部地柜单元差价之和 */
   function cabUnitTotal() {
     var sum = 0;
     (state.cabunit || []).forEach(function (u) { sum += cabUnitContribution(u); });
     return sum;
   }
-  /** 新增下柜单元：宽度硬约束（加入后总宽 > 厨房间口则阻止），返回 true/false */
+  /** 新增地柜单元：宽度硬约束（加入后总宽 > 厨房间口则阻止），返回 true/false */
   function cabAddUnit(unit) {
     var units = state.cabunit || [];
     var newW = parseWidthCm(unit.w);
@@ -545,7 +649,7 @@
       case 'other': return otherContribution();
       case 'multi': return multiContribution(dimId);
       case 'wallunit': return wallUnitContribution();
-      case 'cabunit': return cabUnitTotal();   // 下柜单元差价 = Σ配件价
+      case 'cabunit': return cabUnitTotal();   // 地柜单元差价 = Σ配件价
       case 'radio': {
         if (dimId === 'worktop') return worktopContribution();
         var o = selOption(dimId);
@@ -707,7 +811,7 @@
         total += sum;
         return;
       }
-      // 上柜多单元：逐单元出明细行
+      // 吊柜多单元：逐单元出明细行
       if (d.kind === 'wallunit') {
         var units = wuUnits();
         var wsm = stepMeta(d.step);
@@ -726,7 +830,7 @@
         });
         return;
       }
-      // 下柜多单元：逐单元出明细行
+      // 地柜多单元：逐单元出明细行
       if (d.kind === 'cabunit') {
         var cunits = state.cabunit || [];
         var csm = stepMeta(d.step);
@@ -763,7 +867,7 @@
     var rmbAllIn = (state.rate && state.rate > 0) ? Math.round(totalInc * state.rate) : null;
     return {
       basePrice: base, totalEx: total, tax: tax, totalInc: totalInc, rmbAllIn: rmbAllIn,
-      lines: lines, unknown: unknown,
+      lines: lines, unknown: unknown, widthCheck: widthCheck(),
       layout: state.layout, plan: state.plan, width: state.width, depth: state.depth, grade: state.grade
     };
   }
@@ -933,9 +1037,9 @@
       DATA = data; P = window.KITCHEN.price;
       buildStepsAndDims();
       state.layout = 'i'; state.plan = 'basic'; state.width = '255'; state.depth = '98'; state.grade = 'class5';
-      state.sel = {}; state.sub = {}; state.toggles = {};
+      state.sel = {}; state.sub = {}; state.toggles = {}; state.widthErr = {};
       state.cabunit = [{ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} }];
-      state.sub.wallcabinet = { units: [{ type: 'standard', height: '70' }] };
+      state.sub.wallcabinet = { units: [{ type: 'standard', height: '70', width: '60' }] };
       var colors = currentDoorColors();
       if (colors.length) {
         state.doorColor = colors[0].code;
@@ -954,13 +1058,16 @@
     peripheralPrice: peripheralPrice, peripheralTable: peripheralTable, otherPriceFor: otherPriceFor,
     wu: wu, wuUnits: wuUnits, wuSetHood: wuSetHood, wallUnitBasePrice: wallUnitBasePrice, wallUnitRacksPrice: wallUnitRacksPrice, wallUnitLedPrice: wallUnitLedPrice, wallUnitPriceFor: wallUnitPriceFor, wallUnitContribution: wallUnitContribution, wallUnitTypeName: wallUnitTypeName, wallUnitLabelFor: wallUnitLabelFor, wallUnitExtraLabelFor: wallUnitExtraLabelFor,
     parseWidthCm: parseWidthCm, sumWallUnitWidth: sumWallUnitWidth, sumCabUnitWidth: sumCabUnitWidth,
+    hoodWidthCm: hoodWidthCm, wallRunWidth: wallRunWidth, runTargetCm: runTargetCm,
+    isStrictWidthLayout: isStrictWidthLayout, widthCheck: widthCheck, wallHasCabinets: wallHasCabinets,
+    validateWidthStep: validateWidthStep, clearWidthErr: clearWidthErr, activeWidthErrors: activeWidthErrors,
     cabUnitPositions: cabUnitPositions, cabUnitPosName: cabUnitPosName, cabAccessoriesFor: cabAccessoriesFor, cabUnitContribution: cabUnitContribution, cabUnitTotal: cabUnitTotal, cabAddUnit: cabAddUnit, cabDelUnit: cabDelUnit, cabUnitLabelFor: cabUnitLabelFor,
     disabledReason: disabledReason, autoFix: autoFix, isBaseSpec: isBaseSpec, worktopLayoutKey: worktopLayoutKey,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
-      state.sel = {}; state.sub = {}; state.toggles = {};
+      state.sel = {}; state.sub = {}; state.toggles = {}; state.widthErr = {};
       state.cabunit = [{ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} }];
-      state.sub.wallcabinet = { units: [{ type: 'standard', height: '70' }] };
+      state.sub.wallcabinet = { units: [{ type: 'standard', height: '70', width: '60' }] };
       state.layout = 'i'; state.plan = 'basic'; state.width = '255'; state.depth = '98'; state.grade = 'class5';
       var colors = currentDoorColors();
       if (colors.length) {

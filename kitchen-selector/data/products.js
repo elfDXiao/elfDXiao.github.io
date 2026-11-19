@@ -31,9 +31,9 @@ window.KITCHEN_DATA = {
   "layoutNamesZh": {
    "i": "一字型",
    "l": "L型",
-   "flat": "平面对接式",
-   "dual": "双台面对接式",
-   "tworow": "双列型"
+   "flat": "齐平对面式",
+   "dual": "双层台面对面式",
+   "tworow": "双排型（二字型）"
   },
   "plans": [
    "basic",
@@ -47,8 +47,8 @@ window.KITCHEN_DATA = {
   },
   "planNamesZh": {
    "basic": "基本方案",
-   "stylish": "时尚方案",
-   "kirei": "清洁方案"
+   "stylish": "简约设计方案",
+   "kirei": "易洁方案"
   },
   "grades": [
    "class1",
@@ -167,17 +167,38 @@ window.KITCHEN_DATA = {
    "url": "https://pan.baidu.com/s/10M37F8PTtY_zOkbmR9Xfvw?pwd=hfba",
    "code": "hfba",
    "file": "0259_stediaca.pdf"
-  }
+  },
+  "widthRule": {
+   "rule": "選定間口 W に対し、吊柜横並び合計（Σ非レンジフード上ユニット間口 ＋ レンジフード占位90cm）＝ W、かつ地柜横並び合計（Σ地柜ユニット間口）＝ W でなければならない。不一致はエラー表示。",
+   "hoodWidth": 90,
+   "strictLayouts": [
+    "i",
+    "flat",
+    "dual"
+   ],
+   "advisoryLayouts": [
+    "l",
+    "tworow"
+   ],
+   "advisoryReason": "L型はコーナーキャビネットが両脚にまたがる／2列型はシンク側・コンロ側の2列に分かれるため、脚別寸法の内訳が未建模。合计は参考表示（エラーではない）。",
+   "hoodUpperUnit": "「レンジフード用」チェック済みユニットはレンジフード上方に設置されるため横並び合計に含めない。",
+   "wallOptional": "吊柜は一つも選ばなくてよい（「吊戸棚なし」＝地柜のみ購入）。その場合吊柜側の校验は免除；地柜側の合計は依然として間口と一致が必要。",
+   "validateTiming": "校验只在「点下一步／向前跳页／出报价单」时触发；编辑中不报错，任何修改会清除已触发的错误。"
+  },
+  "translationNote": "中文译名于 2026-11-18 按 188 頁手册逐条复核：修正対面/ツールポケット/ワゴン/開き扉/シロッコファン/シーソースイッチ/ラジエントヒーター/インセットパネル 等术语误译，补译「美コート」「横幕板」，并统一「吊柜/地柜/进深」用语。扉カラー色名为品牌音译，手册无命名释义，未作改动。",
+  "colorNamingNote": "扉カラー中文名于 2026-11-19 重做：从手册 P.102–105 渲染图裁取下柜门板区域实测色相并逐张目视校对，按实际颜色/材质命名（日文原名与型号并列显示，下单核对不受影响）。纠正 4 处与实物不符的旧译：ブルードゥパリ(青绿非蓝)、ペアウッドアッシュ(浅黄木非灰)、ミースアッシュ(暖白非灰)、ミクスドラテ(淡米绿非拿铁)。swatchHex 为手册渲染图取样近似值（含光照），非材料标准色号。"
  },
  "doorColors": {
   "class1": [
    {
     "code": "AVC",
     "name_ja": "オーク",
-    "name_zh": "橡木",
+    "name_zh": "原色橡木",
     "handles": [
      "V"
-    ]
+    ],
+    "swatchHex": "#c4995d",
+    "colorNote": "暖黄橡木纹 #c4995d"
    },
    {
     "code": "AVY",
@@ -185,7 +206,9 @@ window.KITCHEN_DATA = {
     "name_zh": "胡桃木",
     "handles": [
      "V"
-    ]
+    ],
+    "swatchHex": "#7a553b",
+    "colorNote": "深棕胡桃 #7a553b"
    },
    {
     "code": "AVG",
@@ -193,29 +216,35 @@ window.KITCHEN_DATA = {
     "name_zh": "灰橡木",
     "handles": [
      "V"
-    ]
+    ],
+    "swatchHex": "#605c59",
+    "colorNote": "深灰褐橡木 #605c59"
    }
   ],
   "class2": [
    {
     "code": "CJV",
     "name_ja": "ボーテシルバー",
-    "name_zh": "波泰银",
+    "name_zh": "镜面银灰",
     "handles": [
      "F",
      "Z",
      "B"
-    ]
+    ],
+    "swatchHex": "#888985",
+    "colorNote": "不锈钢镜面银灰 #888985（原「波泰银」为无信息音译）"
    },
    {
     "code": "CFQ",
     "name_ja": "ブロンカッセ",
-    "name_zh": "布朗卡塞",
+    "name_zh": "雅白·细框",
     "handles": [
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#d8d8d8",
+    "colorNote": "实为白色细框门 #d8d8d8（原「布朗卡塞」音译，且易误以为古铜色）"
    },
    {
     "code": "CFL",
@@ -225,37 +254,45 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#b1ada2",
+    "colorNote": "浅灰褐 étoupe #b1ada2"
    },
    {
     "code": "CFU",
     "name_ja": "ティオレローズ",
-    "name_zh": "蒂奥雷玫瑰",
+    "name_zh": "藕粉",
     "handles": [
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#c4b2a4",
+    "colorNote": "淡粉褐 #c4b2a4（原「蒂奥雷玫瑰」音译冗长）"
    },
    {
     "code": "CFZ",
     "name_ja": "スタウトシリウス",
-    "name_zh": "斯托特天狼星",
+    "name_zh": "浓黑",
     "handles": [
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#44413d",
+    "colorNote": "深炭黑 stout #44413d（原「斯托特天狼星」不可解）"
    },
    {
     "code": "CFV",
     "name_ja": "ブルードゥパリ",
-    "name_zh": "巴黎蓝",
+    "name_zh": "鸭蛋青",
     "handles": [
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#a4afa6",
+    "colorNote": "★实为浅青绿 #a4afa6，非蓝（原「巴黎蓝」与实物不符）"
    }
   ],
   "class3": [
@@ -271,12 +308,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#eaeaea",
+    "colorNote": "纯白镜面 #eaeaea"
    },
    {
     "code": "CHK",
     "name_ja": "パティナオパール",
-    "name_zh": "古铜蛋白石",
+    "name_zh": "欧泊白",
     "handles": [
      "F",
      "Z",
@@ -285,12 +324,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#ccccd1",
+    "colorNote": "乳白偏冷 #ccccd1（原「古铜蛋白石」的「古铜」与实物不符）"
    },
    {
     "code": "CHL",
     "name_ja": "パティナマーブル",
-    "name_zh": "古铜大理石",
+    "name_zh": "云石灰",
     "handles": [
      "F",
      "Z",
@@ -299,75 +340,91 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#b3b3b0",
+    "colorNote": "浅灰石纹 #b3b3b0（原「古铜大理石」同上）"
    },
    {
     "code": "CPG",
     "name_ja": "ソナタグリーズ",
-    "name_zh": "奏鸣曲灰",
+    "name_zh": "奏鸣米灰",
     "handles": [
      "F",
      "Z",
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#bfb9a8",
+    "colorNote": "浅米灰 #bfb9a8"
    },
    {
     "code": "CPZ",
     "name_ja": "ソナタセピア",
-    "name_zh": "奏鸣曲棕褐",
+    "name_zh": "奏鸣深褐",
     "handles": [
      "F",
      "Z",
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#635f54",
+    "colorNote": "深灰褐 sepia #635f54"
    },
    {
     "code": "CPB",
     "name_ja": "ソナタウッドチェリー",
-    "name_zh": "奏鸣曲樱桃木",
+    "name_zh": "奏鸣樱桃木",
     "handles": [
      "F",
      "Z",
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#a87d44",
+    "colorNote": "樱桃暖棕 #a87d44"
    },
    {
     "code": "CGT",
     "name_ja": "ミースアッシュ",
-    "name_zh": "米斯烬灰",
+    "name_zh": "米斯暖白",
     "handles": [
      "9"
-    ]
+    ],
+    "swatchHex": "#e1ddda",
+    "colorNote": "★实为暖白 #e1ddda，非灰（原「米斯烬灰」与实物不符）"
    },
    {
     "code": "CGV",
     "name_ja": "ミースネイビー",
-    "name_zh": "米斯藏青",
+    "name_zh": "米斯灰蓝",
     "handles": [
      "9"
-    ]
+    ],
+    "swatchHex": "#788385",
+    "colorNote": "中灰蓝 #788385（原「藏青」过深，实物为浅灰蓝）"
    },
    {
     "code": "CGG",
     "name_ja": "ミースグレー",
-    "name_zh": "米斯灰",
+    "name_zh": "米斯中灰",
     "handles": [
      "9"
-    ]
+    ],
+    "swatchHex": "#a9a7a2",
+    "colorNote": "中灰 #a9a7a2"
    },
    {
     "code": "CGW",
     "name_ja": "ミースウッドナチュラル",
-    "name_zh": "米斯自然木",
+    "name_zh": "米斯原木",
     "handles": [
      "9"
-    ]
+    ],
+    "swatchHex": "#cdb690",
+    "colorNote": "浅原木 #cdb690"
    },
    {
     "code": "CGL",
@@ -375,7 +432,9 @@ window.KITCHEN_DATA = {
     "name_zh": "米斯深木",
     "handles": [
      "9"
-    ]
+    ],
+    "swatchHex": "#7b6753",
+    "colorNote": "深棕木 #7b6753"
    }
   ],
   "class4": [
@@ -391,7 +450,9 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#e9eae5",
+    "colorNote": "白 #e9eae5"
    },
    {
     "code": "CYW",
@@ -405,7 +466,9 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#b7cad1",
+    "colorNote": "浅蓝灰 #b7cad1"
    },
    {
     "code": "C3A",
@@ -419,7 +482,9 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#bca17f",
+    "colorNote": "浅暖橡木，确似拿铁 #bca17f"
    },
    {
     "code": "C3B",
@@ -433,12 +498,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#b68758",
+    "colorNote": "樱桃棕混纹 #b68758"
    },
    {
     "code": "C3L",
     "name_ja": "ウォールナットビター",
-    "name_zh": "苦胡桃木",
+    "name_zh": "深胡桃",
     "handles": [
      "F",
      "Z",
@@ -447,12 +514,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#876648",
+    "colorNote": "深棕 #876648（原「苦胡桃木」为 bitter 直译）"
    },
    {
     "code": "CDK",
     "name_ja": "ユーリベージュ",
-    "name_zh": "尤利米色",
+    "name_zh": "尤利米白",
     "handles": [
      "F",
      "Z",
@@ -461,12 +530,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#d5d2bf",
+    "colorNote": "米白 #d5d2bf"
    },
    {
     "code": "CDH",
     "name_ja": "ユーリチャコール",
-    "name_zh": "尤利炭色",
+    "name_zh": "尤利炭黑",
     "handles": [
      "F",
      "Z",
@@ -475,12 +546,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#4d4d47",
+    "colorNote": "炭黑 #4d4d47"
    },
    {
     "code": "CDS",
     "name_ja": "レフティグリーン",
-    "name_zh": "左撇子绿",
+    "name_zh": "橄榄灰绿",
     "handles": [
      "F",
      "Z",
@@ -489,12 +562,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#95937e",
+    "colorNote": "橄榄灰绿 #95937e（原「左撇子绿」为 lefty 直译，不可解）"
    },
    {
     "code": "CDB",
     "name_ja": "カミーナレッド",
-    "name_zh": "卡米娜红",
+    "name_zh": "赭红",
     "handles": [
      "F",
      "Z",
@@ -503,12 +578,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#9e6559",
+    "colorNote": "砖赭红 #9e6559（原「卡米娜红」音译无信息）"
    },
    {
     "code": "CWT",
     "name_ja": "ペアウッドホワイト",
-    "name_zh": "梨木白",
+    "name_zh": "白梨木",
     "handles": [
      "F",
      "Z",
@@ -517,12 +594,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#d6dcda",
+    "colorNote": "白色木纹 #d6dcda"
    },
    {
     "code": "CWX",
     "name_ja": "ペアウッドアッシュ",
-    "name_zh": "梨木灰",
+    "name_zh": "浅梨木",
     "handles": [
      "F",
      "Z",
@@ -531,12 +610,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#d3bf9c",
+    "colorNote": "★实为浅黄木 #d3bf9c，非灰（原「梨木灰」与实物不符）"
    },
    {
     "code": "CWZ",
     "name_ja": "マリンウッドダーク",
-    "name_zh": "海洋深木",
+    "name_zh": "深灰木",
     "handles": [
      "F",
      "Z",
@@ -545,12 +626,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#686560",
+    "colorNote": "深灰木纹 #686560（原「海洋深木」为 marine 直译）"
    },
    {
     "code": "C8T",
     "name_ja": "コティグレー",
-    "name_zh": "科蒂灰",
+    "name_zh": "科蒂浅灰",
     "handles": [
      "F",
      "Z",
@@ -559,12 +642,14 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#a9a59c",
+    "colorNote": "浅暖灰 #a9a59c"
    },
    {
     "code": "C8Z",
     "name_ja": "コティチャコール",
-    "name_zh": "科蒂炭色",
+    "name_zh": "科蒂炭灰",
     "handles": [
      "F",
      "Z",
@@ -573,117 +658,137 @@ window.KITCHEN_DATA = {
      "T",
      "7",
      "8"
-    ]
+    ],
+    "swatchHex": "#6f6c67",
+    "colorNote": "炭灰 #6f6c67"
    }
   ],
   "class5": [
    {
     "code": "CAT",
     "name_ja": "スエードホワイト",
-    "name_zh": "麂皮白",
+    "name_zh": "麂皮米白",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#dedad7",
+    "colorNote": "米白绒面 #dedad7"
    },
    {
     "code": "CAZ",
     "name_ja": "スエードチャコール",
-    "name_zh": "麂皮炭色",
+    "name_zh": "麂皮炭黑",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#43403b",
+    "colorNote": "炭黑绒面 #43403b"
    },
    {
     "code": "C9K",
     "name_ja": "ミクスドラテ",
-    "name_zh": "混合拿铁",
+    "name_zh": "米绿",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#d0ceb5",
+    "colorNote": "★实为淡米绿 #d0ceb5（原「混合拿铁」与实物不符，该译名为上一轮误判）"
    },
    {
     "code": "ECG",
     "name_ja": "トワルグレー",
-    "name_zh": "托瓦尔灰",
+    "name_zh": "布纹浅灰",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#b6b2a9",
+    "colorNote": "浅灰布纹 toile #b6b2a9"
    },
    {
     "code": "ECU",
     "name_ja": "トワルローズ",
-    "name_zh": "托瓦尔玫瑰",
+    "name_zh": "布纹藕粉",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#d0bcb6",
+    "colorNote": "淡粉布纹 #d0bcb6"
    },
    {
     "code": "CKG",
     "name_ja": "ルオントグレージュ",
-    "name_zh": "鲁昂灰米",
+    "name_zh": "灰米棕",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#c7b299",
+    "colorNote": "灰米棕 greige #c7b299（原「鲁昂灰米」音译）"
    },
    {
     "code": "E5K",
     "name_ja": "ロッシュグレー",
-    "name_zh": "罗什灰",
+    "name_zh": "岩石暖灰",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#ab9f8f",
+    "colorNote": "暖灰褐石纹 roche #ab9f8f"
    },
    {
     "code": "CKL",
     "name_ja": "ルオントセピア",
-    "name_zh": "鲁昂棕褐",
+    "name_zh": "深棕褐",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#836951",
+    "colorNote": "深棕褐 sepia #836951（原「鲁昂棕褐」音译）"
    },
    {
     "code": "E5H",
     "name_ja": "ロッシュチャコール",
-    "name_zh": "罗什炭色",
+    "name_zh": "岩石炭黑",
     "handles": [
      "F",
      "Z",
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#534d3f",
+    "colorNote": "深炭褐 #534d3f"
    },
    {
     "code": "C4B",
@@ -695,7 +800,9 @@ window.KITCHEN_DATA = {
      "B",
      "U",
      "T"
-    ]
+    ],
+    "swatchHex": "#a2774e",
+    "colorNote": "桦木棕 #a2774e"
    }
   ]
  },
@@ -1257,7 +1364,7 @@ window.KITCHEN_DATA = {
     {
      "code": "flat",
      "name_ja": "フラット対面",
-     "name_zh": "平面对接式",
+     "name_zh": "齐平对面式",
      "plans": [
       "basic"
      ]
@@ -1265,7 +1372,7 @@ window.KITCHEN_DATA = {
     {
      "code": "dual",
      "name_ja": "デュアルトップ対面",
-     "name_zh": "双台面对接式",
+     "name_zh": "双层台面对面式",
      "plans": [
       "basic",
       "stylish"
@@ -1274,7 +1381,7 @@ window.KITCHEN_DATA = {
     {
      "code": "tworow",
      "name_ja": "2列型",
-     "name_zh": "双列型",
+     "name_zh": "双排型（二字型）",
      "plans": [
       "basic"
      ]
@@ -1294,7 +1401,7 @@ window.KITCHEN_DATA = {
     9,
     10
    ],
-   "description_zh": "套餐方案（Ⅰ型有基本/时尚/清洁三套，其余布局以基本为主；双台面对接另有时尚方案）。",
+   "description_zh": "套餐方案（Ⅰ型有基本/时尚/清洁三套，其余布局以基本为主；双台面对接另有简约设计方案）。",
    "options": [
     {
      "code": "basic",
@@ -1311,19 +1418,21 @@ window.KITCHEN_DATA = {
     {
      "code": "stylish",
      "name_ja": "スタイリッシュプラン",
-     "name_zh": "时尚方案",
+     "name_zh": "简约设计方案",
      "appliesTo": [
       "i",
       "dual"
-     ]
+     ],
+     "note": "手册 P.82 原文「デザインを重視しつつアイテムを絞り込んだコストバランスの良いプラン」——重设计、精简配置、性价比档；三方案中价格最低（255cm/class5 ¥910,000）。ツールポケット無、引出し底板为メラミン化粧板。"
     },
     {
      "code": "kirei",
      "name_ja": "きれいプラン",
-     "name_zh": "清洁方案",
+     "name_zh": "易洁方案",
      "appliesTo": [
       "i"
-     ]
+     ],
+     "note": "易清洁配置档：Efine 水龙头＋洗エール自动清洗油烟机＋FSS 灶具＋サテンエンボス台面（P.83）；三方案中价格最高（255cm/class5 ¥1,424,000）。"
     }
    ]
   },
@@ -1484,7 +1593,7 @@ window.KITCHEN_DATA = {
     {
      "code": "AVC",
      "name_ja": "オーク",
-     "name_zh": "橡木",
+     "name_zh": "原色橡木",
      "grade": "class1"
     },
     {
@@ -1502,13 +1611,13 @@ window.KITCHEN_DATA = {
     {
      "code": "CJV",
      "name_ja": "ボーテシルバー",
-     "name_zh": "波泰银",
+     "name_zh": "镜面银灰",
      "grade": "class2"
     },
     {
      "code": "CFQ",
      "name_ja": "ブロンカッセ",
-     "name_zh": "布朗卡塞",
+     "name_zh": "雅白·细框",
      "grade": "class2"
     },
     {
@@ -1520,19 +1629,19 @@ window.KITCHEN_DATA = {
     {
      "code": "CFU",
      "name_ja": "ティオレローズ",
-     "name_zh": "蒂奥雷玫瑰",
+     "name_zh": "藕粉",
      "grade": "class2"
     },
     {
      "code": "CFZ",
      "name_ja": "スタウトシリウス",
-     "name_zh": "斯托特天狼星",
+     "name_zh": "浓黑",
      "grade": "class2"
     },
     {
      "code": "CFV",
      "name_ja": "ブルードゥパリ",
-     "name_zh": "巴黎蓝",
+     "name_zh": "鸭蛋青",
      "grade": "class2"
     },
     {
@@ -1544,55 +1653,55 @@ window.KITCHEN_DATA = {
     {
      "code": "CHK",
      "name_ja": "パティナオパール",
-     "name_zh": "古铜蛋白石",
+     "name_zh": "欧泊白",
      "grade": "class3"
     },
     {
      "code": "CHL",
      "name_ja": "パティナマーブル",
-     "name_zh": "古铜大理石",
+     "name_zh": "云石灰",
      "grade": "class3"
     },
     {
      "code": "CPG",
      "name_ja": "ソナタグリーズ",
-     "name_zh": "奏鸣曲灰",
+     "name_zh": "奏鸣米灰",
      "grade": "class3"
     },
     {
      "code": "CPZ",
      "name_ja": "ソナタセピア",
-     "name_zh": "奏鸣曲棕褐",
+     "name_zh": "奏鸣深褐",
      "grade": "class3"
     },
     {
      "code": "CPB",
      "name_ja": "ソナタウッドチェリー",
-     "name_zh": "奏鸣曲樱桃木",
+     "name_zh": "奏鸣樱桃木",
      "grade": "class3"
     },
     {
      "code": "CGT",
      "name_ja": "ミースアッシュ",
-     "name_zh": "米斯烬灰",
+     "name_zh": "米斯暖白",
      "grade": "class3"
     },
     {
      "code": "CGV",
      "name_ja": "ミースネイビー",
-     "name_zh": "米斯藏青",
+     "name_zh": "米斯灰蓝",
      "grade": "class3"
     },
     {
      "code": "CGG",
      "name_ja": "ミースグレー",
-     "name_zh": "米斯灰",
+     "name_zh": "米斯中灰",
      "grade": "class3"
     },
     {
      "code": "CGW",
      "name_ja": "ミースウッドナチュラル",
-     "name_zh": "米斯自然木",
+     "name_zh": "米斯原木",
      "grade": "class3"
     },
     {
@@ -1628,115 +1737,115 @@ window.KITCHEN_DATA = {
     {
      "code": "C3L",
      "name_ja": "ウォールナットビター",
-     "name_zh": "苦胡桃木",
+     "name_zh": "深胡桃",
      "grade": "class4"
     },
     {
      "code": "CDK",
      "name_ja": "ユーリベージュ",
-     "name_zh": "尤利米色",
+     "name_zh": "尤利米白",
      "grade": "class4"
     },
     {
      "code": "CDH",
      "name_ja": "ユーリチャコール",
-     "name_zh": "尤利炭色",
+     "name_zh": "尤利炭黑",
      "grade": "class4"
     },
     {
      "code": "CDS",
      "name_ja": "レフティグリーン",
-     "name_zh": "左撇子绿",
+     "name_zh": "橄榄灰绿",
      "grade": "class4"
     },
     {
      "code": "CDB",
      "name_ja": "カミーナレッド",
-     "name_zh": "卡米娜红",
+     "name_zh": "赭红",
      "grade": "class4"
     },
     {
      "code": "CWT",
      "name_ja": "ペアウッドホワイト",
-     "name_zh": "梨木白",
+     "name_zh": "白梨木",
      "grade": "class4"
     },
     {
      "code": "CWX",
      "name_ja": "ペアウッドアッシュ",
-     "name_zh": "梨木灰",
+     "name_zh": "浅梨木",
      "grade": "class4"
     },
     {
      "code": "CWZ",
      "name_ja": "マリンウッドダーク",
-     "name_zh": "海洋深木",
+     "name_zh": "深灰木",
      "grade": "class4"
     },
     {
      "code": "C8T",
      "name_ja": "コティグレー",
-     "name_zh": "科蒂灰",
+     "name_zh": "科蒂浅灰",
      "grade": "class4"
     },
     {
      "code": "C8Z",
      "name_ja": "コティチャコール",
-     "name_zh": "科蒂炭色",
+     "name_zh": "科蒂炭灰",
      "grade": "class4"
     },
     {
      "code": "CAT",
      "name_ja": "スエードホワイト",
-     "name_zh": "麂皮白",
+     "name_zh": "麂皮米白",
      "grade": "class5"
     },
     {
      "code": "CAZ",
      "name_ja": "スエードチャコール",
-     "name_zh": "麂皮炭色",
+     "name_zh": "麂皮炭黑",
      "grade": "class5"
     },
     {
      "code": "C9K",
      "name_ja": "ミクスドラテ",
-     "name_zh": "混合拿铁",
+     "name_zh": "米绿",
      "grade": "class5"
     },
     {
      "code": "ECG",
      "name_ja": "トワルグレー",
-     "name_zh": "托瓦尔灰",
+     "name_zh": "布纹浅灰",
      "grade": "class5"
     },
     {
      "code": "ECU",
      "name_ja": "トワルローズ",
-     "name_zh": "托瓦尔玫瑰",
+     "name_zh": "布纹藕粉",
      "grade": "class5"
     },
     {
      "code": "CKG",
      "name_ja": "ルオントグレージュ",
-     "name_zh": "鲁昂灰米",
+     "name_zh": "灰米棕",
      "grade": "class5"
     },
     {
      "code": "E5K",
      "name_ja": "ロッシュグレー",
-     "name_zh": "罗什灰",
+     "name_zh": "岩石暖灰",
      "grade": "class5"
     },
     {
      "code": "CKL",
      "name_ja": "ルオントセピア",
-     "name_zh": "鲁昂棕褐",
+     "name_zh": "深棕褐",
      "grade": "class5"
     },
     {
      "code": "E5H",
      "name_ja": "ロッシュチャコール",
-     "name_zh": "罗什炭色",
+     "name_zh": "岩石炭黑",
      "grade": "class5"
     },
     {
@@ -1863,7 +1972,7 @@ window.KITCHEN_DATA = {
     {
      "code": "stainless_coining",
      "name_ja": "ステンレス コイニング",
-     "name_zh": "不锈钢 压花",
+     "name_zh": "不锈钢 点纹压花",
      "pricesBySize": {
       "180": -55000,
       "195": -58000,
@@ -2074,7 +2183,7 @@ window.KITCHEN_DATA = {
     {
      "code": "stainless_satin_emboss",
      "name_ja": "ステンレス サテンエンボス（美コート+特殊エンボス加工）",
-     "name_zh": "不锈钢 缎面压花（美コート+特殊压花加工）",
+     "name_zh": "不锈钢 缎面压花（美护涂层+特殊压花加工）",
      "note": "きれいプラン基本仕様台面（P.83）；基本/スタイリッシュプランでは2026.10版で選択不可（旧版 ⊕14,000 は廃止）。",
      "basicFor": [
       "kirei"
@@ -2285,7 +2394,7 @@ window.KITCHEN_DATA = {
     {
      "code": "acrystone_powder",
      "name_ja": "アクリストン パウダー",
-     "name_zh": "人造大理石 粉彩",
+     "name_zh": "人造大理石 粉砂纹",
      "pricesBySize": {
       "180": 56000,
       "195": 57000,
@@ -2914,7 +3023,7 @@ window.KITCHEN_DATA = {
     {
      "code": "SV",
      "name_ja": "美・サイレントシンク（SV）",
-     "name_zh": "美静音水槽（SV）",
+     "name_zh": "美·静音水槽（SV）",
      "priceDiff": -42000,
      "note": "SA→SV / SY→SV ともに －42,000（P.81）；対応間口195～255cm（P.114）",
      "sizes": [
@@ -2928,9 +3037,9 @@ window.KITCHEN_DATA = {
     {
      "code": "AE",
      "name_ja": "流レールアクリストンシンク（AE）",
-     "name_zh": "流轨人造大理石水槽（AE）",
+     "name_zh": "导流人造大理石水槽（AE）",
      "priceDiff": 40000,
-     "note": "SA→AE / SY→AE ともに ＋40,000（P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
+     "note": "SA→AE / SY→AE ともに ＋40,000（P.81）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -2943,9 +3052,9 @@ window.KITCHEN_DATA = {
     {
      "code": "AK",
      "name_ja": "流レールフォルテックスシンク（AK）",
-     "name_zh": "流轨硬质人造大理石水槽（AK）",
+     "name_zh": "导流硬质人造大理石水槽（AK）",
      "priceDiff": 66000,
-     "note": "SA→AK / SY→AK ともに ＋66,000（P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
+     "note": "SA→AK / SY→AK ともに ＋66,000（P.81）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -2958,9 +3067,9 @@ window.KITCHEN_DATA = {
     {
      "code": "RW",
      "name_ja": "流レールシンクワイド（RW）",
-     "name_zh": "流轨宽水槽（RW）",
+     "name_zh": "导流宽水槽（RW）",
      "priceDiff": 55000,
-     "note": "SA→RW ＋55,000（間口255cm の場合、P.81）；対応間口225～300cm（P.114）；対応間口225～300cm（P.114）",
+     "note": "SA→RW ＋55,000（間口255cm の場合、P.81）；対応間口225～300cm（P.114）",
      "sizes": [
       "225",
       "240",
@@ -2975,7 +3084,7 @@ window.KITCHEN_DATA = {
   {
    "id": "cabinet",
    "name_ja": "フロアキャビネット（下柜）",
-   "name_zh": "下柜",
+   "name_zh": "地柜",
    "step": 6,
    "pages": [
     8,
@@ -2986,27 +3095,27 @@ window.KITCHEN_DATA = {
     53,
     54
    ],
-   "description_zh": "下柜（フロアキャビネット）加装项（可多选）。单元类型见 cabinetTypes（シンク/ベース/コンロ/コーナー，基本仕様无差价）。",
+   "description_zh": "地柜（フロアキャビネット）加装项（可多选）。单元类型见 cabinetTypes（シンク/ベース/コンロ/コーナー，基本仕様无差价）。",
    "additive": true,
    "options": [
     {
      "code": "slidebox_sink",
      "name_ja": "スライドボックス シンクキャビネット",
-     "name_zh": "滑动收纳盒 水槽柜",
+     "name_zh": "抽拉收纳盒 水槽柜",
      "priceDiff": null,
      "note": "P.81 に単独加算額の記載なし；コンセント付仕様（ZKIS）は ⊕34,000 を参照"
     },
     {
      "code": "slidebox_base",
      "name_ja": "スライドボックス ベースキャビネット",
-     "name_zh": "滑动收纳盒 基础柜",
+     "name_zh": "抽拉收纳盒 基础柜",
      "priceDiff": 40000,
      "note": "間口255cm の場合（P.81）"
     },
     {
      "code": "slidebox_cooktop",
      "name_ja": "スライドボックス コンロキャビネット",
-     "name_zh": "滑动收纳盒 灶具柜",
+     "name_zh": "抽拉收纳盒 灶具柜",
      "priceDiff": 33000,
      "note": "間口255cm・ガスコンロの場合（P.81）"
     },
@@ -3028,7 +3137,7 @@ window.KITCHEN_DATA = {
     {
      "code": "cross_gallery",
      "name_ja": "クロスギャラリー（1本）",
-     "name_zh": "侧边层架导轨",
+     "name_zh": "抽屉横杆",
      "pricesBySize": {
       "30": 3000,
       "45": 3000,
@@ -3056,7 +3165,7 @@ window.KITCHEN_DATA = {
     {
      "code": "ladle_pocket",
      "name_ja": "レードルポケット",
-     "name_zh": "汤勺挂",
+     "name_zh": "长柄勺收纳槽",
      "priceDiff": 3000,
      "model": "ZKHXWN-K"
     },
@@ -3091,7 +3200,7 @@ window.KITCHEN_DATA = {
     {
      "code": "riser",
      "name_ja": "フロアコンテナ用ライザー",
-     "name_zh": "地面置物箱垫高架",
+     "name_zh": "落地收纳柜垫高座",
      "priceDiff": 6000,
      "model": "ZKCFNN-K"
     }
@@ -3244,7 +3353,7 @@ window.KITCHEN_DATA = {
     {
      "code": "liteco",
      "name_ja": "ライトエコ付ストリーム除菌タイプ",
-     "name_zh": "轻环保蒸汽除菌型",
+     "name_zh": "轻量节能蒸汽除菌型",
      "priceDiff": 211000,
      "model": "ZWPP45M21BDS"
     },
@@ -3258,7 +3367,7 @@ window.KITCHEN_DATA = {
     {
      "code": "econavi",
      "name_ja": "省エネナビ付ストリーム除菌タイプ",
-     "name_zh": "节能导航蒸汽除菌型",
+     "name_zh": "节能向导蒸汽除菌型",
      "priceDiff": 246000,
      "model": "ZWPM45M21CDU"
     }
@@ -3282,7 +3391,7 @@ window.KITCHEN_DATA = {
     71,
     72
    ],
-   "description_zh": "灶具（ガスコンロ XSS 为基本，可选 Lisse/DELICIA/IH/ハイブリッド Dual Chef）。",
+   "description_zh": "灶具（ガスコンロ XSS 为基本，可选 Lisse/DELICIA/IH）。",
    "options": [
     {
      "code": "XSS",
@@ -3324,7 +3433,7 @@ window.KITCHEN_DATA = {
     {
      "code": "ih2",
      "name_ja": "2口IH＋ラジエントヒーター",
-     "name_zh": "双口IH+辐射加热器",
+     "name_zh": "双口IH+电陶炉",
      "priceDiff": 160000,
      "model": "ZZCSG318MSR"
     },
@@ -3338,14 +3447,14 @@ window.KITCHEN_DATA = {
     {
      "code": "ih3allmetal",
      "name_ja": "1口オールメタル対応3口IHヒーター",
-     "name_zh": "单口全金属三口IH电磁炉",
+     "name_zh": "三口IH（1口全金属锅适用）",
      "priceDiff": 391000,
      "model": "ZEHRA6M24NSS"
     },
     {
      "code": "none",
      "name_ja": "コンロなし",
-     "name_zh": "不装燃气灶",
+     "name_zh": "不装灶具",
      "priceDiff": -188000,
      "note": "不选减额=ガラストップコンロ XSS 本体 ¥188,000（P.81）"
     }
@@ -3372,7 +3481,7 @@ window.KITCHEN_DATA = {
     {
      "code": "simpleslim",
      "name_ja": "シンプルスリムレンジフード（鋼板前・横幕板）",
-     "name_zh": "简约超薄抽油烟机（钢板前挡）",
+     "name_zh": "简约超薄抽油烟机（钢板前挡+侧挡板）",
      "model": "ZRS90ACK24FS(R-L)",
      "note": "基本仕様（基本/スタイリッシュプラン、P.81）；class別本体 230,000/207,000/173,000/166,000/163,000",
      "baseSpec": {
@@ -3391,12 +3500,13 @@ window.KITCHEN_DATA = {
       "i",
       "l",
       "tworow"
-     ]
+     ],
+     "hoodWidth": 90
     },
     {
      "code": "deep",
      "name_ja": "深型レンジフード（シロッコファン）",
-     "name_zh": "深型抽油烟机（西洛克风机）",
+     "name_zh": "深型抽油烟机（多翼离心风机）",
      "priceMatrix": {
       "class1": -94000,
       "class2": -71000,
@@ -3405,14 +3515,16 @@ window.KITCHEN_DATA = {
       "class5": -27000
      },
      "model": "ZRS90NAY20FSZ",
-     "note": "深型为减价（相对シンプルスリム基本）"
+     "note": "深型为减价（相对シンプルスリム基本）",
+     "hoodWidth": 90
     },
     {
      "code": "tottemo",
      "name_ja": "とってもクリンフード",
      "name_zh": "超易清洗抽油烟机",
      "priceDiff": 55000,
-     "model": "ZRS90ACH22FSZ"
+     "model": "ZRS90ACH22FSZ",
+     "hoodWidth": 90
     },
     {
      "code": "araiyell",
@@ -3427,7 +3539,8 @@ window.KITCHEN_DATA = {
        "l",
        "tworow"
       ]
-     }
+     },
+     "hoodWidth": 90
     },
     {
      "code": "simpleslimJ",
@@ -3453,7 +3566,8 @@ window.KITCHEN_DATA = {
        "flat",
        "dual"
       ]
-     }
+     },
+     "hoodWidth": 90
     },
     {
      "code": "none",
@@ -3466,7 +3580,8 @@ window.KITCHEN_DATA = {
       "class4": -166000,
       "class5": -163000
      },
-     "note": "不选减额=シンプルスリムレンジフード本体（class別、P.81）"
+     "note": "不选减额=シンプルスリムレンジフード本体（class別、P.81）",
+     "hoodWidth": 0
     },
     {
      "code": "hood_maruta",
@@ -3482,9 +3597,11 @@ window.KITCHEN_DATA = {
      "note": "P.82 スタイリッシュプラン ＋OPTION；レンジフードの前板と横板をキッチン扉面材で統一。基本/きれいプランのページには本加算額の記載なし。",
      "plans": [
       "stylish"
-     ]
+     ],
+     "hoodWidth": 90
     }
-   ]
+   ],
+   "widthNote": "パッケージのレンジフード品番はすべて ZRS90…＝間口90cm（P.81、P.150–152）。一般ラインナップには60/75cmもあるが本システムのパッケージ选项は90cmのみ。吊柜側の横並び合計にこの90cmを加算する。"
   },
   {
    "id": "wallcabinet",
@@ -3631,7 +3748,7 @@ window.KITCHEN_DATA = {
     {
      "code": "pantry_basic",
      "name_ja": "スライドパントリー（基本プラン）",
-     "name_zh": "滑动储物柜（基本系列）",
+     "name_zh": "抽拉式储藏高柜（基本系列）",
      "sizes": [
       "90",
       "105",
@@ -3650,7 +3767,7 @@ window.KITCHEN_DATA = {
     {
      "code": "pantry_care",
      "name_ja": "スライドパントリー（高さケアプラン）",
-     "name_zh": "滑动储物柜（高度关怀系列）",
+     "name_zh": "抽拉式储藏高柜（高度适配★方案）",
      "sizes": [
       "120",
       "150",
@@ -3660,12 +3777,13 @@ window.KITCHEN_DATA = {
       "45",
       "55"
      ],
-     "ref": "peripheralPrices.pantry_care"
+     "ref": "peripheralPrices.pantry_care",
+     "note": "手册 P.177 仅列「高さケア★プラン」表名，未给出释义；中文暂译「高度适配」，正式含义待営業所確認。"
     },
     {
      "code": "pantry_short",
      "name_ja": "スライドパントリー（ショートタイプ）",
-     "name_zh": "滑动储物柜（矮型）",
+     "name_zh": "抽拉式储藏高柜（矮型）",
      "sizes": [
       "90",
       "105",
@@ -3682,7 +3800,7 @@ window.KITCHEN_DATA = {
     {
      "code": "floor_counter",
      "name_ja": "片面フロアカウンター",
-     "name_zh": "单面落地柜台",
+     "name_zh": "单面操作台柜",
      "sizes": [
       "120",
       "135",
@@ -3698,7 +3816,7 @@ window.KITCHEN_DATA = {
     {
      "code": "high_floor_counter",
      "name_ja": "片面ハイフロアカウンター",
-     "name_zh": "单面高落地柜台",
+     "name_zh": "单面高操作台柜",
      "sizes": [
       "120",
       "135",
@@ -3714,7 +3832,7 @@ window.KITCHEN_DATA = {
     {
      "code": "cafe_cupboard_counter",
      "name_ja": "カフェスタイル収納（カップボード+フロアカウンター）",
-     "name_zh": "咖啡馆风收纳（餐边柜+落地柜台）",
+     "name_zh": "咖啡馆风收纳（餐边柜+操作台柜）",
      "sizes": [
       "120",
       "135",
@@ -3727,7 +3845,7 @@ window.KITCHEN_DATA = {
     {
      "code": "cafe_counter",
      "name_ja": "カフェスタイル収納（片面フロアカウンター）",
-     "name_zh": "咖啡馆风收纳（单面落地柜台）",
+     "name_zh": "咖啡馆风收纳（单面操作台柜）",
      "sizes": [
       "135",
       "150",
@@ -4399,7 +4517,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "243",
    "name_ja": "間口243cm・奥行80cm",
-   "name_zh": "宽243cm·深度80cm",
+   "name_zh": "宽243cm·进深80cm",
    "prices": {
     "class1": 2492000,
     "class2": 2130000,
@@ -4414,7 +4532,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "258",
    "name_ja": "間口258cm・奥行80cm",
-   "name_zh": "宽258cm·深度80cm",
+   "name_zh": "宽258cm·进深80cm",
    "prices": {
     "class1": 2561000,
     "class2": 2195000,
@@ -4429,7 +4547,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "273",
    "name_ja": "間口273cm・奥行80cm",
-   "name_zh": "宽273cm·深度80cm",
+   "name_zh": "宽273cm·进深80cm",
    "prices": {
     "class1": 2718000,
     "class2": 2337000,
@@ -4444,7 +4562,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "243",
    "name_ja": "間口243cm・奥行98cm",
-   "name_zh": "宽243cm·深度98cm",
+   "name_zh": "宽243cm·进深98cm",
    "prices": {
     "class1": 2764000,
     "class2": 2411000,
@@ -4459,7 +4577,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "258",
    "name_ja": "間口258cm・奥行98cm",
-   "name_zh": "宽258cm·深度98cm",
+   "name_zh": "宽258cm·进深98cm",
    "prices": {
     "class1": 2833000,
     "class2": 2480000,
@@ -4474,7 +4592,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "273",
    "name_ja": "間口273cm・奥行98cm",
-   "name_zh": "宽273cm·深度98cm",
+   "name_zh": "宽273cm·进深98cm",
    "prices": {
     "class1": 2990000,
     "class2": 2626000,
@@ -4489,7 +4607,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "242.5",
    "name_ja": "間口242.5cm・奥行80cm",
-   "name_zh": "宽242.5cm·深度80cm",
+   "name_zh": "宽242.5cm·进深80cm",
    "prices": {
     "class1": 2034000,
     "class2": 1821000,
@@ -4504,7 +4622,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "257.5",
    "name_ja": "間口257.5cm・奥行80cm",
-   "name_zh": "宽257.5cm·深度80cm",
+   "name_zh": "宽257.5cm·进深80cm",
    "prices": {
     "class1": 2061000,
     "class2": 1848000,
@@ -4519,7 +4637,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "272.5",
    "name_ja": "間口272.5cm・奥行80cm",
-   "name_zh": "宽272.5cm·深度80cm",
+   "name_zh": "宽272.5cm·进深80cm",
    "prices": {
     "class1": 2148000,
     "class2": 1935000,
@@ -4534,7 +4652,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "242.5",
    "name_ja": "間口242.5cm・奥行98cm",
-   "name_zh": "宽242.5cm·深度98cm",
+   "name_zh": "宽242.5cm·进深98cm",
    "prices": {
     "class1": 2133000,
     "class2": 1923000,
@@ -4549,7 +4667,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "257.5",
    "name_ja": "間口257.5cm・奥行98cm",
-   "name_zh": "宽257.5cm·深度98cm",
+   "name_zh": "宽257.5cm·进深98cm",
    "prices": {
     "class1": 2160000,
     "class2": 1950000,
@@ -4564,7 +4682,7 @@ window.KITCHEN_DATA = {
    "plan": "basic",
    "width": "272.5",
    "name_ja": "間口272.5cm・奥行98cm",
-   "name_zh": "宽272.5cm·深度98cm",
+   "name_zh": "宽272.5cm·进深98cm",
    "prices": {
     "class1": 2247000,
     "class2": 2037000,
@@ -4579,7 +4697,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "242.5",
    "name_ja": "間口242.5cm・奥行80cm",
-   "name_zh": "宽242.5cm·深度80cm",
+   "name_zh": "宽242.5cm·进深80cm",
    "prices": {
     "class1": 1685000,
     "class2": 1472000,
@@ -4594,7 +4712,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "257.5",
    "name_ja": "間口257.5cm・奥行80cm",
-   "name_zh": "宽257.5cm·深度80cm",
+   "name_zh": "宽257.5cm·进深80cm",
    "prices": {
     "class1": 1709000,
     "class2": 1496000,
@@ -4609,7 +4727,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "272.5",
    "name_ja": "間口272.5cm・奥行80cm",
-   "name_zh": "宽272.5cm·深度80cm",
+   "name_zh": "宽272.5cm·进深80cm",
    "prices": {
     "class1": 1778000,
     "class2": 1565000,
@@ -4624,7 +4742,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "242.5",
    "name_ja": "間口242.5cm・奥行98cm",
-   "name_zh": "宽242.5cm·深度98cm",
+   "name_zh": "宽242.5cm·进深98cm",
    "prices": {
     "class1": 1691000,
     "class2": 1478000,
@@ -4639,7 +4757,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "257.5",
    "name_ja": "間口257.5cm・奥行98cm",
-   "name_zh": "宽257.5cm·深度98cm",
+   "name_zh": "宽257.5cm·进深98cm",
    "prices": {
     "class1": 1715000,
     "class2": 1502000,
@@ -4654,7 +4772,7 @@ window.KITCHEN_DATA = {
    "plan": "stylish",
    "width": "272.5",
    "name_ja": "間口272.5cm・奥行98cm",
-   "name_zh": "宽272.5cm·深度98cm",
+   "name_zh": "宽272.5cm·进深98cm",
    "prices": {
     "class1": 1784000,
     "class2": 1571000,
@@ -4681,7 +4799,7 @@ window.KITCHEN_DATA = {
   }
  ],
  "wallCabinetUnits": {
-  "note": "上柜（ウォールキャビネット）单元类型，来源 v2 手册 PDF 156–161。间口=柜体自身间口(cm)；价表含 class×间口×照明 或 间口×照明×タイプ。",
+  "note": "吊柜（ウォールキャビネット）单元类型，来源 v2 手册 PDF 156–161。间口=柜体自身间口(cm)；价表含 class×间口×照明 或 间口×照明×タイプ。",
   "handmove": {
    "name_ja": "ハンドムーブ",
    "name_zh": "手动升降吊柜",
@@ -4761,7 +4879,7 @@ window.KITCHEN_DATA = {
   },
   "eyearea": {
    "name_ja": "アイエリアボックス",
-   "name_zh": "眼部区域收纳盒",
+   "name_zh": "眼前区收纳盒",
    "types": {
     "seasoning": "調味料棚タイプ",
     "draining": "水切りカウンタータイプ"
@@ -4793,7 +4911,12 @@ window.KITCHEN_DATA = {
      }
     }
    },
-   "note": "間口45/75/90cm，奥行30cm，下降42cm；45cm 仅调味料棚且无照明付"
+   "note": "間口45/75/90cm，奥行30cm，下降42cm；45cm 仅调味料棚且无照明付",
+   "widths": [
+    "45",
+    "75",
+    "90"
+   ]
   },
   "automove": {
    "name_ja": "オートムーブシステム",
@@ -4858,11 +4981,20 @@ window.KITCHEN_DATA = {
     "70",
     "90"
    ],
-   "note": "取手レス吊戸棚 / サイレントダンパー付"
+   "note": "取手レス吊戸棚 / サイレントダンパー付",
+   "widths": [
+    "15",
+    "30",
+    "45",
+    "60",
+    "75",
+    "90"
+   ],
+   "widthsNote": "標準吊戸棚の間口ラインナップは別冊価格表に掲載（本188頁手册には未記載）。此处提供手册内で確認できる吊戸棚ファミリー間口の並集合：梁欠き対応用 15/30/45/60/90・シースルー/ムーブダウン 60/75/90（P.161）。正式間口は営業所確認。"
   },
   "seethrough": {
    "name_ja": "シースルー吊戸棚",
-   "name_zh": "透视吊柜",
+   "name_zh": "半透明门吊柜",
    "widths": [
     "60",
     "75",
@@ -4890,7 +5022,7 @@ window.KITCHEN_DATA = {
   "led": {
    "seesaw": {
     "name_ja": "LEDシーソースイッチ",
-    "name_zh": "LED跷跷板开关灯",
+    "name_zh": "LED翘板开关灯",
     "pricesBySize": {
      "60": 23000,
      "90": 29000
@@ -4932,7 +5064,7 @@ window.KITCHEN_DATA = {
   }
  },
  "cabinetTypes": {
-  "note": "下柜（フロアキャビネット）单元类型，来源 v2 手册 PDF 122–127。类型为基本仕様（无加减差价，类型差价在别册）；対応間口=柜体间口(cm)，奥行=D650/D600。手册原表対応間口为 mm（750/900/1050/1100mm 等），数据已统一换算为 cm。",
+  "note": "地柜（フロアキャビネット）单元类型，来源 v2 手册 PDF 122–127。类型为基本仕様（无加减差价，类型差价在别册）；対応間口=柜体间口(cm)，奥行=D650/D600。手册原表対応間口为 mm（750/900/1050/1100mm 等），数据已统一换算为 cm。",
   "sink": {
    "name_ja": "シンクキャビネット",
    "name_zh": "水槽柜",
@@ -4949,52 +5081,52 @@ window.KITCHEN_DATA = {
    "types": [
     {
      "name_ja": "ツールポケット付きインセットパネルタイプ",
-     "name_zh": "带工具袋嵌入式面板",
+     "name_zh": "带小物收纳格·收口板",
      "isBasic": true
     },
     {
      "name_ja": "ツールポケット付きタイプ",
-     "name_zh": "带工具袋"
+     "name_zh": "带小物收纳格"
     },
     {
      "name_ja": "ツールポケット付き既設配水管対応タイプ",
-     "name_zh": "带工具袋既有配水管对应"
+     "name_zh": "带小物收纳格·既有配水管适配"
     },
     {
      "name_ja": "スライドボックス＋ツールポケット付きインセットパネルタイプ",
-     "name_zh": "滑动盒+工具袋嵌入式面板"
+     "name_zh": "抽拉收纳盒+小物收纳格·收口板"
     },
     {
      "name_ja": "スライドボックス＋ツールポケット付き",
-     "name_zh": "滑动盒+工具袋"
+     "name_zh": "抽拉收纳盒+小物收纳格"
     },
     {
      "name_ja": "インセットパネルタイプ",
-     "name_zh": "嵌入式面板"
+     "name_zh": "收口板"
     },
     {
      "name_ja": "シンプルタイプ",
-     "name_zh": "简约"
+     "name_zh": "简约型"
     },
     {
      "name_ja": "シンプルタイプ既設配水管対応タイプ",
-     "name_zh": "简约既有配水管对应"
+     "name_zh": "简约型·既有配水管适配"
     },
     {
      "name_ja": "シンプルタイプディスポーザー対応タイプ",
-     "name_zh": "简约垃圾处理器对应"
+     "name_zh": "简约型·垃圾处理器适配"
     },
     {
      "name_ja": "開き扉タイプ",
-     "name_zh": "对开门"
+     "name_zh": "平开门"
     },
     {
      "name_ja": "オープンタイプ",
-     "name_zh": "开放"
+     "name_zh": "开放式"
     },
     {
      "name_ja": "オープンタイプ横組み込み間口15cm包丁差し付スライドタイプ",
-     "name_zh": "开放横嵌15cm带刀架滑动"
+     "name_zh": "开放式·横嵌15cm·带刀架抽拉"
     }
    ]
   },
@@ -5021,7 +5153,7 @@ window.KITCHEN_DATA = {
     },
     {
      "name_ja": "2段引出しスライドボックス付きタイプ",
-     "name_zh": "双层抽屉带滑动盒"
+     "name_zh": "双层抽屉·带抽拉收纳盒"
     },
     {
      "name_ja": "1段引出しタイプ",
@@ -5033,7 +5165,7 @@ window.KITCHEN_DATA = {
     },
     {
      "name_ja": "オープンタイプ",
-     "name_zh": "开放"
+     "name_zh": "开放式"
     }
    ]
   },
@@ -5053,32 +5185,32 @@ window.KITCHEN_DATA = {
    "types": [
     {
      "name_ja": "ガス・IH共用ツールポケット付きタイプ",
-     "name_zh": "燃气/IH共用带工具袋",
+     "name_zh": "燃气/IH共用·带小物收纳格",
      "isBasic": true
     },
     {
      "name_ja": "ガス用/IH用スライドボックス＋ツールポケット付きタイプ",
-     "name_zh": "燃气/IH滑动盒+工具袋"
+     "name_zh": "燃气/IH抽拉收纳盒+小物收纳格"
     },
     {
      "name_ja": "グリルレス用スライドボックス＋ツールポケット付きタイプ",
-     "name_zh": "无烤架滑动盒+工具袋"
+     "name_zh": "无烤架抽拉收纳盒+小物收纳格"
     },
     {
      "name_ja": "グリルレス用ツールポケット付きタイプ",
-     "name_zh": "无烤架带工具袋"
+     "name_zh": "无烤架·带小物收纳格"
     },
     {
      "name_ja": "ガス・IH共用シンプルタイプ",
-     "name_zh": "燃气/IH共用简约"
+     "name_zh": "燃气/IH共用·简约型"
     },
     {
      "name_ja": "グリルレス用シンプルタイプ",
-     "name_zh": "无烤架简约"
+     "name_zh": "无烤架·简约型"
     },
     {
      "name_ja": "コンロ横組み込み間口15cm（網カゴ付き/ボトル対応）",
-     "name_zh": "灶侧嵌15cm（网篮/瓶罐）"
+     "name_zh": "灶侧横嵌15cm（网篮/瓶罐）"
     }
    ]
   },
@@ -5096,7 +5228,7 @@ window.KITCHEN_DATA = {
    "types": [
     {
      "name_ja": "ワゴンタイプ",
-     "name_zh": "推车型"
+     "name_zh": "转角拉篮"
     },
     {
      "name_ja": "棚板タイプ",

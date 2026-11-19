@@ -66,6 +66,7 @@
       sumWallWidthRow: document.querySelector('#sumWallWidthRow'),
       sumCabWidth: document.querySelector('#sumCabWidth'),
       sumCabWidthRow: document.querySelector('#sumCabWidthRow'),
+      sumWidthErr: document.querySelector('#sumWidthErr'),
       sumBase: document.querySelector('#sumBase'),
       sumOpt: document.querySelector('#sumOpt'),
       sumJPY: document.querySelector('#sumJPY'),
@@ -100,6 +101,7 @@
     var body = els.body;
 
     body.addEventListener('change', function (e) {
+      Q.clearWidthErr();          // 编辑中不打扰；下次点「下一步」重新校验
       var tgt = e.target;
       var dim = tgt.getAttribute('data-dim');
       var val = tgt.getAttribute('data-val');
@@ -137,7 +139,7 @@
         renderStep(); renderSummary();
         return;
       }
-      // 多选（multi，如 cabinet 下柜加装）复选框
+      // 多选（multi，如 cabinet 地柜加装）复选框
       if (tgt.hasAttribute('data-multi')) {
         var mid = tgt.getAttribute('data-multi');
         var mval = tgt.getAttribute('data-val');
@@ -181,7 +183,7 @@
         return;
       }
 
-      // 上柜单元（wallunit，多单元列表）
+      // 吊柜单元（wallunit，多单元列表）
       if (tgt.hasAttribute('data-wu-hood')) { Q.wuSetHood(Number(tgt.getAttribute('data-wu-idx')), tgt.checked); renderStep(); renderSummary(); return; }
       if (tgt.hasAttribute('data-wu-type')) { wuSetDefaults(Number(tgt.getAttribute('data-wu-idx')), tgt.getAttribute('data-wu-type')); renderStep(); renderSummary(); return; }
       if (tgt.hasAttribute('data-wu-width')) {
@@ -225,7 +227,7 @@
         if (tgt.checked) wu7.extras[ek] = true; else delete wu7.extras[ek];
         renderStep(); renderSummary(); return;
       }
-      // 下柜单元（cabunit，多单元列表）
+      // 地柜单元（cabunit，多单元列表）
       if (tgt.hasAttribute('data-cab-pos')) {
         var cu0 = Q.state.cabunit[Number(tgt.getAttribute('data-cab-idx'))];
         var newPos = tgt.getAttribute('data-cab-pos');
@@ -307,7 +309,7 @@
       renderStep(); renderSummary();
     });
 
-    // 上柜单元 添加/删除（click 委托，仅绑一次）
+    // 吊柜单元 添加/删除（click 委托，仅绑一次）
     body.addEventListener('click', function (e) {
       var tgt = e.target;
       if (tgt.hasAttribute('data-wu-add')) {
@@ -323,10 +325,10 @@
         renderStep(); renderSummary();
         return;
       }
-      // 下柜单元 新增（宽度硬约束）/删除
+      // 地柜单元 新增（宽度硬约束）/删除
       if (tgt.hasAttribute('data-cab-add')) {
         var ok = Q.cabAddUnit({ pos: 'sink', t: 0, w: '75', d: 'D650', acc: {} });
-        if (!ok) flash(t('下柜总宽将超厨房间口，请选择更小间口或删除单元', '下戸棚幅合計が厨房間口を超えます。より小さい間口を選択するかユニットを削除してください'));
+        if (!ok) flash(t('地柜总宽将超厨房间口，请选择更小间口或删除单元', '下戸棚幅合計が厨房間口を超えます。より小さい間口を選択するかユニットを削除してください'));
         renderStep(); renderSummary();
         return;
       }
@@ -342,7 +344,13 @@
   function bindStatic() {
     var last = Q.STEPS.length - 1;
     if (els.btnPrev) els.btnPrev.addEventListener('click', function () { Q.state.step = Math.max(0, Q.state.step - 1); renderAll(); });
-    if (els.btnNext) els.btnNext.addEventListener('click', function () { if (Q.state.step < last) { Q.state.step += 1; renderAll(); } });
+    if (els.btnNext) els.btnNext.addEventListener('click', function () {
+      if (Q.state.step >= last) return;
+      // 离开本页前校验柜体总长；对不上则报错并停留在本页
+      var werrs = Q.validateWidthStep(Q.state.step);
+      if (werrs.length) { renderAll(); return; }
+      Q.state.step += 1; renderAll();
+    });
     if (els.btnFinish) els.btnFinish.addEventListener('click', function () { goTab('quote'); });
     if (els.sumToQuote) els.sumToQuote.addEventListener('click', function () { goTab('quote'); });
     if (els.sumCopy) els.sumCopy.addEventListener('click', copyList);
@@ -353,7 +361,14 @@
     if (els.stepper) els.stepper.addEventListener('click', function (e) {
       var b = e.target.closest('.wstep');
       if (!b) return;
-      Q.state.step = Number(b.getAttribute('data-step'));
+      var to = Number(b.getAttribute('data-step'));
+      var from = Q.state.step;
+      // 向前跳页：校验被离开/跳过的柜体页，不合格则落在第一个出错页
+      if (to > from) {
+        var bad = guardWidthSteps(from, to);
+        if (bad >= 0) { Q.state.step = bad; renderAll(); return; }
+      }
+      Q.state.step = to;   // 向后跳页（回去修改）不校验
       renderAll();
     });
 
@@ -392,7 +407,27 @@
   }
 
   /* ---------------- tab 切换 ---------------- */
+  /** 校验 [fromN, toN) 区间内的柜体页；返回第一个不合格步骤索引，-1=全通过 */
+  function guardWidthSteps(fromN, toN) {
+    var bad = -1;
+    Q.STEPS.forEach(function (s) {
+      if (s.n < fromN || s.n >= toN) return;
+      var errs = Q.validateWidthStep(s.n);   // 非柜体页返回 []
+      if (errs.length && bad < 0) bad = s.n;
+    });
+    return bad;
+  }
+
   function goTab(name) {
+    // 出报价单前把关：柜体总长对不上则不出单，直接跳到出错页报错
+    if (name === 'quote') {
+      var bad = guardWidthSteps(0, Q.STEPS.length);
+      if (bad >= 0) {
+        Q.state.step = bad;
+        name = 'wizard';
+        renderAll();
+      }
+    }
     if (els.tabs) els.tabs.querySelectorAll('.tab-btn').forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-view') === name);
     });
@@ -490,15 +525,38 @@
     return html;
   }
 
-  function optCard(dimId, nameZh, nameJa, code, val, on, dis, priceHtml) {
+  function optCard(dimId, nameZh, nameJa, code, val, on, dis, priceHtml, leadHtml) {
     var disCls = dis ? ' disabled' : '';
     var codeHtml = code ? '<span class="opt-code">' + esc(code) + '</span>' : '';
     var note = dis ? '<span class="opt-dis">⛔ ' + esc(dis) + '</span>' : '';
-    return '<label class="opt-card' + (on ? ' on' : '') + disCls + '">' +
+    return '<label class="opt-card' + (on ? ' on' : '') + disCls + (leadHtml ? ' has-swatch' : '') + '">' +
       '<input type="radio" name="dim_' + dimId + '" data-dim="' + dimId + '" data-val="' + esc(val) + '"' +
       (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+      (leadHtml || '') +
       '<span class="opt-name">' + esc(nameZh) + '<em>' + esc(nameJa) + '</em></span>' +
       codeHtml + (priceHtml || '') + note + '</label>';
+  }
+
+  /** 按扉色型号取色卡（报价单行用） */
+  function swatchForCode(code) {
+    if (!code) return '';
+    var dc = DATA.doorColors || {};
+    for (var g in dc) {
+      if (!Object.prototype.hasOwnProperty.call(dc, g)) continue;
+      var hit = (dc[g] || []).filter(function (c) { return c.code === code; })[0];
+      if (hit) return doorSwatch(hit, false);
+    }
+    return '';
+  }
+
+  /** 扉色色卡：用 swatchHex（手册渲染图门板取样近似值）渲染色块 */
+  function doorSwatch(c, big) {
+    if (!c || !c.swatchHex) return '';
+    var hex = String(c.swatchHex);
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return '';
+    var tip = tp('手册渲染图取样近似色 ' + hex + '（含现场光照，非标准色号；实物以展厅色板为准）',
+                'カタログ画像からの近似色 ' + hex + '（照明を含む。標準色番ではありません。実物はショールームサンプルでご確認ください）');
+    return '<span class="opt-swatch' + (big ? ' lg' : '') + '" style="background:' + hex + '" title="' + esc(tip) + '"></span>';
   }
 
   function priceNum(priceText) {
@@ -596,7 +654,7 @@
   }
 
   function depthHtml(d) {
-    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('深度 / 奥行：', '奥行：') + '</span>';
+    var html = '<div class="sub-row"><span class="dim-sub-title">' + t('进深 / 奥行：', '奥行：') + '</span>';
     Q.depthList().forEach(function (dp) {
       var on = Q.state.depth === dp;
       html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="depth_sel" data-dim="depth" data-val="' + esc(dp) + '"' + (on ? ' checked' : '') + '>' + esc(dp) + 'cm</label>';
@@ -620,7 +678,7 @@
     var html = '<div class="opt-grid">';
     colors.forEach(function (c) {
       var on = Q.state.doorColor === c.code;
-      html += optCard('door', c.name_zh || c.name_ja, c.name_ja || '', c.code, c.code, on, null, '');
+      html += optCard('door', c.name_zh || c.name_ja, c.name_ja || '', c.code, c.code, on, null, '', doorSwatch(c, true));
     });
     html += '</div>';
     var handles = Q.doorHandles();
@@ -701,7 +759,7 @@
       }
       if (depths.length) {
         var curDepth = s.depth || depths[0];
-        html += '<div class="sub-row"><span class="dim-sub-title">' + t('深度 / 奥行：', '奥行：') + '</span>';
+        html += '<div class="sub-row"><span class="dim-sub-title">' + t('进深 / 奥行：', '奥行：') + '</span>';
         depths.forEach(function (dp) {
           var on = curDepth === dp;
           html += '<label class="sub-chip' + (on ? ' on' : '') + '"><input type="radio" name="peri_depth" data-peri-depth="' + esc(dp) + '"' + (on ? ' checked' : '') + '>' + esc(dp) + 'cm</label>';
@@ -815,7 +873,7 @@
     return html;
   }
 
-  /* ---------------- 上柜单元（wallunit，多单元列表）+ 下柜单元（cabunit） ---------------- */
+  /* ---------------- 吊柜单元（wallunit，多单元列表）+ 地柜单元（cabunit） ---------------- */
   function wuChips(idx, label, attr, values, cur, suffix, displayMap) {
     var html = '<div class="sub-row"><span class="dim-sub-title">' + esc(label) + '：</span>';
     (values || []).forEach(function (v) {
@@ -846,7 +904,7 @@
       u.width = '75';
       wuAutoFixWidth(u);
     }
-    else if (type === 'standard') { u.height = '70'; }
+    else if (type === 'standard') { u.height = '70'; u.width = (WU.standard.widths && WU.standard.widths[3]) || '60'; }
     else if (type === 'seethrough') { u.width = '60'; u.height = '70'; }
     else if (type === 'movedown') { u.width = '60'; u.height = '70'; }
   }
@@ -874,10 +932,10 @@
 
   var WU_TYPE_OPTS = [
     { code: 'handmove', zh: '手动升降吊柜', ja: 'ハンドムーブ' },
-    { code: 'eyearea', zh: '眼部区域收纳盒', ja: 'アイエリアボックス' },
+    { code: 'eyearea', zh: '眼前区收纳盒', ja: 'アイエリアボックス' },
     { code: 'automove', zh: '电动升降吊柜', ja: 'オートムーブ' },
     { code: 'standard', zh: '吊柜', ja: '吊戸棚' },
-    { code: 'seethrough', zh: '透视吊柜', ja: 'シースルー吊戸棚' },
+    { code: 'seethrough', zh: '半透明门吊柜', ja: 'シースルー吊戸棚' },
     { code: 'movedown', zh: '下拉吊柜', ja: 'ムーブダウン吊戸棚' },
     { code: 'none', zh: '不安装吊柜', ja: '吊戸棚なし' }
   ];
@@ -892,7 +950,7 @@
   function wuUnitCard(u, idx, total) {
     var WU = DATA.wallCabinetUnits || {};
     var html = '<div class="opt-sub" data-wu-card="' + idx + '">';
-    html += '<div class="wu-head"><span class="wu-title">' + t('上柜单元', '上戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
+    html += '<div class="wu-head"><span class="wu-title">' + t('吊柜单元', '上戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
       '<span class="wu-right">' + wuPriceBadge(u) +
       (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-wu-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
       '</span></div>';
@@ -928,6 +986,8 @@
       var amW = (WU.automove.widthsByType && WU.automove.widthsByType[u.subtype]) || WU.automove.widths;
       html += wuChips(idx, '间口/間口', 'data-wu-width', amW, u.width, 'cm');
     } else if (wt === 'standard') {
+      // 間口は柜体总长校验に必要（従来は高さのみで幅を持てなかった）
+      if (WU.standard.widths) html += wuChips(idx, '间口/間口', 'data-wu-width', WU.standard.widths, u.width, 'cm');
       html += wuChips(idx, '高さ', 'data-wu-height', WU.standard.heights, u.height, 'cm');
     } else if (wt === 'seethrough') {
       html += wuChips(idx, '间口/間口', 'data-wu-width', WU.seethrough.widths, u.width, 'cm');
@@ -985,13 +1045,42 @@
     return html;
   }
 
+  /** 柜体总长错误/提示横幅（仅在点「下一步」校验未通过后才报错） */
+  function widthBanner(side) {
+    var wc = Q.widthCheck();
+    var errs = Q.activeWidthErrors().filter(function (e) { return !side || e.side === side; });
+    if (errs.length) {
+      return '<div class="width-err">' + errs.map(function (e) {
+        return '<div class="width-err-item">' + esc(e.text) + '</div>';
+      }).join('') + '</div>';
+    }
+    if (!side && wc.advisories.length && !Q.activeWidthErrors().length) {
+      return '<div class="width-err"><div class="width-err-note">' + esc(wc.advisories[0]) + '</div></div>';
+    }
+    if (side === 'wall') {
+      if (wc.wallExempt) {
+        return '<p class="muted">' + t(
+          '已选择「不安装吊柜」——只购买地柜时，吊柜总长不参与校验；地柜总长仍需等于間口 ' + wc.target + 'cm。',
+          '「吊戸棚なし」を選択中——下戸棚のみの場合、上戸棚幅の校验は行いません。下戸棚合計は間口 ' + wc.target + 'cm と一致が必要です。') + '</p>';
+      }
+      return '<p class="muted">' + t(
+        '吊柜总长 = 各吊柜间口之和 ＋ 油烟机 ' + wc.hood + 'cm，必须等于間口 ' + wc.target + 'cm。勾「油烟机用」的柜体位于机体上方，不计入横向总长。吊柜也可以一个都不选（选「不安装吊柜」，只买地柜）。',
+        '上戸棚合計 = 各ユニット間口 ＋ レンジフード ' + wc.hood + 'cm が間口 ' + wc.target + 'cm と一致すること。「レンジフード用」は機体上方のため横並びに含めません。') + '</p>';
+    }
+    if (side === 'cab') {
+      return '<p class="muted">' + t('地柜总长 = 各地柜间口之和，必须等于間口 ' + wc.target + 'cm。',
+        '下戸棚合計 = 各ユニット間口の和が間口 ' + wc.target + 'cm と一致すること。') + '</p>';
+    }
+    return '';
+  }
+
   function wallunitHtml(d) {
     var units = Q.wuUnits();
-    var html = '';
+    var html = widthBanner('wall');
     units.forEach(function (u, idx) {
       html += wuUnitCard(u, idx, units.length);
     });
-    html += '<button type="button" class="btn btn-line" data-wu-add>' + t('＋ 添加上柜单元', '＋ 上戸棚ユニット追加') + '</button>';
+    html += '<button type="button" class="btn btn-line" data-wu-add>' + t('＋ 添加吊柜单元', '＋ 上戸棚ユニット追加') + '</button>';
     return html;
   }
 
@@ -1035,7 +1124,7 @@
   function cabUnitCard(u, idx, total) {
     var CT = DATA.cabinetTypes || {};
     var html = '<div class="opt-sub" data-cab-card="' + idx + '">';
-    html += '<div class="wu-head"><span class="wu-title">' + t('下柜单元', '下戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
+    html += '<div class="wu-head"><span class="wu-title">' + t('地柜单元', '下戸棚ユニット') + ' ' + (idx + 1) + '</span>' +
       '<span class="wu-right">' + cabPriceBadge(u) +
       (total > 1 ? '<button type="button" class="btn btn-line btn-sm" data-cab-del="' + idx + '">' + t('删除', '削除') + '</button>' : '') +
       '</span></div>';
@@ -1080,18 +1169,18 @@
         html += cabAccHtml(o, sub, idx);
       });
     }
-    html += '<p class="muted">' + t('下柜单元类型为基本仕様（无差价），配件按勾选计价。', '下戸棚ユニットタイプは基本仕様（差額なし）、オプションは選択で加算。') + '</p>';
+    html += '<p class="muted">' + t('地柜单元类型为基本仕様（无差价），配件按勾选计价。', '下戸棚ユニットタイプは基本仕様（差額なし）、オプションは選択で加算。') + '</p>';
     html += '</div>';
     return html;
   }
 
   function cabunitHtml(d) {
     var units = Q.state.cabunit || [];
-    var html = '';
+    var html = widthBanner('cab');
     units.forEach(function (u, idx) {
       html += cabUnitCard(u, idx, units.length);
     });
-    html += '<button type="button" class="btn btn-line" data-cab-add>' + t('＋ 新增下柜单元', '＋ 下戸棚ユニット追加') + '</button>';
+    html += '<button type="button" class="btn btn-line" data-cab-add>' + t('＋ 新增地柜单元', '＋ 下戸棚ユニット追加') + '</button>';
     return html;
   }
 
@@ -1106,17 +1195,40 @@
     if (els.sumGrade) els.sumGrade.textContent = Q.gradeLabel();
     if (els.sumDepth) els.sumDepth.textContent = Q.hasDepth() ? (Q.state.depth + 'cm') : '—';
     if (els.sumDepthRow) els.sumDepthRow.hidden = !Q.hasDepth();
-    // 上/下柜宽度适配（软提示，不阻止）
-    var kitchenW = Q.parseWidthCm(Q.state.width);
+    // 柜体总长：平时只中性展示数字；点「下一步」校验未通过才标红报错
+    var wc = r.widthCheck || Q.widthCheck();
+    var act = Q.activeWidthErrors();
+    var actWall = act.some(function (e) { return e.side === 'wall'; });
+    var actCab = act.some(function (e) { return e.side === 'cab'; });
     if (els.sumWallWidth) {
-      var wuW = Q.sumWallUnitWidth();
-      els.sumWallWidth.textContent = wuW + 'cm / 间口 ' + kitchenW + 'cm';
-      if (els.sumWallWidthRow) els.sumWallWidthRow.classList.toggle('warn', wuW > kitchenW || (wuW > 0 && wuW < kitchenW * 0.6));
+      els.sumWallWidth.textContent = wc.wallExempt
+        ? tp('不选吊柜（仅地柜）', '吊戸棚なし（下戸棚のみ）')
+        : wc.wallUnits + '+机' + wc.hood + '=' + wc.wallTotal + ' / ' + wc.target + 'cm';
+      if (els.sumWallWidthRow) {
+        els.sumWallWidthRow.classList.toggle('warn', actWall);
+        els.sumWallWidthRow.title = '吊柜总长需等于間口 ' + wc.target + 'cm（含油烟机 ' + wc.hood + 'cm）';
+      }
     }
     if (els.sumCabWidth) {
-      var cbW = Q.sumCabUnitWidth();
-      els.sumCabWidth.textContent = cbW + 'cm / 间口 ' + kitchenW + 'cm';
-      if (els.sumCabWidthRow) els.sumCabWidthRow.classList.toggle('warn', cbW > kitchenW || (cbW > 0 && cbW < kitchenW * 0.6));
+      els.sumCabWidth.textContent = wc.cabTotal + ' / ' + wc.target + 'cm';
+      if (els.sumCabWidthRow) {
+        els.sumCabWidthRow.classList.toggle('warn', actCab);
+        els.sumCabWidthRow.title = '地柜总长需等于間口 ' + wc.target + 'cm';
+      }
+    }
+    if (els.sumWidthErr) {
+      if (act.length) {
+        els.sumWidthErr.hidden = false;
+        els.sumWidthErr.innerHTML = act.map(function (e) {
+          return '<div class="width-err-item">' + esc(e.text) + '</div>';
+        }).join('');
+      } else if (wc.advisories.length) {
+        els.sumWidthErr.hidden = false;
+        els.sumWidthErr.innerHTML = '<div class="width-err-note">' + esc(wc.advisories[0]) + '</div>';
+      } else {
+        els.sumWidthErr.hidden = true;
+        els.sumWidthErr.innerHTML = '';
+      }
     }
     if (els.sumBase) els.sumBase.textContent = r.basePrice != null ? P.yen(r.basePrice) : '—';
     if (els.sumOpt) els.sumOpt.textContent = optTotal !== 0 ? P.yen(optTotal) : '—';
@@ -1146,7 +1258,7 @@
       '<span>' + t('布局 / レイアウト：', 'レイアウト：') + tp(Q.layoutNameZh(), Q.layoutNameJa()) + '</span>' +
       '<span>' + t('套餐 / プラン：', 'プラン：') + tp(Q.planNameZh(), Q.planNameJa()) + '</span>' +
       '<span>' + t('宽度 / 間口：', '間口：') + esc(Q.state.width) + 'cm</span>' +
-      (Q.hasDepth() ? '<span>' + t('深度 / 奥行：', '奥行：') + esc(Q.state.depth) + 'cm</span>' : '') +
+      (Q.hasDepth() ? '<span>' + t('进深 / 奥行：', '奥行：') + esc(Q.state.depth) + 'cm</span>' : '') +
       '<span>' + t('等级 / グレード：', 'グレード：') + esc(Q.gradeLabel()) + '</span>' +
       (head.customer ? '<span>' + t('客户 / お客様：', 'お客様：') + esc(head.customer) + '</span>' : '') +
       (head.phone ? '<span>' + t('电话 / TEL：', 'TEL：') + esc(head.phone) + '</span>' : '') +
@@ -1163,9 +1275,11 @@
         '<th>' + t('品名', '品名') + '</th><th>' + t('記号', '記号') + '</th><th>' + t('型番', '型番') + '</th><th>' + t('仕様', '仕様') + '</th><th class="num">' + t('金额(税抜)', '金額(税抜)') + '</th>' +
         '</tr></thead><tbody>';
       lines.forEach(function (l) {
-        var nameCell = l.base
+        var chip = swatchForCode(l.code);
+        var nameCell = (l.base
           ? '<b>' + esc(l.nameZh) + '</b><div class="ja">' + esc(l.nameJa) + '</div>'
-          : esc(l.nameZh) + '<div class="ja">' + esc(l.nameJa) + '</div>';
+          : esc(l.nameZh) + '<div class="ja">' + esc(l.nameJa) + '</div>');
+        if (chip) nameCell = '<span class="doc-name-swatch">' + chip + '<span>' + nameCell + '</span></span>';
         var amount = l.base ? P.yen(r.basePrice != null ? r.basePrice : 0) : (l.diff > 0 ? '＋' : l.diff < 0 ? '－' : '') + P.yen(Math.abs(l.diff));
         html += '<tr>' +
           '<td>' + nameCell + '</td>' +
@@ -1187,6 +1301,19 @@
       '<div class="doc-a">' + (r.rmbAllIn != null ? '¥' + Number(r.rmbAllIn).toLocaleString() : t('请输入汇率', '為替を入力してください')) + '</div></div>' +
       (rate ? '<div class="doc-formula">' + t('使用汇率：1日元 = ' + rate + ' 人民币 ｜ 大陆地区价格为纯物料价格（不含安装/工事费）', '為替：1円 = ' + rate + ' RMB ｜ 中国本土価格は純物料価格（据付・工事費別）') + '</div>' : '') +
       '</div>';
+
+    var wckErrs = Q.activeWidthErrors();
+    if (wckErrs.length) {
+      html += '<div class="doc-section"><div class="doc-sec-title"><span>✖</span>' +
+        t('柜体总长错误 / 幅合計エラー', '幅合計エラー') + '</div>' +
+        '<div class="width-err">' + wckErrs.map(function (e) {
+          return '<div class="width-err-item">' + esc(e.text) + '</div>';
+        }).join('') + '</div>' +
+        '<div class="doc-row"><div class="doc-q">' +
+        t('※ 柜体总长与所选間口不一致，本报价单仅供参考，请先修正后再对外报价。',
+          '※ キャビネット幅合計が間口と一致していません。本見積は参考値です。修正後に正式見積をご利用ください。') +
+        '</div></div></div>';
+    }
 
     if (r.unknown.length) {
       html += '<div class="doc-section"><div class="doc-sec-title"><span>⚠</span>' + t('未计价项 / 未計上', '未計上') + '</div>' +
