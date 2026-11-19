@@ -4058,7 +4058,7 @@ resize();
       var card=gate.querySelector('.pw-card'),inp=document.getElementById('pwInput'),err=document.getElementById('pwErr');
       function show(){gate.classList.add('show');gate.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';try{inp.focus();}catch(e){}}
       function unlock(){remember();gate.classList.remove('show');gate.setAttribute('aria-hidden','true');document.body.style.overflow='';setTimeout(function(){if(gate.parentNode)gate.remove();},250);}
-      function submit(){if(inp.value==='elfd'){unlock();return;}err.style.display='block';card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');inp.value='';try{inp.focus();}catch(e){}}
+      function submit(){if(inp.value==='elf'){unlock();return;}err.style.display='block';card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');inp.value='';try{inp.focus();}catch(e){}}
       document.getElementById('pwBtn').addEventListener('click',submit);
       inp.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
       show();
