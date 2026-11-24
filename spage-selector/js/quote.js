@@ -23,7 +23,7 @@
 
   /* ---------------- 步骤元数据（16 步：0-15） ---------------- */
   var STEPS = [
-    { n: 0, title: 'サイズ・タイプ・設置', titleZh: '尺寸·型号·設置', note: '选择尺寸（11 種）、型号（P/C/S/V/A）与設置（戸建 U/マンション M）＋地域，決定標準仕様価格（タイプ×サイズ×設置矩阵）。' },
+    { n: 0, title: 'サイズ・タイプ・設置', titleZh: '尺寸·型号·設置', note: 'サイズ（11種）・タイプ（P/C/S/V/A）・設置（戸建U/マンションM）＋地域を選択し、標準仕様価格（タイプ×サイズ×設置矩阵）を決定。', noteZh: '选择尺寸（11 種）、型号（P/C/S/V/A）与設置（戸建 U/マンション M）＋地域，決定標準仕様価格（タイプ×サイズ×設置矩阵）。' },
     { n: 1, title: 'ドア位置・下部据付', titleZh: '门位置·基础', note: 'ドア位置（RL/LR/RC/LC＋移動）、ボルト脚/吊架台（戸建・マンション別）、浴槽パン S/W。' },
     { n: 2, title: '壁パネル', titleZh: '壁面', note: 'Lパネル（プレミアムⅡ/Ⅰ/ハイ）、アーテクトパネル（P/C クラス）、セラミックパネル（グランクラス・長納期）。' },
     { n: 3, title: '床', titleZh: '地板', note: 'グランフロア 4 種／サッとキレイサーモフロア 6 種。' },
@@ -189,7 +189,7 @@
     '1H': 'ハイクラス', '2H': 'ハイクラス',
     'PALL': 'アーテクトP', 'CALL': 'アーテクトC',
     'GRB': 'グランクラス(セラミック)', 'GRC': 'グランクラス(セラミック)',
-    'PP': 'アーテクトP', 'CC': 'アーテクトC', 'CH': 'アーテクトC'
+    'PP': 'アーテクトP', 'CC': 'アーテクトC'
   };
   /** wall 选项 code → 張り方（prices 键） */
   var WALL_FURI = {
@@ -299,6 +299,23 @@
   function currentUru() {
     return selIs('urutuya', 'A') ? 'UruAri' : 'UruNashi';
   }
+  /** シャワーヘッド価格键：タイプ×水栓組合せ（手册P.154 矩阵列） */
+  function showerHeadKey() {
+    var t = typeCode(), f = state.sel.faucet;
+    if (t === 'P' || t === 'C') return 'PC_beige';   // P/C 基本＝カウンタープッシュ〈ベージュ〉
+    if (t === 'S') return (f === 'H4' || f === 'Q5') ? 'S_black' : 'S_metal';
+    if (f === 'M2') return 'VA_pushblack';           // プッシュ水栓〈ブラック〉①
+    if (f === 'Q5') return 'VA_thermblack';          // 壁付サーモ（OG1）〈ブラック〉②
+    return 'VA_other';                               // ①②以外の水栓
+  }
+  /** フロフタ価格键：浴槽形状组（手册P.142 矩阵列） */
+  function lidShapeKey() {
+    var s = state.sel.bt_shape;
+    if (s === 'FULL' || s === 'HI') return 'LidFull';
+    if (s === 'WIDE' || s === 'RECW') return 'LidWide';
+    if (s === 'STR') return /^13/.test(sizeCode()) ? 'LidFull' : 'LidMain';
+    return 'LidMain';   // GRF/REC/MULTI
+  }
   /** 条件键 priceByType 解析（返回数字/文本或 null） */
   function contextPrice(option, dimId) {
     if (!option || !option.priceByType) return null;
@@ -318,7 +335,8 @@
     }
     var key = null;
     if (dimId === 'water_pipe') key = currentBathtubFaucet();
-    else if (dimId === 'shower_head') key = currentFaucetKind();
+    else if (dimId === 'shower_head') key = showerHeadKey();
+    else if (dimId === 'bt_lid') key = lidShapeKey();
     else if (dimId === 'shower_hook') key = currentUru();
     if (key == null) return null;
     return Object.prototype.hasOwnProperty.call(p, key) ? p[key] : null;
@@ -330,6 +348,10 @@
     if (isVirtualBasic(code)) return 0;
     var o = opt(dimId, code);
     if (!o) return null;
+    if (o.priceByTypeSize) {
+      var sv = P.priceByTypeSizeValue(o, typeCode(), sizeCode());
+      return sv == null ? null : P.toAmount(sv);
+    }
     if (o.priceByType) {
       var cv = contextPrice(o, dimId);
       if (cv != null) return P.toAmount(cv);
@@ -338,6 +360,29 @@
       return null;
     }
     return P.priceFor(o, typeCode(), sizeCode());
+  }
+
+  /** 卡片价格摘要（上下文感知：水栓/形状/設置条件键 + priceByTypeSize） */
+  function optionPriceSummary(dimId, code) {
+    if (isVirtualBasic(code)) return { text: '基本仕様', type: 'basic' };
+    var o = opt(dimId, code);
+    if (!o) return { text: '—', type: 'empty' };
+    if (typeof o.priceDiff === 'number') {
+      return o.priceDiff === 0 ? { text: '基本仕様', type: 'basic' } : { text: P.fmtDiff(o.priceDiff), type: 'num' };
+    }
+    var v = null;
+    if (o.priceByTypeSize) v = P.priceByTypeSizeValue(o, typeCode(), sizeCode());
+    else if (o.priceByType) {
+      v = contextPrice(o, dimId);
+      if (v == null) v = P.priceByTypeValue(o, typeCode());
+    }
+    if (v != null) {
+      var n = P.toAmount(v);
+      if (n != null) return n === 0 ? { text: '基本仕様', type: 'basic' } : { text: P.fmtDiff(n), type: 'num' };
+      return { text: String(v), type: 'text' };
+    }
+    if (o.priceByType || o.priceByTypeSize) return { text: '—', type: 'na' };
+    return P.optionPriceSummary(o, typeCode(), sizeCode());
   }
 
   function contributionFor(dimId) {
@@ -507,9 +552,9 @@
     return list.indexOf(sizeCode()) >= 0;
   }
 
-  /** セラミックパネル（wall CH）选中判断 */
+  /** セラミックパネル（wall GRB/GRC/GRBP/GRCP）选中判断 */
   function ceramicWall() {
-    return selIs('wall', 'CH') || selIs('wall', 'GRB') || selIs('wall', 'GRC');
+    return selIs('wall', 'GRB') || selIs('wall', 'GRC') || selIs('wall', 'GRBP') || selIs('wall', 'GRCP');
   }
 
   /**
@@ -536,6 +581,10 @@
         if (!okS) return '该选项不适用于 ' + size + ' 尺寸';
       }
       if (Array.isArray(o.types) && o.types.indexOf(type) < 0) return '该选项不适用于 ' + type + ' タイプ';
+      if (o.install && o.install !== installCode()) return '该选项仅限戸建用（U）設置';
+      if (o.priceByTypeSize) {
+        if (P.priceByTypeSizeValue(o, type, size) == null) return '该タイプ/サイズでは選択不可';
+      }
       if (o.priceByType) {
         var cv = contextPrice(o, dimId);
         if (cv == null) {
@@ -555,6 +604,20 @@
       if (tbp2 && tbp2[type] && tbp2[type][size] && tbp2[type][size][code] == null) {
         return size + ' 尺寸不提供 ' + (code === 'M' ? 'マンション用' : '戸建用');
       }
+    }
+
+    // ---- 浴槽カラー × 浴槽形状（グランザ色はストレートライン不可；パールクォーツはストレートライン専用） ----
+    if (dimId === 'bt_material') {
+      var bsh = state.sel.bt_shape;
+      if (/^AG/.test(code) && bsh === 'STR') return 'グランザカラーはストレートライン浴槽では選択不可';
+      if ((code === 'CW1' || code === 'CN1') && bsh && bsh !== 'STR') return 'パールクォーツはストレートライン浴槽専用';
+    }
+
+    // ---- フロフタ形状制限（腰掛付＝GRF/REC/HI；マルチボード付＝MULTI） ----
+    if (dimId === 'bt_lid') {
+      var lsh = state.sel.bt_shape;
+      if ((code === 'H' || code === 'J') && lsh && ['GRF', 'REC', 'HI'].indexOf(lsh) < 0) return '腰掛付保温フタはグランフィット/リクライニング/ハイレスト浴槽専用';
+      if ((code === 'L' || code === 'K' || code === 'Q') && lsh && lsh !== 'MULTI') return 'マルチボード付保温フタはマルチボード浴槽専用';
     }
 
     // ---- アクアフィール/おそうじ → 浴槽パンあり ----
@@ -789,6 +852,7 @@
     productNo: productNo,
     computeQuote: computeQuote, contributionFor: contributionFor, describe: describe,
     disabledReason: disabledReason, autoFix: autoFix, setSize: setSize, sizeAltPrice: sizeAltPrice,
+    optionPriceSummary: optionPriceSummary, radioContribution: radioContribution,
     kanjiYen: kanjiYen, toCSV: toCSV,
     reset: function () {
       state.sel = {}; state.multi = {}; state.sub = {};

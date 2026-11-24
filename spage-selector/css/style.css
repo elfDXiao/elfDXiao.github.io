@@ -112,6 +112,9 @@ img { max-width: 100%; display: block; }
 .opt-card.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .opt-card.disabled, .opt-card.dis { opacity: .42; pointer-events: none; }
 .opt-name { font-size: 13.5px; line-height: 1.45; color: var(--ink); }
+.opt-img { display: block; margin: -2px 0 2px; }
+.opt-img img { width: 100%; height: 92px; object-fit: cover; border-radius: 5px; border: 1px solid var(--line); background: #fff; }
+.opt-card.on .opt-img img { border-color: var(--accent); }
 .opt-name em { display: block; font-style: normal; font-size: 11px; color: var(--accent); margin-top: 2px; }
 .opt-code { font-size: 11.5px; color: var(--ink-3); letter-spacing: .05em; }
 .opt-price { font-size: 12.5px; }

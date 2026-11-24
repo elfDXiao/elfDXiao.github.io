@@ -47,8 +47,8 @@ function waitFor(win, check, ms) {
 
   console.log('== 壁パネル联动（step 2） ==');
   doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 16; }, 2000);
-  assert('壁パネル 16 选项', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 16);
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 18; }, 2000);
+  assert('壁パネル 18 选项（含新增 GRBP/GRCP）', doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 18);
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="PALL"]').click();  // アーテクトP
   await waitFor(win, function () { return doc.querySelector('#sumJPY').textContent.indexOf('3,617,000') >= 0; }, 2000);
   assert('选 PALL 后合计 = 3,617,000（3,377,000+240,000）', doc.querySelector('#sumJPY').textContent.indexOf('3,617,000') >= 0, doc.querySelector('#sumJPY').textContent);
@@ -70,7 +70,7 @@ function waitFor(win, check, ms) {
 
   console.log('== 壁パネル花纹两段选择 ==');
   doc.querySelector('#wizStepper .wstep[data-step="2"]').dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
-  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 16; }, 2000);
+  await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="dim_wall"]').length === 18; }, 2000);
   doc.querySelector('#wizBody input[name="dim_wall"][data-code="0"]').click();   // 全面張り プレミアムⅡ
   await waitFor(win, function () { return doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 8; }, 2000);
   assert('プレミアムⅡ 花纹 7+未指定 = 8 chips', doc.querySelectorAll('#wizBody input[name="wall_pattern"]').length === 8);

@@ -37,6 +37,51 @@
     if (LANG === 'zh') return zh;
     return zh + ' / ' + ja;
   }
+  /** 选项名三态：ja=日文 / zh=中文 / both=中文+日文 em */
+  function nameHtml(o) {
+    var zh = o.name_zh || o.name_ja || '', ja = o.name_ja || '';
+    if (LANG === 'ja') return esc(ja || zh);
+    if (LANG === 'zh') return esc(zh);
+    return esc(zh) + '<em>' + esc(ja) + '</em>';
+  }
+  /** 手册配图（o.img，相对 spage-selector 根） */
+  function imgHtml(o) {
+    if (!o || !o.img) return '';
+    return '<span class="opt-img"><img src="' + esc(o.img) + '" alt="" loading="lazy"></span>';
+  }
+  /** 约束提示日文模式翻译（quote.js 返回中文/混合字符串） */
+  function disText(dis) {
+    if (LANG !== 'ja' || !dis) return dis;
+    var s = String(dis);
+    var map = [
+      ['该选项不适用于', 'このオプションは適用不可：'],
+      ['该选项仅限戸建用（U）設置', '戸建用（U）設置専用です'],
+      ['该タイプ/サイズでは選択不可', 'このタイプ/サイズでは選択できません'],
+      ['该タイプ/条件下不可选', 'このタイプ/条件では選択できません'],
+      ['该タイプ无', 'このタイプには存在しません：'],
+      ['設置定价', '設置の価格'],
+      ['尺寸不提供', 'サイズは提供されません：'],
+      ['选择时浴槽パン须あり', '選択時は浴槽パンあり（W）必須'],
+      ['需浴槽パンあり', 'には浴槽パンあり（W）が必要です'],
+      ['需アクアフィール', 'にはアクアフィールが必要です'],
+      ['时マグネットアイテム不可', '時はマグネットアイテム不可'],
+      ['时マグネットメタルシェルフ不可', '時はマグネットメタルシェルフ不可'],
+      ['时内組平天井不可', '時は内組平天井不可'],
+      ['时まる洗いカウンター不可', '時はまる洗いカウンター不可'],
+      ['时ダウンライト不可', '時はダウンライト不可'],
+      ['仅 C/V/A タイプ', 'は C/V/A タイプのみ'],
+      ['时カウンター须まる洗い', '時はカウンターがまる洗い必須'],
+      ['时不可选まる洗いカウンター', '時はまる洗いカウンター選択不可'],
+      ['时浴室テレビ不可', '時は浴室テレビ不可'],
+      ['时浴槽側水栓不可', '時は浴槽側水栓不可'],
+      ['不适用于', 'は適用不可：'],
+      ['该花纹不适用于当前クラス', 'この柄は現在のクラスでは選択できません'],
+      ['该花纹不提供', 'この柄は対応していません：'],
+      ['尺寸', 'サイズ']
+    ];
+    for (var i = 0; i < map.length; i++) s = s.split(map[i][0]).join(map[i][1]);
+    return s;
+  }
 
   /* ---------------- 初始化（事件只绑一次） ---------------- */
   function init(data) {
@@ -253,7 +298,7 @@
     var html = '<div class="wiz-step-head">' +
       '<span class="wiz-step-no">' + t('步骤 / STEP', 'ステップ') + ' ' + st.n + ' / ' + total + '</span>' +
       '<h3>' + (st.n === 0 ? t('尺寸与型号', 'サイズ・タイプ') : t(st.titleZh, st.title)) + '</h3>' +
-      '<p class="wiz-note">' + esc(st.note) + '</p></div>';
+      '<p class="wiz-note">' + t(st.noteZh || st.note, st.note) + '</p></div>';
 
     if (st.n === 0) {
       html += step0Info();
@@ -333,12 +378,13 @@
     var dis = Q.disabledReason(d.id, code);
     var disCls = dis ? ' disabled' : '';
     var note = '';
-    if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
+    if (dis) note = '<span class="opt-dis">⛔ ' + esc(disText(dis)) + '</span>';
     return '<label class="opt-card' + sel + disCls + '">' +
       '<input type="radio" name="dim_' + d.id + '" data-code="' + esc(code) + '"' +
       (sel ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-      '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
-      '<span class="opt-code">' + esc(code) + 'タイプ</span>' +
+      imgHtml(o) +
+      '<span class="opt-name">' + nameHtml(o) + '</span>' +
+      '<span class="opt-code">' + esc(code) + tp('型', 'タイプ') + '</span>' +
       (o.snapshot ? '<span class="opt-dis" style="color:var(--ink-3);">' + esc(o.snapshot) + '</span>' : '') +
       note + '</label>';
   }
@@ -381,10 +427,10 @@
     list.forEach(function (p) {
       var on = cur === p.code;
       var dis = Q.disabledReason('wall', p.code);
-      var price = (p.prices && p.prices[furi] != null) ? P.fmtDiff(p.prices[furi]) : '—';
+      var price = (p.prices && p.prices[furi] != null) ? (p.prices[furi] === 0 ? tp('基本', '基本仕様') : P.fmtDiff(p.prices[furi])) : '—';
       var mark = '';
-      if (p.lightingLimited) mark += ' ⚠照明限定';
-      if (p.longLeadTime) mark += ' 納期+';
+      if (p.lightingLimited) mark += ' ' + t('⚠照明限定', '⚠照明限定');
+      if (p.longLeadTime) mark += ' ' + t('长交期', '納期+');
       html += '<label class="sub-chip' + (on ? ' on' : '') + (dis ? ' dis' : '') + '">' +
         '<input type="radio" name="wall_pattern" data-wall-pattern="' + esc(p.code) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
         esc(p.name_zh || p.name_ja || p.code) + ' <span class="ja">' + esc(p.code + ' ' + (p.name_ja || '')) + '</span>' + (p.finish ? '（' + esc(p.finish) + '）' : '') + mark +
@@ -434,7 +480,7 @@
 
   function priceNum(d, code, o) {
     if (Q.isVirtualBasic(code)) return 0;
-    var v = P.priceFor(o, Q.typeCode(), Q.sizeCode());
+    var v = Q.radioContribution(d.id, code);
     return (typeof v === 'number') ? v : null;
   }
 
@@ -442,14 +488,15 @@
     var sel = Q.state.sel[d.id] === code ? ' on' : '';
     var dis = Q.disabledReason(d.id, code);
     var disCls = dis ? ' disabled' : '';
-    var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode());
+    var s = Q.optionPriceSummary(d.id, code);
     var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
     var note = '';
-    if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
+    if (dis) note = '<span class="opt-dis">⛔ ' + esc(disText(dis)) + '</span>';
     return '<label class="opt-card' + sel + disCls + '">' +
       '<input type="radio" name="dim_' + d.id + '" data-code="' + esc(code) + '"' +
       (sel ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-      '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
+      imgHtml(o) +
+      '<span class="opt-name">' + nameHtml(o) + '</span>' +
       '<span class="opt-price' + optPriceClass(priceNum(d, code, o)) + '">' + esc(price) + '</span>' +
       note + '</label>';
   }
@@ -498,13 +545,14 @@
       var on = Q.state.multi[d.id] && Q.state.multi[d.id][code];
       var dis = Q.disabledReason(d.id, code);
       var disCls = dis ? ' disabled' : '';
-      var s = P.optionPriceSummary(o, Q.typeCode(), Q.sizeCode());
+      var s = Q.optionPriceSummary(d.id, code);
       var price = (s.type === 'basic') ? tp('基本', '基本仕様') : s.text;
       var note = '';
-      if (dis) note = '<span class="opt-dis">⛔ ' + esc(dis) + '</span>';
+      if (dis) note = '<span class="opt-dis">⛔ ' + esc(disText(dis)) + '</span>';
       html += '<label class="opt-card' + (on ? ' on' : '') + disCls + '">' +
         '<input type="checkbox" name="multi_' + d.id + '" data-code="' + esc(code) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
-        '<span class="opt-name">' + esc(o.name_zh || o.name_ja) + '<em>' + esc(o.name_ja || '') + '</em></span>' +
+        imgHtml(o) +
+        '<span class="opt-name">' + nameHtml(o) + '</span>' +
         '<span class="opt-price' + optPriceClass(priceNum(d, code, o)) + '">' + esc(price) + '</span>' +
         note + '</label>';
     });
@@ -516,7 +564,7 @@
   function renderSummary() {
     var r = Q.computeQuote();
     var optTotal = r.totalEx - r.basePrice;
-    if (els.sumType) els.sumType.textContent = r.type + 'タイプ' + (r.install === 'M' ? '（マンション）' : '（戸建）');
+    if (els.sumType) els.sumType.textContent = r.type + tp('型', 'タイプ') + (r.install === 'M' ? tp('（公寓）', '（マンション）') : tp('（独栋）', '（戸建）'));
     if (els.sumSize) els.sumSize.textContent = r.size;
     if (els.sumDoor) els.sumDoor.textContent = r.doorPos;
     if (els.sumBase) els.sumBase.textContent = P.yen(r.basePrice);
@@ -562,9 +610,9 @@
         '<th>' + t('品名', '品名') + '</th><th>' + t('記号', '記号') + '</th><th>' + t('型番', '型番') + '</th><th>' + t('仕様', '仕様') + '</th><th class="num">' + t('金额(税抜)', '金額(税抜)') + '</th>' +
         '</tr></thead><tbody>';
       lines.forEach(function (l) {
-        var nameCell = l.base
-          ? '<b>' + esc(l.nameZh) + '</b><div class="ja">' + esc(l.nameJa) + '</div>'
-          : esc(l.nameZh) + '<div class="ja">' + esc(l.nameJa) + '</div>';
+        var nameCell = (LANG === 'ja')
+          ? (l.base ? '<b>' + esc(l.nameJa) + '</b>' : esc(l.nameJa))
+          : (l.base ? '<b>' + esc(l.nameZh) + '</b>' : esc(l.nameZh)) + (LANG === 'zh' ? '' : '<div class="ja">' + esc(l.nameJa) + '</div>');
         var amount = l.base ? P.yen(r.basePrice) : (l.diff > 0 ? '＋' : l.diff < 0 ? '－' : '') + P.yen(Math.abs(l.diff));
         html += '<tr>' +
           '<td>' + nameCell + '</td>' +
@@ -593,7 +641,7 @@
     }
 
     html += '<div class="doc-footer">' +
-      '<p>' + t('※ 所示价格为不含税参考价，最终以 TOTO 正式見積書为准', '※ 表示価格は税抜きの参考価格です。正式な見積はお見積書でご確認ください') + '</p>' +
+      '<p>' + t('※ 所示价格为不含税参考价，最终以 LIXIL 正式見積書为准', '※ 表示価格は税抜きの参考価格です。正式な見積はLIXILのお見積書でご確認ください') + '</p>' +
       '<p>※ ' + t('基本セット価格は取付・設置費別（不含安装费）', '基本セット価格（取付・設置費別）') + '</p>' +
       '<p>※ ' + t('大陆地区价格已含安装人工费 / 中国本土価格は据付人工費込み', '中国本土価格は据付人工費込み') + '</p>' +
       (head.remark ? '<p>' + t('備考：' + head.remark, '備考：' + head.remark) + '</p>' : '') +
@@ -610,25 +658,28 @@
   /* ---------------- 复制选型清单 ---------------- */
   function copyList() {
     var r = Q.computeQuote();
-    var lines = ['【LIXIL SPAGE（スパージュ）見積（报价）选型清单】'];
-    lines.push('品番：' + Q.productNo());
-    lines.push('尺寸：' + r.size + ' ｜ 型号：' + r.type + 'タイプ ｜ 门位置：' + r.doorPos);
+    var ja = LANG === 'ja';
+    var lines = [ja ? '【LIXIL SPAGE（スパージュ）見積选型リスト】' : '【LIXIL SPAGE（スパージュ）見積（报价）选型清单】'];
+    lines.push((ja ? '品番：' : '品番：') + Q.productNo());
+    lines.push(ja ? ('サイズ：' + r.size + ' ｜ タイプ：' + r.type + ' ｜ ドア位置：' + r.doorPos)
+                  : ('尺寸：' + r.size + ' ｜ 型号：' + r.type + 'タイプ ｜ 门位置：' + r.doorPos));
     lines.push('—'.repeat(30));
     r.lines.forEach(function (l) {
-      lines.push((l.base ? '套装价  ' : '        ') + l.nameZh + (l.extra ? '（' + l.extra + '）' : '') + (l.base ? '' : '  ' + P.fmtDiff(l.diff)));
+      var nm = ja ? l.nameJa : l.nameZh;
+      lines.push((l.base ? (ja ? 'セット価格  ' : '套装价  ') : '        ') + nm + (l.extra ? '（' + l.extra + '）' : '') + (l.base ? '' : '  ' + P.fmtDiff(l.diff)));
     });
     lines.push('—'.repeat(30));
-    lines.push('日元合计（税抜）：' + P.yen(r.totalEx));
-    lines.push('日元合计（税込）：' + P.yen(r.totalInc));
-    if (r.rmbAllIn != null) lines.push('大陆地区价格（人民币 · 已含安装人工费）：¥' + Number(r.rmbAllIn).toLocaleString());
+    lines.push((ja ? '円合計（税抜）：' : '日元合计（税抜）：') + P.yen(r.totalEx));
+    lines.push((ja ? '円合計（税込）：' : '日元合计（税込）：') + P.yen(r.totalInc));
+    if (r.rmbAllIn != null) lines.push((ja ? '中国本土価格（人民元・据付人工費込み）：¥' : '大陆地区价格（人民币 · 已含安装人工费）：¥') + Number(r.rmbAllIn).toLocaleString());
     var text = lines.join('\n');
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { flash('已复制到剪贴板'); });
+      navigator.clipboard.writeText(text).then(function () { flash(tp('已复制到剪贴板', 'クリップボードにコピーしました')); });
     } else {
       var ta = document.createElement('textarea');
       ta.value = text; document.body.appendChild(ta); ta.select();
       document.execCommand('copy'); document.body.removeChild(ta);
-      flash('已复制到剪贴板');
+      flash(tp('已复制到剪贴板', 'クリップボードにコピーしました'));
     }
   }
 

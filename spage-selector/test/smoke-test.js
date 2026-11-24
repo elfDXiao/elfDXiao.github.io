@@ -149,8 +149,8 @@ console.log('== 约束 ==');
 Q.state.sel.type = 'P';
 assert('P タイプ时 GP 禁用', !!Q.disabledReason('lighting', 'GP'));
 Q.reset();
-// セラミックパネル × マグネット
-Q.state.sel.wall = 'CH';
+// セラミックパネル × マグネット（GRB＝グランクラスセラミック×アーテクトP；CHはハイクラス×アーテクトCでセラミックではない）
+Q.state.sel.wall = 'GRB';
 assert('セラミックパネル时 magnet A70 禁用', !!Q.disabledReason('magnet', 'A70'));
 Q.reset();
 // アクアフィール → パン W 自动

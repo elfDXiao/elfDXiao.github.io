@@ -15,7 +15,11 @@ function convertOption(o, catId) {
   if (o.priceDiff != null) out.priceDiff = o.priceDiff;
   if (o.price != null) out.price = o.price;
   if (o.priceByType) out.priceByType = o.priceByType;
+  if (o.priceByTypeSize) out.priceByTypeSize = o.priceByTypeSize;
   if (o.pricesBySize) out.pricesBySize = o.pricesBySize;
+  if (o.partNumber) out.partNumber = o.partNumber;
+  if (o.img) out.img = o.img;
+  if (o.install) out.install = o.install;
   if (o.sizes) out.sizes = o.sizes;
   if (o.availability && typeof o.availability === 'object') {
     const sizes = Object.keys(o.availability).filter(k => o.availability[k] !== false);
@@ -24,7 +28,7 @@ function convertOption(o, catId) {
   if (o.types && Array.isArray(o.types)) out.types = o.types;
   if (o.constraints) out.constraints = o.constraints;
   if (o.note) out.note = o.note;
-  const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.pricesBySize;
+  const hasPrice = (out.priceDiff != null) || (out.price != null) || out.priceByType || out.priceByTypeSize || out.pricesBySize;
   if (!hasPrice && catId !== 'type' && catId !== 'size') out.priceDiff = 0;
   return out;
 }

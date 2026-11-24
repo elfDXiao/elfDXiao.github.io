@@ -1,13 +1,13 @@
 /**
- * price.js — TOTO Synla（シンラ）价格解析工具（纯函数，无 DOM 依赖）
+ * price.js — LIXIL SPAGE（スパージュ）价格解析工具（纯函数，无 DOM 依赖）
  *
- * 挂载为 window.SYNLA.price。处理 Synla 价格表示：
+ * 挂载为 window.SPAGE.price。处理 SPAGE 价格表示：
  *  1. 数字 priceDiff：固定差价（正=加价 负=减价 0=基本）
  *  2. price：单品绝对价（オプション单品/セット）
- *  3. priceByType：タイプ別差价，键多样（{G,BR,DC} / {G,BRDC} / {GBR,DC} / {GBRD,C} / {GR,B,DC} / {GRDC,B} 等）
+ *  3. priceByType：タイプ別差价，键多样（P/C/S/V/A 精确键、组键 P/C/S、条件键 PC_beige/S_metal/VA_other/LidMain 等）
  *     匹配规则：优先精确键（==typeCode），否则取「含 typeCode 字符」中最短键；值 null = 该タイプ不可选
- *  4. pricesBySize：尺寸档差价（键为尺寸或尺寸组 "1624/1620/1618"，支持 全サイズ）
- *  5. priceMatrix { "G 1624": "＋￥..." }：タイプ×サイズ 文本矩阵（备用）
+ *  4. priceByTypeSize：タイプ×サイズ差价（键为タイプ/组键，值为尺寸→差价表，尺寸键支持 "1618/1616" 组）
+ *  5. pricesBySize：尺寸档差价（键为尺寸或尺寸组 "1624/1620/1618"，支持 全サイズ）
  *  6. isBasic / priceDiff:0：基本仕様（0 元）
  *
  * 文本单元格格式："＋￥10,000" / "－￥5,000" / "基本仕様" / "-" / "unknown" / 纯数字。
@@ -85,6 +85,26 @@
     return null;
   }
 
+  /**
+   * priceByTypeSize：タイプ×サイズ 差价。
+   * 第一层键＝タイプ精确键或组键（如 "P/C/S/V"、"A"、"S/V"），第二层＝尺寸/尺寸组→差价。
+   * 返回数字/文本；null＝该タイプ或尺寸不可选。
+   */
+  function priceByTypeSizeValue(option, typeCode, size) {
+    var p = option && option.priceByTypeSize;
+    if (!p || !size) return null;
+    var tk = null;
+    if (Object.prototype.hasOwnProperty.call(p, typeCode)) tk = typeCode;
+    else {
+      var bestLen = Infinity;
+      Object.keys(p).forEach(function (k) {
+        if (k.indexOf(typeCode) >= 0 && k.length < bestLen) { tk = k; bestLen = k.length; }
+      });
+    }
+    if (tk == null) return null;
+    return priceBySize({ pricesBySize: p[tk] }, size);
+  }
+
   /** 数字/文本统一转差价数字；null 表示无法确定；'基本仕様'/'0' → 0 */
   function toAmount(v) {
     if (v == null) return null;
@@ -103,6 +123,11 @@
   function priceFor(option, typeCode, size) {
     if (!option) return null;
     if (typeof option.priceDiff === 'number') return option.priceDiff;
+    if (option.priceByTypeSize) {
+      var sv = priceByTypeSizeValue(option, typeCode, size);
+      if (sv != null) return toAmount(sv);
+      return null;
+    }
     var v = priceByTypeValue(option, typeCode);
     if (v != null) return toAmount(v);
     if (option.pricesBySize && size) {
@@ -122,6 +147,17 @@
     if (typeof option.priceDiff === 'number') {
       if (option.priceDiff === 0) return { text: '基本仕様', type: 'basic' };
       return { text: fmtDiff(option.priceDiff), type: 'num' };
+    }
+    if (option.priceByTypeSize) {
+      var sv = priceByTypeSizeValue(option, typeCode, size);
+      if (sv != null) {
+        if (typeof sv === 'number') return { text: sv === 0 ? '基本仕様' : fmtDiff(sv), type: sv === 0 ? 'basic' : 'num' };
+        var cs = parseCell(sv);
+        if (cs.type === 'num') return { text: cs.text, type: 'num' };
+        if (cs.type === 'basic') return { text: '基本仕様', type: 'basic' };
+        return { text: String(sv), type: 'text' };
+      }
+      return { text: '—', type: 'na' };
     }
     if (option.priceByType) {
       var v = priceByTypeValue(option, typeCode);
@@ -163,6 +199,7 @@
     fmtDiff: fmtDiff,
     typeGroupOf: typeGroupOf,
     priceByTypeValue: priceByTypeValue,
+    priceByTypeSizeValue: priceByTypeSizeValue,
     sizeKeyMatches: sizeKeyMatches,
     priceBySize: priceBySize,
     toAmount: toAmount,
